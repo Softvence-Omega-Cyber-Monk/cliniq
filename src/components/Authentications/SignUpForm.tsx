@@ -217,6 +217,8 @@ const countries = [
   { name: "Zimbabwe", code: "+263", flag: "🇿🇼" }
 ];
 
+// hbvkfhgvfrgevufbvfbvfbvfhbvfvbrfbvufbf
+
 const RoleSelector: React.FC<{ 
   selectedRole: Role; 
   onRoleChange: (role: Role) => void;
