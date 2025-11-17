@@ -18,11 +18,12 @@ import Settings from "@/pages/Settings";
 import Support from "@/pages/Support";
 import Therapists from "../pages/Therapists";
 import Sessions from "../pages/Sessions";
-import ContentManagement from "../pages/ContentManagement";
 import DashboardContent from "@/components/IndividualDashboard/DashboardContent";
 import Oldreport from "@/pages/Oldreport";
 import PlatformSettings from "@/pages/PlatformSettings"
 import SupportTickets from "@/pages/SupportTickets"
+import ReportsTwo from "../pages/ReportsTwo";
+import Billing from "../pages/Billing";
 const routes = createBrowserRouter([
   {
     path: "/",
@@ -92,10 +93,13 @@ const routes = createBrowserRouter([
           { index: true, element: <DashboardContent /> }, // Use the new component
           { path: "therapists", element: <Therapists /> },
           { path: "sessions", element: <Sessions /> },
-          { path: "content-management", element: <ContentManagement /> },
+          { path: "clients", element: <Clients /> },
+          { path: "appointments", element: <Appointments /> },
           { path: "reports", element: <UserDashboardReportsPage /> },
+          { path: "reportstwo", element: <ReportsTwo /> },
           { path: "settings", element: <PlatformSettings /> },
           { path: "support", element: <SupportTickets /> },
+          { path: "billing", element: <Billing /> },
         ],
       },
     ],

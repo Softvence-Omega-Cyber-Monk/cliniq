@@ -6,21 +6,20 @@ import SessionTimelineItem from './SessionTimelineItem';
 const ClientDetailView: React.FC<{ client: Client, onBack: () => void, onOpenModal: () => void }> = ({ client, onBack, onOpenModal }) => {
   const [sessionTimer, setSessionTimer] = useState(0); // seconds
   const [isSessionActive, setIsSessionActive] = useState(false);
+  const [isPaused, setIsPaused] = useState(false);
 
   // Timer logic
   React.useEffect(() => {
     let interval: NodeJS.Timeout | null = null;
-    if (isSessionActive) {
+    if (isSessionActive && !isPaused) {
       interval = setInterval(() => {
         setSessionTimer(t => t + 1);
       }, 1000);
-    } else if (!isSessionActive && sessionTimer !== 0) {
-      if (interval) clearInterval(interval);
     }
     return () => {
       if (interval) clearInterval(interval);
     };
-  }, [isSessionActive, sessionTimer]);
+  }, [isSessionActive, isPaused]);
 
   const formatTime = (totalSeconds: number): string => {
     const hours = Math.floor(totalSeconds / 3600);
@@ -34,15 +33,21 @@ const ClientDetailView: React.FC<{ client: Client, onBack: () => void, onOpenMod
     if (!isSessionActive) {
       setSessionTimer(0);
       setIsSessionActive(true);
+      setIsPaused(false);
     }
   };
 
   const endSession = () => {
     if (isSessionActive) {
       setIsSessionActive(false);
+      setIsPaused(false);
       // In a real app, you would save the session data here
       console.log(`Session ended for ${client.name}. Duration: ${formatTime(sessionTimer)}`);
     }
+  };
+
+  const togglePause = () => {
+    setIsPaused(!isPaused);
   };
 
   return (
@@ -89,8 +94,16 @@ const ClientDetailView: React.FC<{ client: Client, onBack: () => void, onOpenMod
               <div className="bg-white rounded-lg p-3 shadow-inner border border-gray-200">
                 <div className="flex justify-center items-center space-x-3">
                   <span className="text-xl font-mono text-red-600">{formatTime(sessionTimer)}</span>
+                  <button onClick={togglePause} className={`px-3 py-1 text-sm font-semibold rounded-lg transition flex items-center space-x-1 ${isPaused ? 'bg-emerald-500 text-white hover:bg-emerald-600' : 'bg-yellow-500 text-white hover:bg-yellow-600'}`}>
+                    {isPaused ? (
+                        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M8 5v10l7-5-7-5z"></path></svg>
+                    ) : (
+                        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M6 5h2v10H6V5zm6 0h2v10h-2V5z"></path></svg>
+                    )}
+                    <span>{isPaused ? 'Resume' : 'Pause'}</span>
+                  </button>
                   <button onClick={endSession} className="px-3 py-1 bg-red-500 text-white text-sm rounded-lg hover:bg-red-600 transition">
-                    End
+                    Stop
                   </button>
                 </div>
               </div>
