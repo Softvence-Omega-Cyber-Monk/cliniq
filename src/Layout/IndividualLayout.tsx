@@ -1,6 +1,7 @@
+
 import React, { useState } from 'react';
 import { NavLink, Outlet, useLocation } from 'react-router-dom';
-import { LayoutGrid, Users, BarChart, Settings, HelpCircle, Zap, Bell, Menu, Calendar, CreditCard } from 'lucide-react';
+import { LayoutGrid, Users, BarChart, Settings, HelpCircle, Zap, Bell, Menu, Calendar, CreditCard, Book } from 'lucide-react';
 
 interface NavItem {
   id: number;
@@ -10,14 +11,15 @@ interface NavItem {
 }
 
 const navItems: NavItem[] = [
-  { id: 1, label: 'Dashboard', icon: LayoutGrid, href: '/user-dashboard' },
-  { id: 2, label: 'Therapists', icon: Users, href: '/user-dashboard/therapists' },
-  { id: 3, label: 'Appointments', icon: Calendar, href: '/user-dashboard/appointments' },
-  { id: 8, label: 'Clients', icon: Users, href: '/user-dashboard/clients' },
-  { id: 9, label: 'Reports', icon: BarChart, href: '/user-dashboard/reportstwo' },
-  { id: 10, label: 'Billing', icon: CreditCard, href: '/user-dashboard/billing' },
-  { id: 6, label: 'Settings', icon: Settings, href: '/user-dashboard/settings' },
-  { id: 7, label: 'Support', icon: HelpCircle, href: '/user-dashboard/support' },
+  { id: 1, label: 'Dashboard', icon: LayoutGrid, href: '/private-practice-admin' },
+  { id: 2, label: 'Therapists', icon: Users, href: '/private-practice-admin/therapists' },
+  { id: 3, label: 'Appointments', icon: Calendar, href: '/private-practice-admin/appointments' },
+  { id: 8, label: 'Clients', icon: Users, href: '/private-practice-admin/clients' },
+  { id: 9, label: 'Reports', icon: BarChart, href: '/private-practice-admin/reportstwo' },
+  { id: 10, label: 'Billing', icon: CreditCard, href: '/private-practice-admin/billing' },
+  { id: 11, label: 'Materials', icon: Book, href: '/private-practice-admin/materials' },
+  { id: 6, label: 'Settings', icon: Settings, href: '/private-practice-admin/settings' },
+  { id: 7, label: 'Support', icon: HelpCircle, href: '/private-practice-admin/support' },
 ];
 
 interface SidebarLinkProps {
@@ -28,10 +30,10 @@ const SidebarLink: React.FC<SidebarLinkProps> = ({ item }) => {
   const Icon = item.icon;
   const location = useLocation();
 
-  // Special handling for Dashboard - only active when exactly on '/user-dashboard'
-  const isDashboard = item.href === '/user-dashboard';
+  // Special handling for Dashboard - only active when exactly on '/private-practice-admin'
+  const isDashboard = item.href === '/private-practice-admin';
   const isActive = isDashboard 
-    ? location.pathname === '/user-dashboard'
+    ? location.pathname === '/private-practice-admin'
     : location.pathname.startsWith(item.href);
 
   return (
@@ -139,7 +141,7 @@ const IndividualLayout = () => {
         <div className="flex items-center px-2 py-4 mb-8">
           <Zap className="h-6 w-6 text-sky-500 mr-2" />
           <span className="text-xl font-bold text-gray-800">
-            Individual Panel
+            Private Practice Admin
           </span>
         </div>
 
