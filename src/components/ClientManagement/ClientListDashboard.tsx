@@ -1,10 +1,12 @@
 import React, { useState, useMemo } from 'react';
 import { Client, Status } from './types';
 import ClientListItem from './ClientListItem';
+import { AddNewClient } from './AddNewClient';
 
 const ClientListDashboard: React.FC<{ clients: Client[], onSelectClient: (client: Client) => void }> = ({ clients, onSelectClient }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filter, setFilter] = useState<Status | 'all'>('all');
+  const [showAddNewClientModal, setShowAddNewClientModal] = useState(false);
 
   const filteredClients = useMemo(() => {
     return clients.filter(client => {
@@ -21,7 +23,10 @@ const ClientListDashboard: React.FC<{ clients: Client[], onSelectClient: (client
           <h1 className="text-3xl font-bold text-gray-800">CLIENTS</h1>
           <p className="text-gray-500 mt-1">Manage your client list and sessions</p>
         </div>
-        <button className="mt-4 md:mt-0 px-5 py-2.5 bg-emerald-500 text-white font-semibold rounded-lg hover:bg-emerald-600 transition shadow-md flex items-center space-x-2">
+        <button
+          className="mt-4 md:mt-0 px-5 py-2.5 bg-emerald-500 text-white font-semibold rounded-lg hover:bg-emerald-600 transition shadow-md flex items-center space-x-2"
+          onClick={() => setShowAddNewClientModal(true)}
+        >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" /></svg>
           <span>Add New Client</span>
         </button>
@@ -64,6 +69,8 @@ const ClientListDashboard: React.FC<{ clients: Client[], onSelectClient: (client
           </div>
         )}
       </div>
+
+      {showAddNewClientModal && <AddNewClient onClose={() => setShowAddNewClientModal(false)} />}
     </div>
   );
 };

@@ -19,7 +19,7 @@ const DashboardView: React.FC<DashboardViewProps> = ({ stats, appointments, onSt
                 <h1 className="text-3xl font-extrabold text-gray-800">APPOINTMENTS</h1>
                 <button
                     onClick={onOpenModal}
-                    className="flex items-center px-6 py-3 font-semibold rounded-full bg-mint-500 text-black hover:bg-mint-600 transition-colors shadow-lg shadow-mint-500/30"
+                    className="flex items-center px-6 py-3 font-semibold rounded-full bg-mint-500 text-white bg-[#3FDCBF] hover:bg-mint-600 transition-colors shadow-lg shadow-mint-500/30"
                 >
                     <Plus size={20} className="mr-2" /> Create New Appointment
                 </button>

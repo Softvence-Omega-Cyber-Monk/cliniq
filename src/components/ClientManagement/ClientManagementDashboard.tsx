@@ -1,0 +1,58 @@
+import React, { useState, useCallback } from 'react';
+import { Client } from './types';
+import { MOCK_CLIENTS } from './mockData';
+import ClientListDashboard from './ClientListDashboard';
+import ClientDetailView from './ClientDetailView';
+import UpdateProgressModal from './UpdateProgressModal';
+
+interface ClientManagementDashboardProps {
+  // This component is now self-contained and doesn't need props
+}
+
+const ClientManagementDashboard: React.FC<ClientManagementDashboardProps> = () => {
+  const [selectedClient, setSelectedClient] = useState<Client | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const handleSelectClient = useCallback((client: Client) => {
+    setSelectedClient(client);
+    window.scrollTo(0, 0); 
+  }, []);
+
+  const handleBackToList = useCallback(() => {
+    setSelectedClient(null);
+    window.scrollTo(0, 0);
+  }, []);
+
+  const handleUpdateProgress = (notes: string) => {
+    console.log('Progress Notes Submitted:', notes);
+    // In a real app, you would send this to Firestore/API
+    setIsModalOpen(false);
+    alert('Progress Note saved successfully!');
+  };
+
+  return (
+    <div className="min-h-screen font-sans bg-gray-50">
+      {selectedClient ? (
+        <ClientDetailView
+          client={selectedClient}
+          onBack={handleBackToList}
+          onOpenModal={() => setIsModalOpen(true)}
+        />
+      ) : (
+        <ClientListDashboard
+          clients={MOCK_CLIENTS}
+          onSelectClient={handleSelectClient}
+        />
+      )}
+
+      {/* Modal is rendered outside the main view components */}
+      <UpdateProgressModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onUpdate={handleUpdateProgress}
+      />
+    </div>
+  );
+};
+
+export default ClientManagementDashboard;

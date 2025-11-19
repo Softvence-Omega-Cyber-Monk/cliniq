@@ -111,10 +111,13 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSwitchToSignUp }) => {
       const userType = "THERAPIST"; // Both INDIVIDUAL and PRIVATE_PRACTICE are therapists
       await login({ email: data.email, password: data.password, userType }).unwrap();
       
-      // Dispatch to authSlice to update local state (e.g., store token, user info)
-      const role = "user"; // All therapists map to the 'user' role for frontend routing
-      dispatch(authSliceLogin({ role }));
-      navigate("/user-dashboard");
+      if (data.role === Role.INDIVIDUAL) {
+        dispatch(authSliceLogin({ role: "admin" }));
+        navigate("/individual-therapist-dashboard");
+      } else {
+        dispatch(authSliceLogin({ role: "user" }));
+        navigate("/private-practice-admin");
+      }
     } catch (error) {
       console.error('Login error:', error);
       alert("Login failed. Please check your credentials and try again.");

@@ -39,7 +39,7 @@ const ScheduleModal: React.FC<ScheduleModalProps> = ({ onClose }) => {
     );
 
     return (
-        <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center z-50 p-4" onClick={onClose}>
+        <div className="fixed inset-0 bg-white/50 bg-opacity-50 flex items-center justify-center z-50 p-4" onClick={onClose}>
             <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden" onClick={(e) => e.stopPropagation()}>
                 <div className="p-6 border-b border-gray-100 flex justify-between items-center">
                     <h2 className="text-xl font-bold text-gray-800">Schedule New Appointment</h2>
