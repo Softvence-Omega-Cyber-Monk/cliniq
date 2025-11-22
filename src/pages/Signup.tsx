@@ -54,7 +54,7 @@ const Signup = () => {
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-200">
-      <div className="w-full max-w-md bg-white p-6 rounded-lg shadow-md">
+      <div className="w-full bg-white">
         <h2 className="text-2xl font-semibold text-center">Signup</h2>
         <form onSubmit={handleSubmit(onSubmit)} className="mt-4">
           {/* Name Field */}

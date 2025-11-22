@@ -14,7 +14,7 @@ const ProtectedRoute = ({ allowedRoles }: ProtectedRouteProps) => {
   }
 
   if (allowedRoles && !allowedRoles.includes(user.role)) {
-    return <Navigate to="/dashboard" replace />;
+    return <Navigate to="/individual-therapist-dashboard" replace />;
   }
 
   return <Outlet />;
