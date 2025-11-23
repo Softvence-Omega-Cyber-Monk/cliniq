@@ -1,13 +1,14 @@
+
 import React, { useState, useRef, useEffect } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useNavigate } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
-import { login as authSliceLogin } from '../../store/Slices/AuthSlice/authSlice';
+import { useSelector } from 'react-redux';
 import { Role } from './types';
 import { UserIcon, UsersIcon, ChevronDownIcon } from './Icons';
 import { useLoginMutation } from '@/store/api/apiSlice';
+import { selectIsAuthenticated, selectUserType } from '@/store/Slices/authSlice';
 
 const loginSchema = z.object({
   email: z.string().email("Invalid email format"),
@@ -23,8 +24,8 @@ interface LoginFormProps {
   onSwitchToSignUp: () => void;
 }
 
-const RoleSelector: React.FC<{ 
-  selectedRole: Role; 
+const RoleSelector: React.FC<{
+  selectedRole: Role;
   onRoleChange: (role: Role) => void;
   disabled?: boolean;
 }> = ({ selectedRole, onRoleChange, disabled = false }) => {
@@ -65,10 +66,10 @@ const RoleSelector: React.FC<{
           <span className="mr-3 text-clinic-accent">{roleData[selectedRole as keyof typeof roleData].icon}</span>
           {roleData[selectedRole as keyof typeof roleData].label}
         </span>
-        <ChevronDownIcon 
+        <ChevronDownIcon
           className={`w-5 h-5 ml-2 text-gray-400 transform transition-transform ${
             isOpen ? 'rotate-180' : ''
-          }`} 
+          }`}
         />
       </button>
       {isOpen && (
@@ -101,23 +102,25 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSwitchToSignUp }) => {
       role: Role.INDIVIDUAL,
     }
   });
-  
+
   const navigate = useNavigate();
-  const dispatch = useDispatch();
+  const isAuthenticated = useSelector(selectIsAuthenticated);
+  const userType = useSelector(selectUserType);
   const currentRole = watch("role");
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      if (userType === 'CLINIC') {
+        navigate("/private-practice-admin");
+      } else {
+        navigate("/individual-therapist-dashboard");
+      }
+    }
+  }, [isAuthenticated, userType, navigate]);
 
   const onSubmit: SubmitHandler<LoginFormInputs> = async (data) => {
     try {
-      const userType = "THERAPIST"; // Both INDIVIDUAL and PRIVATE_PRACTICE are therapists
-      await login({ email: data.email, password: data.password, userType }).unwrap();
-      
-      if (data.role === Role.INDIVIDUAL) {
-        dispatch(authSliceLogin({ role: "admin" }));
-        navigate("/individual-therapist-dashboard");
-      } else {
-        dispatch(authSliceLogin({ role: "user" }));
-        navigate("/private-practice-admin");
-      }
+      await login({ email: data.email, password: data.password, role: data.role }).unwrap();
     } catch (error) {
       console.error('Login error:', error);
       alert("Login failed. Please check your credentials and try again.");
@@ -128,8 +131,8 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSwitchToSignUp }) => {
     <div className="flex flex-col h-full min-h-[500px]">
       <div className="flex justify-between items-center mb-8 mt-4 mx-2">
         <div className="w-auto">
-          <RoleSelector 
-            selectedRole={currentRole} 
+          <RoleSelector
+            selectedRole={currentRole}
             onRoleChange={(role) => setValue('role', role, { shouldValidate: true })}
             disabled={isLoading}
           />
@@ -142,9 +145,9 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSwitchToSignUp }) => {
         </div>
         <p className="text-sm">
           Don't have an account?{' '}
-          <button 
+          <button
             type="button"
-            onClick={onSwitchToSignUp} 
+            onClick={onSwitchToSignUp}
             className="font-bold text-clinic-accent hover:underline focus:outline-none focus:ring-2 focus:ring-clinic-accent focus:ring-offset-2 rounded text-[#3FDCBF]"
             disabled={isLoading}
           >
@@ -155,7 +158,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSwitchToSignUp }) => {
 
       <div className="flex flex-col justify-center mx-4">
         <div className="w-full">
-        
+
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 mt-[150px]">
             <div>
