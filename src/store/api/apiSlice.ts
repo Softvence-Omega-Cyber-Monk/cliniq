@@ -20,7 +20,7 @@ export const apiSlice = createApi({
     }),
     registerTherapist: builder.mutation({
       query: (data) => ({
-        url: '/auth/therapist/register',
+        url: '/auth/register/therapist',
         method: 'POST',
         body: data,
       }),
