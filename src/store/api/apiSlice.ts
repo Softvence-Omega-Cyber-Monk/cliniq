@@ -1,12 +1,23 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
-// Define a service using a base URL and expected endpoints
 export const apiSlice = createApi({
   reducerPath: 'api',
-  baseQuery: fetchBaseQuery({ baseUrl: import.meta.env.VITE_API_BASE_URL }),
+  baseQuery: fetchBaseQuery({
+    baseUrl: import.meta.env.VITE_API_BASE_URL,
+
+    prepareHeaders: (headers) => {
+      const token = localStorage.getItem('token');
+      if (token) {
+        headers.set('Authorization', `Bearer ${token}`);
+      }
+      return headers;
+    },
+  }),
+
   endpoints: (builder) => ({
+    // PUBLIC endpoints
     getPosts: builder.query({
-      query: () => `posts`,
+      query: () => 'posts',
     }),
     getPost: builder.query({
       query: (id) => `posts/${id}`,
@@ -32,9 +43,19 @@ export const apiSlice = createApi({
         body: credentials,
       }),
     }),
+
+    // PROTECTED endpoint (requires token)
+    getProfile: builder.query({
+      query: () => '/auth/profile',
+    }),
   }),
 });
 
-// Export hooks for usage in functional components, which are
-// auto-generated based on the defined endpoints
-export const { useGetPostsQuery, useGetPostQuery, useRegisterClinicMutation, useRegisterTherapistMutation, useLoginMutation } = apiSlice;
+export const {
+  useGetPostsQuery,
+  useGetPostQuery,
+  useRegisterClinicMutation,
+  useRegisterTherapistMutation,
+  useLoginMutation,
+  useGetProfileQuery,
+} = apiSlice;

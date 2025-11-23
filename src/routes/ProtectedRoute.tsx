@@ -8,8 +8,9 @@ interface ProtectedRouteProps {
 
 const ProtectedRoute = ({ allowedRoles }: ProtectedRouteProps) => {
   const user = useSelector((state: RootState) => state.auth.user);
-
-  if (!user) {
+  console.log(user);
+  const token = localStorage.getItem("token");
+  if (!user || !token) {
     return <Navigate to="/login" replace />;
   }
 

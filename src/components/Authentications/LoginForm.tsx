@@ -1,13 +1,16 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { useForm, SubmitHandler } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
-import { useNavigate } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
-import { login as authSliceLogin } from '../../store/Slices/AuthSlice/authSlice';
-import { Role } from './types';
-import { UserIcon, UsersIcon, ChevronDownIcon } from './Icons';
-import { useLoginMutation } from '@/store/api/apiSlice';
+import React, { useState, useRef, useEffect } from "react";
+import { useForm, SubmitHandler } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import {
+  login as authSliceLogin,
+  setCredentials,
+} from "../../store/Slices/AuthSlice/authSlice";
+import { Role } from "./types";
+import { UserIcon, UsersIcon, ChevronDownIcon } from "./Icons";
+import { useLoginMutation } from "@/store/api/apiSlice";
 
 const loginSchema = z.object({
   email: z.string().email("Invalid email format"),
@@ -23,8 +26,8 @@ interface LoginFormProps {
   onSwitchToSignUp: () => void;
 }
 
-const RoleSelector: React.FC<{ 
-  selectedRole: Role; 
+const RoleSelector: React.FC<{
+  selectedRole: Role;
   onRoleChange: (role: Role) => void;
   disabled?: boolean;
 }> = ({ selectedRole, onRoleChange, disabled = false }) => {
@@ -32,18 +35,27 @@ const RoleSelector: React.FC<{
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const roleData = {
-    [Role.PRIVATE_PRACTICE]: { icon: <UserIcon className="w-5 h-5" />, label: 'PRIVATE PRACTICE' },
-    [Role.INDIVIDUAL]: { icon: <UsersIcon className="w-5 h-5" />, label: 'INDIVIDUAL' },
+    [Role.PRIVATE_PRACTICE]: {
+      icon: <UserIcon className="w-5 h-5" />,
+      label: "PRIVATE PRACTICE",
+    },
+    [Role.INDIVIDUAL]: {
+      icon: <UsersIcon className="w-5 h-5" />,
+      label: "INDIVIDUAL",
+    },
   };
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
         setIsOpen(false);
       }
     };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   const handleSelect = (role: Role) => {
@@ -62,13 +74,15 @@ const RoleSelector: React.FC<{
         aria-expanded={isOpen}
       >
         <span className="flex items-center">
-          <span className="mr-3 text-clinic-accent">{roleData[selectedRole as keyof typeof roleData].icon}</span>
+          <span className="mr-3 text-clinic-accent">
+            {roleData[selectedRole as keyof typeof roleData].icon}
+          </span>
           {roleData[selectedRole as keyof typeof roleData].label}
         </span>
-        <ChevronDownIcon 
+        <ChevronDownIcon
           className={`w-5 h-5 ml-2 text-gray-400 transform transition-transform ${
-            isOpen ? 'rotate-180' : ''
-          }`} 
+            isOpen ? "rotate-180" : ""
+          }`}
         />
       </button>
       {isOpen && (
@@ -81,7 +95,9 @@ const RoleSelector: React.FC<{
                   onClick={() => handleSelect(role as Role)}
                   className="w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 flex items-center focus:outline-none focus:bg-gray-50"
                 >
-                  <span className="mr-3 text-gray-500">{roleData[role as keyof typeof roleData].icon}</span>
+                  <span className="mr-3 text-gray-500">
+                    {roleData[role as keyof typeof roleData].icon}
+                  </span>
                   {roleData[role as keyof typeof roleData].label}
                 </button>
               </li>
@@ -95,13 +111,22 @@ const RoleSelector: React.FC<{
 
 const LoginForm: React.FC<LoginFormProps> = ({ onSwitchToSignUp }) => {
   const [login, { isLoading }] = useLoginMutation();
-  const { register, handleSubmit, formState: { errors }, setValue, watch } = useForm<LoginFormInputs>({
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    setValue,
+    watch,
+  } = useForm<LoginFormInputs>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
       role: Role.INDIVIDUAL,
-    }
+      email: "therapist@gmail.com",
+      password: "123456",
+    },
   });
-  
+
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const currentRole = watch("role");
@@ -109,17 +134,39 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSwitchToSignUp }) => {
   const onSubmit: SubmitHandler<LoginFormInputs> = async (data) => {
     try {
       const userType = "THERAPIST"; // Both INDIVIDUAL and PRIVATE_PRACTICE are therapists
-      await login({ email: data.email, password: data.password, userType }).unwrap();
-      
+      const response = await login({
+        email: data.email,
+        password: data.password,
+        userType,
+      }).unwrap();
+      console.log(response);
+      localStorage.setItem("token", response.accessToken);
+      const profileResponse = await fetch(
+        `${import.meta.env.VITE_API_BASE_URL}/auth/profile`,
+        {
+          headers: { Authorization: `Bearer ${response.accessToken}` },
+        }
+      );
+      const user = await profileResponse.json();
+      console.log(user);
+      dispatch(
+        setCredentials({
+          user,
+          accessToken: response.accessToken,
+          refreshToken: response.refreshToken,
+        })
+      );
+
       if (data.role === Role.INDIVIDUAL) {
         dispatch(authSliceLogin({ role: "admin" }));
+
         navigate("/individual-therapist-dashboard");
       } else {
         dispatch(authSliceLogin({ role: "user" }));
         navigate("/private-practice-admin");
       }
     } catch (error) {
-      console.error('Login error:', error);
+      console.error("Login error:", error);
       alert("Login failed. Please check your credentials and try again.");
     }
   };
@@ -128,23 +175,28 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSwitchToSignUp }) => {
     <div className="flex flex-col h-full min-h-[500px]">
       <div className="flex justify-between items-center mb-8 mt-4 mx-2">
         <div className="w-auto">
-          <RoleSelector 
-            selectedRole={currentRole} 
-            onRoleChange={(role) => setValue('role', role, { shouldValidate: true })}
+          <RoleSelector
+            selectedRole={currentRole}
+            onRoleChange={(role) =>
+              setValue("role", role, { shouldValidate: true })
+            }
             disabled={isLoading}
           />
-           {errors.role && (
-                <p id="login-role-error" className="text-red-500 text-xs mt-2 flex items-center">
-                  <span className="mr-1">⚠</span>
-                  {errors.role.message}
-                </p>
-              )}
+          {errors.role && (
+            <p
+              id="login-role-error"
+              className="text-red-500 text-xs mt-2 flex items-center"
+            >
+              <span className="mr-1">⚠</span>
+              {errors.role.message}
+            </p>
+          )}
         </div>
         <p className="text-sm">
-          Don't have an account?{' '}
-          <button 
+          Don't have an account?{" "}
+          <button
             type="button"
-            onClick={onSwitchToSignUp} 
+            onClick={onSwitchToSignUp}
             className="font-bold text-clinic-accent hover:underline focus:outline-none focus:ring-2 focus:ring-clinic-accent focus:ring-offset-2 rounded text-[#3FDCBF]"
             disabled={isLoading}
           >
@@ -155,11 +207,15 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSwitchToSignUp }) => {
 
       <div className="flex flex-col justify-center mx-4">
         <div className="w-full">
-        
-
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 mt-[150px]">
+          <form
+            onSubmit={handleSubmit(onSubmit)}
+            className="space-y-6 mt-[150px]"
+          >
             <div>
-              <label htmlFor="login-email" className="text-sm font-bold text-gray-700 block mb-2">
+              <label
+                htmlFor="login-email"
+                className="text-sm font-bold text-gray-700 block mb-2"
+              >
                 Email
               </label>
               <input
@@ -168,11 +224,16 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSwitchToSignUp }) => {
                 {...register("email")}
                 placeholder="Enter your email"
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-clinic-primary focus:border-transparent transition-colors bg-[#fff]"
-                aria-describedby={errors.email ? "login-email-error" : undefined}
+                aria-describedby={
+                  errors.email ? "login-email-error" : undefined
+                }
                 disabled={isLoading}
               />
               {errors.email && (
-                <p id="login-email-error" className="text-red-500 text-xs mt-2 flex items-center">
+                <p
+                  id="login-email-error"
+                  className="text-red-500 text-xs mt-2 flex items-center"
+                >
                   <span className="mr-1">⚠</span>
                   {errors.email.message}
                 </p>
@@ -180,7 +241,10 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSwitchToSignUp }) => {
             </div>
 
             <div>
-              <label htmlFor="login-password" className="text-sm font-bold text-gray-700 block mb-2">
+              <label
+                htmlFor="login-password"
+                className="text-sm font-bold text-gray-700 block mb-2"
+              >
                 Password
               </label>
               <input
@@ -189,17 +253,22 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSwitchToSignUp }) => {
                 {...register("password")}
                 placeholder="Enter your password"
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-clinic-primary focus:border-transparent transition-colors bg-[#fff]"
-                aria-describedby={errors.password ? "login-password-error" : undefined}
+                aria-describedby={
+                  errors.password ? "login-password-error" : undefined
+                }
                 disabled={isLoading}
               />
               {errors.password && (
-                <p id="login-password-error" className="text-red-500 text-xs mt-2 flex items-center">
+                <p
+                  id="login-password-error"
+                  className="text-red-500 text-xs mt-2 flex items-center"
+                >
                   <span className="mr-1">⚠</span>
                   {errors.password.message}
                 </p>
               )}
             </div>
-            
+
             <button
               type="submit"
               disabled={isLoading}
@@ -207,14 +276,30 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSwitchToSignUp }) => {
             >
               {isLoading ? (
                 <span className="flex items-center justify-center">
-                  <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  <svg
+                    className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    ></circle>
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                    ></path>
                   </svg>
                   Log In...
                 </span>
               ) : (
-                'Log In'
+                "Log In"
               )}
             </button>
           </form>
