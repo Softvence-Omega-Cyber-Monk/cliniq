@@ -1,5 +1,9 @@
 import { useGetSessionTrendsQuery } from "@/store/api/dashboardApi";
+import { RootState } from "@/store/store";
+
+import { getDateRangeParams } from "@/utils/getDateRangeParams";
 import React, { useState } from "react";
+import { useSelector } from "react-redux";
 import {
   LineChart,
   Line,
@@ -11,12 +15,12 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
-const data = [
-  { name: "Week-1", Completed: 120, Scheduled: 70, Cancelled: 30 },
-  { name: "Week-2", Completed: 280, Scheduled: 200, Cancelled: 90 },
-  { name: "Week-3", Completed: 120, Scheduled: 30, Cancelled: 10 },
-  { name: "Week-4", Completed: 230, Scheduled: 90, Cancelled: 45 },
-];
+// const data = [
+//   { name: "Week-1", Completed: 120, Scheduled: 70, Cancelled: 30 },
+//   { name: "Week-2", Completed: 280, Scheduled: 200, Cancelled: 90 },
+//   { name: "Week-3", Completed: 120, Scheduled: 30, Cancelled: 10 },
+//   { name: "Week-4", Completed: 230, Scheduled: 90, Cancelled: 45 },
+// ];
 
 const ChartCard: React.FC<{
   children: React.ReactNode;
@@ -33,36 +37,23 @@ const ChartCard: React.FC<{
 );
 
 const SessionsCompletionChart: React.FC = () => {
+  const { user } = useSelector((state: RootState) => state.auth.user);
   const [activeTab, setActiveTab] = useState("Week");
-  const formatDate = (date: Date) => {
-    return date.toISOString().split("T")[0];
-  };
-
-  const getDateRangeParams = (tab: string) => {
-    const today = new Date();
-    const endDate = formatDate(today);
-
-    const days = tab === "Week" ? 7 : 30;
-    const start = new Date();
-    start.setDate(start.getDate() - days);
-    const startDate = formatDate(start);
-
-    return { startDate, endDate };
-  };
+  console.log(user);
   const { startDate, endDate } = getDateRangeParams(activeTab);
   const dateRange = activeTab === "Week" ? "last_7_days" : "last_30_days";
   const {
-    data: tg,
+    data: chartData,
     isLoading,
     isError,
   } = useGetSessionTrendsQuery({
     dateRange,
     startDate,
     endDate,
-    therapistId: "123e4567-e89b-12d3-a456-426614174000",
+    therapistId: user?.id ?? "",
     status: "completed",
   });
-  console.log(tg?.weeklyData);
+
   const renderLegend = (props: any) => {
     const { payload } = props;
     return (
@@ -106,7 +97,7 @@ const SessionsCompletionChart: React.FC = () => {
     >
       <ResponsiveContainer width="100%" height="100%">
         <LineChart
-          data={tg?.weeklyData}
+          data={chartData?.weeklyData}
           margin={{ top: 5, right: 20, left: -10, bottom: 5 }}
         >
           <CartesianGrid strokeDasharray="3 3" vertical={false} />

@@ -16,8 +16,8 @@ import UserDashboardReportsPage from "../pages/UserDashboardReports";
 import Therapists from "../pages/Therapists";
 import Sessions from "../pages/Sessions";
 import DashboardContent from "@/components/IndividualDashboard/DashboardContent";
-import PlatformSettings from "@/pages/PlatformSettings"
-import SupportTickets from "@/pages/SupportTickets"
+import PlatformSettings from "@/pages/PlatformSettings";
+import SupportTickets from "@/pages/SupportTickets";
 import ReportsTwo from "../pages/ReportsTwo";
 import Billing from "../pages/Billing";
 import Materials from "../pages/Materials";
@@ -34,12 +34,21 @@ const routes = createBrowserRouter([
     element: <Layout />,
     children: [
       {
-        element: <ProtectedRoute allowedRoles={["user", "admin"]} />,
+        element: <ProtectedRoute allowedRoles={["admin"]} />,
         children: [
-          { index: true, element: <Navigate to="/individual-therapist-dashboard" replace /> },
-          { path: "individual-therapist-dashboard", element: <IndividualTherapistDashboard /> },
+          {
+            index: true,
+            element: <Navigate to="/individual-therapist-dashboard" replace />,
+          },
+          {
+            path: "individual-therapist-dashboard",
+            element: <IndividualTherapistDashboard />,
+          },
           { path: "clients", element: <IndividualTherapistClients /> },
-          { path: "appointments", element: <IndividualTherapistAppointments /> },
+          {
+            path: "appointments",
+            element: <IndividualTherapistAppointments />,
+          },
           { path: "reports", element: <IndividualTherapistOldreport /> },
           { path: "settings", element: <IndividualTherapistSettings /> },
           { path: "support", element: <IndividualTherapistSupport /> },
@@ -58,7 +67,7 @@ const routes = createBrowserRouter([
   },
   {
     path: "/private-practice-admin",
-    element: <ProtectedRoute allowedRoles={["user"]} />,
+    element: <ProtectedRoute allowedRoles={["THERAPIST"]} />,
     children: [
       {
         path: "",

@@ -1,14 +1,12 @@
-// store.ts
 import { configureStore } from "@reduxjs/toolkit";
 import { persistStore, persistReducer } from "redux-persist";
-import storage from "redux-persist/lib/storage"; // defaults to localStorage
+import storage from "redux-persist/lib/storage";
 import counterReducer from "./Slices/counterSlice/counterSlice";
 import authReducer from "./Slices/AuthSlice/authSlice";
 import formReducer from "./Slices/FormSlice/FormSlice";
 import { apiSlice } from "./api/apiSlice";
 import { dashboardApi } from "./api/dashboardApi";
 
-// Persist config for auth slice
 const authPersistConfig = {
   key: "auth",
   storage,
@@ -31,7 +29,7 @@ export const store = configureStore({
       .concat(dashboardApi.middleware),
 });
 
-// Create persistor
+
 export const persistor = persistStore(store);
 
 export type RootState = ReturnType<typeof store.getState>;

@@ -15,10 +15,7 @@ export const dashboardApi = createApi({
     }),
 
     endpoints: (builder) => ({
-        // PUBLIC endpoints
 
-
-        // PROTECTED endpoint (requires token)
         getProfile: builder.query({
             query: () => '/auth/profile',
         }),
@@ -49,6 +46,29 @@ export const dashboardApi = createApi({
                     reportType: params.reportType,
                 }
             })
+        }),
+        getTherapistActivity: builder.query({
+            query: (params) => ({
+                url: "/reports/therapist-activity",
+                method: "GET",
+                params: {
+                    dateRange: params.dateRange,
+                    startDate: params.startDate,
+                    endDate: params.endDate,
+                    therapistId: params.therapistId,
+                    status: params.status,
+                    reportType: params.reportType,
+                }
+            })
+        }),
+        getCrisisAlerts: builder.query({
+            query: (params) => ({
+                url: "/reports/crisis-alerts",
+                method: "GET",
+                params: {
+                    limit: params.limit
+                }
+            })
         })
     }),
 });
@@ -56,4 +76,6 @@ export const dashboardApi = createApi({
 export const {
     useGetSessionTrendsQuery,
     useGetDashboardStatsQuery,
+    useGetTherapistActivityQuery,
+    useGetCrisisAlertsQuery
 } = dashboardApi;

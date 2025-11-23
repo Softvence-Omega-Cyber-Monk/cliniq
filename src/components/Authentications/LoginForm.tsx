@@ -133,7 +133,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSwitchToSignUp }) => {
 
   const onSubmit: SubmitHandler<LoginFormInputs> = async (data) => {
     try {
-      const userType = "THERAPIST"; // Both INDIVIDUAL and PRIVATE_PRACTICE are therapists
+      const userType = "THERAPIST";
       const response = await login({
         email: data.email,
         password: data.password,
@@ -156,13 +156,19 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSwitchToSignUp }) => {
           refreshToken: response.refreshToken,
         })
       );
-
-      if (data.role === Role.INDIVIDUAL) {
-        dispatch(authSliceLogin({ role: "admin" }));
-
-        navigate("/individual-therapist-dashboard");
+      console.log(data);
+      if (user.userType === "THERAPIST") {
+        dispatch(
+          setCredentials({
+            user,
+            accessToken: response.accessToken,
+            refreshToken: response.refreshToken,
+          })
+        );
+        navigate("/private-practice-admin");
       } else {
         dispatch(authSliceLogin({ role: "user" }));
+
         navigate("/private-practice-admin");
       }
     } catch (error) {
