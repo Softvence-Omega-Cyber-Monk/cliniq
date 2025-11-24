@@ -13,7 +13,7 @@ import {
 } from "../icons";
 import { FaPlus } from "react-icons/fa";
 import EditPersonalInfo from "./EditPersonalInfo";
-import { useGetDashboardStatsQuery } from "@/store/api/dashboardApi";
+import { useGetDashboardStatsQuery } from "@/store/api/ReportsApi";
 import StatCardSkeleton from "@/common/StatCardSkeleton";
 
 import { useSelector } from "react-redux";

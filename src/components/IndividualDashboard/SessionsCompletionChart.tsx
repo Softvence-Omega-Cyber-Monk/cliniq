@@ -1,4 +1,5 @@
-import { useGetSessionTrendsQuery } from "@/store/api/dashboardApi";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { useGetSessionTrendsQuery } from "@/store/api/ReportsApi";
 import { RootState } from "@/store/store";
 
 import { getDateRangeParams } from "@/utils/getDateRangeParams";
@@ -45,8 +46,6 @@ const SessionsCompletionChart: React.FC = () => {
 
   const {
     data: chartData,
-    isLoading,
-    isError,
   } = useGetSessionTrendsQuery({
     dateRange,
     startDate,
