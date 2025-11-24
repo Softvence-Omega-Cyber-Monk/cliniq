@@ -15,7 +15,7 @@ export const apiSlice = createApi({
   }),
 
   endpoints: (builder) => ({
-    // PUBLIC endpoints
+
     getPosts: builder.query({
       query: () => 'posts',
     }),
@@ -44,7 +44,7 @@ export const apiSlice = createApi({
       }),
     }),
 
-    // PROTECTED endpoint (requires token)
+
     getProfile: builder.query({
       query: () => '/auth/profile',
     }),

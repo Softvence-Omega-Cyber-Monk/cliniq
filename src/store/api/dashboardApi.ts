@@ -69,6 +69,20 @@ export const dashboardApi = createApi({
                     limit: params.limit
                 }
             })
+        }),
+        getSessionData: builder.query({
+            query: (params) => ({
+                url: "/reports/session-data",
+                method: "GET",
+                params: {
+                    dateRange: params.dateRange,
+                    startDate: params.startDate,
+                    endDate: params.endDate,
+                    therapistId: params.therapistId,
+                    status: params.status,
+                    reportType: params.reportType,
+                }
+            })
         })
     }),
 });
@@ -77,5 +91,6 @@ export const {
     useGetSessionTrendsQuery,
     useGetDashboardStatsQuery,
     useGetTherapistActivityQuery,
-    useGetCrisisAlertsQuery
+    useGetCrisisAlertsQuery,
+    useGetSessionDataQuery,
 } = dashboardApi;

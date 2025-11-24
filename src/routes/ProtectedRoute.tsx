@@ -17,11 +17,11 @@ const ProtectedRoute = ({ allowedRoles }: ProtectedRouteProps) => {
 
   if (allowedRoles && !allowedRoles.includes(user.userType)) {
     switch (user.userType) {
-      case "admin":
+      case "ADMIN":
         return <Navigate to="/admin-dashboard" replace />;
-      case "therapist":
+      case "THERAPIST":
         return <Navigate to="/private-practice-admin" replace />;
-      case "client":
+      case "PRIVATE_PRACTICE":
         return <Navigate to="/client-dashboard" replace />;
       default:
         return <Navigate to="/login" replace />;

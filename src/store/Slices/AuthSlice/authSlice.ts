@@ -1,5 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 export interface User {
+  user: User
   id: string;
   fullName: string;
   licenseNumber: string;
@@ -15,6 +16,7 @@ export interface User {
   clinic: string | null;
   subscriptionPlan: string | null;
   createdAt: string;
+  userType: "THERAPIST" | "ADMIN" | "PRIVATE_PRACTICE";
   updatedAt: string;
 }
 interface AuthState {
