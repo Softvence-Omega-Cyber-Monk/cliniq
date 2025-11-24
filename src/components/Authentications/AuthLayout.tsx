@@ -13,7 +13,7 @@ const AuthLayout: React.FC<AuthLayoutProps> = ({ children, role }) => {
   const coverImage = role === Role.INDIVIDUAL ? individualCover : logincover;
   const imageClassName =
     role === Role.INDIVIDUAL
-      ? "w-full h-full object-contain opacity-80"
+      ? "w-full h-full object-cover opacity-80"
       : "w-full max-h-full object-contain object-bottom opacity-80";
   return (
     <div className="flex flex-col md:flex-row bg-white min-h-screen">
