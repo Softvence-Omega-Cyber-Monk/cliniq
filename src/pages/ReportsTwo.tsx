@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import {
   Download,
   ChevronDown,
@@ -24,7 +24,7 @@ import {
 import {
   useGetDashboardStatsQuery,
   useGetSessionDataQuery,
-} from "@/store/api/dashboardApi";
+} from "@/store/api/ReportsApi";
 import { RootState } from "@/store/store";
 import { useSelector } from "react-redux";
 
@@ -324,9 +324,7 @@ const TherapistActivityChart: React.FC = () => (
 interface SessionReportTableProps {
   SessionDataReport: TherapistData[];
 }
-const SessionReportTable: React.FC<SessionReportTableProps> = ({
-  SessionDataReport,
-}) => {
+const SessionReportTable: React.FC<SessionReportTableProps> = () => {
   const getStatusClasses = (status: TherapistData["status"]) => {
     switch (status) {
       case "Active":
@@ -447,7 +445,6 @@ const App: React.FC = () => {
   });
   const {
     data: sessionDate,
-    isLoading: sessionLoading,
     isError,
   } = useGetSessionDataQuery({
     dateRange: "last_30_days",
@@ -491,7 +488,6 @@ const App: React.FC = () => {
       color: "red",
     },
   ];
-  const [filters, setFilters] = useState({});
   return (
     <div className="min-h-screen bg-gray-50 p-4 sm:p-6 lg:p-8 font-inter">
       {/* Header */}

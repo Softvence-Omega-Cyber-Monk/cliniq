@@ -10,7 +10,8 @@ import {
 } from "../../store/Slices/AuthSlice/authSlice";
 import { Role } from "./types";
 import { UserIcon, UsersIcon, ChevronDownIcon } from "./Icons";
-import { useLoginMutation } from "@/store/api/apiSlice";
+import { useLoginMutation } from "@/store/api/AuthApi";
+
 
 const loginSchema = z.object({
   email: z.string().email("Invalid email format"),
