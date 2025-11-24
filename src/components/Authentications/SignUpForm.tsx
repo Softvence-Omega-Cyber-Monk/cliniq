@@ -418,17 +418,18 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
           privatePracticeName: data.privatePracticeName,
         }),
       };
-      console.log(currentRole, Role);
       let result;
       if (currentRole === Role.PRIVATE_PRACTICE) {
         result = await registrationClinic(payload).unwrap();
+        console.log(result)
       } else {
         result = await registrationTherapist(payload).unwrap();
+        console.log(result)
       }
-      console.log(result);
+      console.log(result)
       toast.success("Account created successfully!");
       navigate("/login", {
-        state: { email: data.email, password: data.password },
+        state: {email: data.email, password: data.password,userType:result.userType},
       });
       onSwitchToLogin();
     } catch (error) {

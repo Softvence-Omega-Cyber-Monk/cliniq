@@ -1,13 +1,14 @@
-import { useSelector } from "react-redux";
+
+import { useAppSelector } from "@/hooks/useRedux";
 import { Navigate, Outlet } from "react-router-dom";
-import type { RootState } from "../store/store";
+
 
 interface ProtectedRouteProps {
   allowedRoles: string[];
 }
 
 const ProtectedRoute = ({ allowedRoles }: ProtectedRouteProps) => {
-  const user = useSelector((state: RootState) => state.auth.user);
+  const user = useAppSelector(state => state.auth.user)
   const token = localStorage.getItem("token");
   console.log(user);
 

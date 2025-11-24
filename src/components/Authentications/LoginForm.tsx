@@ -112,6 +112,7 @@ const RoleSelector: React.FC<{
 const LoginForm: React.FC<LoginFormProps> = ({ onSwitchToSignUp }) => {
   const [login, { isLoading }] = useLoginMutation();
   const {state} = useLocation();
+  console.log(state)
   const {
     register,
     handleSubmit,
@@ -123,6 +124,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSwitchToSignUp }) => {
     defaultValues: {
       email: state?.email || "",
       password: state?.password || "",
+      role: state.userType === "CLINIC" ? Role.PRIVATE_PRACTICE : Role.INDIVIDUAL,
     }
   });
 
@@ -136,29 +138,30 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSwitchToSignUp }) => {
       const response = await login({
         email: data.email,
         password: data.password,
+        userType:state.userType
       }).unwrap();
       console.log(response);
       localStorage.setItem("token", response.accessToken);
-      const profileResponse = await fetch(
-        `${import.meta.env.VITE_API_BASE_URL}/auth/profile`,
-        {
-          headers: { Authorization: `Bearer ${response.accessToken}` },
-        }
-      );
-      const user = await profileResponse.json();
-      console.log(user);
+      // const profileResponse = await fetch(
+      //   `${import.meta.env.VITE_API_BASE_URL}/auth/profile`,
+      //   {
+      //     headers: { Authorization: `Bearer ${response.accessToken}` },
+      //   }
+      // );
+      // const user = await profileResponse.json();
+      console.log(response.user);
       dispatch(
         setCredentials({
-          user,
+          user:response.user,
           accessToken: response.accessToken,
           refreshToken: response.refreshToken,
         })
       );
       console.log(data);
-      if (user.userType === "THERAPIST") {
+      if (response.user.userType === "THERAPIST") {
         dispatch(
           setCredentials({
-            user,
+            user:response.user,
             accessToken: response.accessToken,
             refreshToken: response.refreshToken,
           })

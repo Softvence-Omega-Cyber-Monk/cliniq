@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 export interface User {
-  user: User
+  user: User;
   id: string;
   fullName: string;
   licenseNumber: string;
@@ -66,4 +66,4 @@ const authSlice = createSlice({
 });
 
 export const { login, logout, setCredentials } = authSlice.actions;
-export default authSlice.reducer; 
+export default authSlice.reducer;
