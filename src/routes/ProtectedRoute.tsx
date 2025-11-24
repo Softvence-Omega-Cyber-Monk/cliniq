@@ -7,16 +7,16 @@ interface ProtectedRouteProps {
 }
 
 const ProtectedRoute = ({ allowedRoles }: ProtectedRouteProps) => {
-  const user = useSelector((state: RootState) => state.auth.user);
+  const userType = useSelector((state: RootState) => state.auth.userType);
   const token = localStorage.getItem("token");
-  console.log(user);
+  console.log(userType);
 
-  if (!user || !token) {
+  if (!userType || !token) {
     return <Navigate to="/login" replace />;
   }
 
-  if (allowedRoles && !allowedRoles.includes(user.userType)) {
-    switch (user.userType) {
+  if (allowedRoles && !allowedRoles.includes(userType)) {
+    switch (userType) {
       case "ADMIN":
         return <Navigate to="/admin-dashboard" replace />;
       case "THERAPIST":

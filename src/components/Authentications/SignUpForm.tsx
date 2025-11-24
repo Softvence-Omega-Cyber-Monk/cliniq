@@ -3,7 +3,9 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { Role } from './types';
 import { UserIcon, UsersIcon, ChevronDownIcon } from './Icons';
-import { useRegisterClinicMutation } from '@/store/api/AuthApi';
+import { toast } from 'sonner';
+import { Eye, EyeOff } from 'lucide-react';
+import { useRegistrationMutation } from '@/store/api/AuthApi';
 
 
 interface SignUpFormProps {
@@ -218,8 +220,6 @@ const countries = [
   { name: "Zimbabwe", code: "+263", flag: "🇿🇼" }
 ];
 
-// hbvkfhgvfrgevufbvfbvfbvfhbvfvbrfbvufbf
-
 const RoleSelector: React.FC<{ 
   selectedRole: Role; 
   onRoleChange: (role: Role) => void;
@@ -360,13 +360,17 @@ const CountrySelector: React.FC<{
 
 const SignUpForm: React.FC<SignUpFormProps> = ({ initialRole, onSwitchToLogin }) => {
   const [currentRole, setCurrentRole] = useState<Role>(initialRole);
-  const [registerClinic, { isLoading }] = useRegisterClinicMutation();
+  const [showPassword, setShowPassword] = useState(false);
+const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [registration, { isLoading }] = useRegistrationMutation();
   const { register, handleSubmit, formState: { errors }, watch, setValue } = useForm<FormData>({
     defaultValues: {
       countryCode: '+1'
     }
   });
-  
+  const togglePasswordVisibility = () => setShowPassword(!showPassword);
+const toggleConfirmPasswordVisibility = () => setShowConfirmPassword(!showConfirmPassword);
+
   const password = watch("password");
   const acceptPolicy = watch("acceptPolicy");
   const countryCode = watch("countryCode");
@@ -380,12 +384,13 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ initialRole, onSwitchToLogin })
         phone: `${data.countryCode}${data.phone}`,
         ...(currentRole === Role.PRIVATE_PRACTICE && { privatePracticeName: data.privatePracticeName }),
       };
-      await registerClinic(payload).unwrap();
-      alert("Account created successfully! Please log in.");
+      const result = await registration(payload).unwrap();
+      console.log(result);
+      toast.success("Account created successfully!");
       onSwitchToLogin();
     } catch (error) {
       console.error('Signup error:', error);
-      alert("Account creation failed. Please try again.");
+      toast.error("Account creation failed. Please try again.");
     }
   };
 
@@ -394,7 +399,7 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ initialRole, onSwitchToLogin })
   };
 
   return (
-    <div className="flex flex-col h-full min-h-[600px] mx-4">
+    <div className="flex flex-col h-full min-h-[600px] mx-20">
           <div className="flex justify-between items-center gap-9 mb-8 mt-4">
             <div>
               {/* <label className="text-sm font-bold text-gray-700 block mb-2">
@@ -550,55 +555,82 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ initialRole, onSwitchToLogin })
             </div>
 
             <div>
-              <label htmlFor="password" className="text-sm font-bold text-gray-700 block mb-2">
-                Password
-              </label>
-              <input 
-                id="password"
-                type="password"
-                {...register("password", { 
-                  required: "Password is required", 
-                  minLength: { 
-                    value: 6, 
-                    message: "Password must be at least 6 characters" 
-                  } 
-                })} 
-                placeholder="Create a password"
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-clinic-primary focus:border-transparent transition-colors bg-[#fff]"
-                aria-describedby={errors.password ? "password-error" : undefined}
-                disabled={isLoading}
-              />
-              {errors.password && (
-                <p id="password-error" className="text-red-500 text-xs mt-2 flex items-center">
-                  <span className="mr-1">⚠</span>
-                  {errors.password.message}
-                </p>
-              )}
-            </div>
+  <label htmlFor="password" className="text-sm font-bold text-gray-700 block mb-2">
+    Password
+  </label>
+
+  <div className="relative">
+    <input
+      id="password"
+      type={showPassword ? "text" : "password"}
+      {...register("password", {
+        required: "Password is required",
+        minLength: {
+          value: 6,
+          message: "Password must be at least 6 characters",
+        },
+      })}
+      placeholder="Create a password"
+      className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-clinic-primary focus:border-transparent transition-colors"
+      aria-describedby={errors.password ? "password-error" : undefined}
+      disabled={isLoading}
+    />
+
+    <button
+      type="button"
+      onClick={togglePasswordVisibility}
+      className="absolute inset-y-0 right-3 flex items-center text-gray-500 hover:text-gray-700"
+    >
+      {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+    </button>
+  </div>
+
+  {errors.password && (
+    <p id="password-error" className="text-red-500 text-xs mt-2 flex items-center">
+      <span className="mr-1">⚠</span>
+      {errors.password.message}
+    </p>
+  )}
+</div>
+
             
             <div>
-              <label htmlFor="confirmPassword" className="text-sm font-bold text-gray-700 block mb-2">
-                Confirm Password
-              </label>
-              <input 
-                id="confirmPassword"
-                type="password"
-                {...register("confirmPassword", { 
-                  required: "Please confirm your password", 
-                  validate: value => value === password || "Passwords do not match" 
-                })} 
-                placeholder="Retype your password"
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-clinic-primary focus:border-transparent transition-colors bg-[#fff]"
-                aria-describedby={errors.confirmPassword ? "confirmPassword-error" : undefined}
-                disabled={isLoading}
-              />
-              {errors.confirmPassword && (
-                <p id="confirmPassword-error" className="text-red-500 text-xs mt-2 flex items-center">
-                  <span className="mr-1">⚠</span>
-                  {errors.confirmPassword.message}
-                </p>
-              )}
-            </div>
+  <label htmlFor="confirmPassword" className="text-sm font-bold text-gray-700 block mb-2">
+    Confirm Password
+  </label>
+
+  <div className="relative">
+    <input
+      id="confirmPassword"
+      type={showConfirmPassword ? "text" : "password"}
+      {...register("confirmPassword", {
+        required: "Please confirm your password",
+        validate: (value) =>
+          value === password || "Passwords do not match",
+      })}
+      placeholder="Retype your password"
+      className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-clinic-primary focus:border-transparent transition-colors"
+      aria-describedby={errors.confirmPassword ? "confirmPassword-error" : undefined}
+      disabled={isLoading}
+    />
+
+    <button
+      type="button"
+      onClick={toggleConfirmPasswordVisibility}
+      className="absolute inset-y-0 right-3 flex items-center text-gray-500 hover:text-gray-700"
+    >
+      {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+    </button>
+  </div>
+
+  {errors.confirmPassword && (
+    <p id="confirmPassword-error" className="text-red-500 text-xs mt-2 flex items-center">
+      <span className="mr-1">⚠</span>
+      {errors.confirmPassword.message}
+    </p>
+  )}
+</div>
+
             
             <div className="flex items-start space-x-3 pt-2">
               <input 

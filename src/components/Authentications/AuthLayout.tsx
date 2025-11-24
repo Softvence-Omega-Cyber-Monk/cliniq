@@ -13,14 +13,12 @@ const AuthLayout: React.FC<AuthLayoutProps> = ({ children, role }) => {
   const coverImage = role === Role.INDIVIDUAL ? individualCover : logincover;
   const imageClassName =
     role === Role.INDIVIDUAL
-      ? "w-full h-full object-fill object-bottom opacity-80"
+      ? "w-full h-full object-contain opacity-80"
       : "w-full max-h-full object-contain object-bottom opacity-80";
   return (
     <div className="flex flex-col md:flex-row bg-white min-h-screen">
-
       {/* LEFT SIDE */}
       <div className="w-full md:w-5/12 bg-[#0B0D3D] text-white p-8 md:p-12 flex flex-col relative overflow-hidden">
-
         {/* TEXT (above image) */}
         {role !== Role.INDIVIDUAL && (
           <div className="relative z-10 text-center mt-[104px]">
@@ -41,17 +39,12 @@ const AuthLayout: React.FC<AuthLayoutProps> = ({ children, role }) => {
             className={imageClassName}
           />
         </div>
-
       </div>
 
       {/* RIGHT SIDE */}
-      <div className="w-full md:w-7/12 bg-[#ECEFDE]">
-        {children}
-      </div>
-
+      <div className="w-full md:w-7/12 bg-[#ECEFDE]">{children}</div>
     </div>
   );
 };
-
 
 export default AuthLayout;
