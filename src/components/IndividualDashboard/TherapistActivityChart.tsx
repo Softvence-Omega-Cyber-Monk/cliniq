@@ -1,4 +1,5 @@
-import { useGetTherapistActivityQuery } from "@/store/api/dashboardApi";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { useGetTherapistActivityQuery } from "@/store/api/ReportsApi";
 import { getDateRangeParams } from "@/utils/getDateRangeParams";
 import React from "react";
 import {
@@ -12,14 +13,14 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
-const data = [
-  { name: "Jan", "This Week": 190, "Last Week": 260 },
-  { name: "Feb", "This Week": 195, "Last Week": 270 },
-  { name: "Mar", "This Week": 190, "Last Week": 260 },
-  { name: "Apr", "This Week": 195, "Last Week": 270 },
-  { name: "May", "This Week": 195, "Last Week": 260 },
-  { name: "June", "This Week": 190, "Last Week": 270 },
-];
+// const data = [
+//   { name: "Jan", "This Week": 190, "Last Week": 260 },
+//   { name: "Feb", "This Week": 195, "Last Week": 270 },
+//   { name: "Mar", "This Week": 190, "Last Week": 260 },
+//   { name: "Apr", "This Week": 195, "Last Week": 270 },
+//   { name: "May", "This Week": 195, "Last Week": 260 },
+//   { name: "June", "This Week": 190, "Last Week": 270 },
+// ];
 
 const ChartCard: React.FC<{ children: React.ReactNode; title: string }> = ({
   children,
@@ -36,8 +37,6 @@ const TherapistActivityChart: React.FC = () => {
   const dateRange = "last_30_days";
   const {
     data: chartData,
-    isLoading,
-    isError,
   } = useGetTherapistActivityQuery({
     dateRange,
     startDate,

@@ -3,7 +3,8 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { Role } from './types';
 import { UserIcon, UsersIcon, ChevronDownIcon } from './Icons';
-import { useRegisterClinicMutation } from '@/store/api/apiSlice';
+import { useRegisterClinicMutation } from '@/store/api/AuthApi';
+
 
 interface SignUpFormProps {
   initialRole: Role;
