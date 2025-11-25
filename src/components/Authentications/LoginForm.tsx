@@ -4,9 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import {
-  setCredentials,
-} from "../../store/Slices/AuthSlice/authSlice";
+import { setCredentials } from "../../store/Slices/AuthSlice/authSlice";
 import { Role } from "./types";
 import { UserIcon, UsersIcon, ChevronDownIcon } from "./Icons";
 import { useLoginMutation } from "@/store/api/AuthApi";
@@ -123,10 +121,10 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSwitchToSignUp }) => {
       email: state?.email || "",
       password: state?.password || "",
       role:
-        state.userType === "CLINIC" ? Role.PRIVATE_PRACTICE : Role.INDIVIDUAL,
+        state?.userType === "CLINIC" ? Role.PRIVATE_PRACTICE : Role.INDIVIDUAL,
     },
   });
-  console.log(state)
+
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const currentRole = watch("role");
@@ -134,9 +132,9 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSwitchToSignUp }) => {
   const onSubmit: SubmitHandler<LoginFormInputs> = async (data) => {
     try {
       const response = await login({
-        email: data?.email,
-        password: data?.password,
-        userType: state?.userType,
+        email: data.email,
+        password: data.password,
+        userType: data.role === Role.PRIVATE_PRACTICE ? "CLINIC" : "THERAPIST",
       }).unwrap();
 
       console.log(response);
