@@ -3,8 +3,10 @@ import { Client } from "./types";
 import {
   IconUser,
   StatusBadge,
+  SeverityBadge,
+  ProgressBar,
 } from "./utilityComponents";
-
+import SessionTimelineItem from "./SessionTimelineItem";
 import { useSendSessionMutation } from "@/store/api/BaseApi/AiApi";
 
 const ClientDetailView: React.FC<{
@@ -279,8 +281,104 @@ const ClientDetailView: React.FC<{
           </div>
         )}
 
-        {/* CRISIS HISTORY, TREATMENT PROGRESS, SESSION HISTORY */}
-        {/* ...Keep your existing sections as-is... */}
+        {/* ------------------------- */}
+        {/* CRISIS HISTORY */}
+        {/* ------------------------- */}
+        <section className="bg-white p-6 rounded-xl shadow-lg mb-6">
+          <div className="flex items-center space-x-2 mb-4">
+            <svg
+              className="w-6 h-6 text-red-500"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 9v2m0 4h.01M5.062 19h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+              />
+            </svg>
+            <h2 className="text-xl font-semibold text-gray-800">
+              Crisis History
+            </h2>
+          </div>
+
+          {client.crisisHistory.map((event) => (
+            <div
+              key={event.id}
+              className="border-l-4 border-red-400 p-4 bg-red-50 mb-4 rounded-lg"
+            >
+              <div className="flex justify-between">
+                <h3 className="font-semibold text-gray-800">{event.title}</h3>
+                <SeverityBadge severity={event.severity} />
+              </div>
+              <p className="text-xs text-gray-500 mt-1">{event.date}</p>
+              <p className="text-sm mt-3 text-gray-700">
+                <span className="font-medium">Action Taken:</span>{" "}
+                {event.actionsTaken}
+              </p>
+              <div className="mt-2 flex gap-1 flex-wrap">
+                {event.tags.map((tag) => (
+                  <span
+                    key={tag}
+                    className="px-2 py-0.5 text-xs bg-red-100 text-red-700 rounded-full"
+                  >
+                    {tag}
+                  </span>
+                ))}
+              </div>
+            </div>
+          ))}
+        </section>
+
+        {/* ------------------------- */}
+        {/* TREATMENT PROGRESS */}
+        {/* ------------------------- */}
+        <section className="bg-white p-6 rounded-xl shadow-lg mb-6">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xl font-semibold text-gray-800">
+              Treatment Progress
+            </h2>
+            <span className="text-sm font-medium text-emerald-600 bg-emerald-100 px-3 py-1 rounded-full">
+              AI-Generated Insights
+            </span>
+          </div>
+
+          <div className="bg-emerald-50 p-4 rounded-lg mb-6 text-sm text-gray-700">
+            **AI Analysis:** {client.name} has shown improvement in managing
+            anxiety triggers. Recommend continued focus on workplace stress
+            management and exposure therapy.
+          </div>
+
+          <div className="space-y-4">
+            {client.progressItems.map((item) => (
+              <ProgressBar key={item.label} label={item.label} value={item.value} />
+            ))}
+          </div>
+        </section>
+
+        {/* ------------------------- */}
+        {/* SESSION HISTORY */}
+        {/* ------------------------- */}
+        <section className="bg-white p-6 rounded-xl shadow-lg">
+          <div className="flex justify-between mb-6">
+            <h2 className="text-xl font-semibold text-gray-800">
+              Session History
+            </h2>
+            <span className="text-sm text-gray-500">
+              {client.sessionHistory.length} total sessions
+            </span>
+          </div>
+
+          {client.sessionHistory.length > 0 ? (
+            client.sessionHistory.map((session) => (
+              <SessionTimelineItem key={session.id} session={session} />
+            ))
+          ) : (
+            <p className="text-gray-500 italic">No session history available.</p>
+          )}
+        </section>
       </div>
     </div>
   );
