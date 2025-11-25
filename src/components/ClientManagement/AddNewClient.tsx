@@ -1,24 +1,27 @@
-import React, { useState } from 'react';
+import { useUserId } from "@/hooks/useUserId";
+import { useCreateNewClientMutation } from "@/store/api/ClientsApi";
+import React, { useState } from "react";
+import { toast } from "sonner";
 
 // Define the type for the client form data
 export interface ClientForm {
   name: string;
   email: string;
-  phoneNumber: string;
-  speciality: string;
+  phoneNumber: string; // for input
+  healthIssues: string[];
   condition: string;
 }
 
 // Initial state with empty values
 const initialFormState: ClientForm = {
-  name: '',
-  email: '',
-  phoneNumber: '',
-  speciality: '',
-  condition: '',
+  name: "",
+  email: "",
+  phoneNumber: "",
+  healthIssues: [],
+  condition: "",
 };
 
-// Define a type for the Input component props
+// Input component for shared styling
 interface FormInputProps {
   id: keyof ClientForm;
   label: string;
@@ -27,10 +30,13 @@ interface FormInputProps {
   placeholder?: string;
 }
 
-/**
- * Custom Input Component with shared styling
- */
-const FormInput: React.FC<FormInputProps> = ({ id, label, value, onChange, placeholder = '' }) => (
+const FormInput: React.FC<FormInputProps> = ({
+  id,
+  label,
+  value,
+  onChange,
+  placeholder = "",
+}) => (
   <div className="flex flex-col space-y-2">
     <label htmlFor={id} className="text-sm font-semibold text-gray-700">
       {label}
@@ -48,9 +54,73 @@ const FormInput: React.FC<FormInputProps> = ({ id, label, value, onChange, place
   </div>
 );
 
+// Tag-style input for healthIssues
+const HealthIssuesInput: React.FC<{
+  value: string[];
+  onChange: (val: string[]) => void;
+}> = ({ value, onChange }) => {
+  const [input, setInput] = useState("");
 
-export const AddNewClient: React.FC<{ onClose: () => void }> = ({ onClose }) => {
+  const handleAdd = () => {
+    const trimmed = input.trim();
+    if (trimmed && !value.includes(trimmed)) {
+      onChange([...value, trimmed]);
+      setInput("");
+    }
+  };
+
+  const handleRemove = (issue: string) => {
+    onChange(value.filter((v) => v !== issue));
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      handleAdd();
+    }
+  };
+
+  return (
+    <div className="flex flex-col space-y-2">
+      <label className="text-sm font-semibold text-gray-700">
+        Health Issues
+      </label>
+      <div className="flex flex-wrap gap-2 border border-gray-300 p-2 rounded">
+        {value.map((issue) => (
+          <span
+            key={issue}
+            className="flex items-center bg-cyan-100 text-cyan-800 px-2 py-1 rounded-full text-sm"
+          >
+            {issue}
+            <button
+              type="button"
+              onClick={() => handleRemove(issue)}
+              className="ml-1 font-bold text-gray-600 hover:text-gray-900"
+            >
+              ×
+            </button>
+          </span>
+        ))}
+        <input
+          type="text"
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          onKeyDown={handleKeyDown}
+          placeholder="Type and press Enter"
+          className="flex-1 outline-none"
+        />
+      </div>
+    </div>
+  );
+};
+
+export const AddNewClient: React.FC<{ onClose: () => void }> = ({
+  onClose,
+}) => {
   const [formData, setFormData] = useState<ClientForm>(initialFormState);
+  const userId = useUserId();
+  console.log(userId);
+  const [createNewClient, { isLoading }] = useCreateNewClientMutation();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -60,16 +130,35 @@ export const AddNewClient: React.FC<{ onClose: () => void }> = ({ onClose }) => 
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Client Data Submitted:', formData);
-    onClose();
+
+    const payload = {
+      name: formData.name,
+      email: formData.email,
+      phone: formData.phoneNumber,
+      healthIssues: formData.healthIssues,
+      condition: formData.condition,
+      status: "active",
+    };
+
+    try {
+      await createNewClient({
+        therapistId: userId!,
+        credentials: payload,
+      }).unwrap();
+      toast.success("New client added successfully!");
+      setFormData(initialFormState); // reset form
+      onClose(); // close modal
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to add new client.");
+    }
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#fff]/50 bg-opacity-30 p-4 font-sans backdrop-blur-sm">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#fff]/50 backdrop-blur-sm p-4 font-sans">
       <div className="bg-white w-full max-w-4xl rounded-xl shadow-2xl p-6 md:p-10">
-        
         {/* Header */}
         <div className="flex justify-between items-center mb-8">
           <h2 className="text-2xl font-bold text-gray-800">Add New Client</h2>
@@ -83,22 +172,19 @@ export const AddNewClient: React.FC<{ onClose: () => void }> = ({ onClose }) => 
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
             >
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
                 strokeWidth="2"
                 d="M6 18L18 6M6 6l12 12"
-              ></path>
+              />
             </svg>
           </button>
         </div>
 
         {/* Form */}
         <form onSubmit={handleSubmit}>
-          
-          {/* Two-Column Layout for Name/Email and Phone/Speciality */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6 mb-6">
             <FormInput
               id="name"
@@ -118,15 +204,13 @@ export const AddNewClient: React.FC<{ onClose: () => void }> = ({ onClose }) => 
               value={formData.phoneNumber}
               onChange={handleChange}
             />
-            <FormInput
-              id="speciality"
-              label="Speciality"
-              value={formData.speciality}
-              onChange={handleChange}
+            <HealthIssuesInput
+              value={formData.healthIssues}
+              onChange={(arr) =>
+                setFormData((prev) => ({ ...prev, healthIssues: arr }))
+              }
             />
           </div>
-
-          {/* Single Column Layout for Condition */}
           <div className="mb-8">
             <FormInput
               id="condition"
@@ -136,13 +220,14 @@ export const AddNewClient: React.FC<{ onClose: () => void }> = ({ onClose }) => 
             />
           </div>
 
-          {/* Action Button - Placed to the right */}
+          {/* Action Button */}
           <div className="flex justify-end pt-4 border-t border-gray-100">
             <button
               type="submit"
-              className="px-8 py-3 bg-cyan-500 text-white font-bold rounded-lg shadow-md hover:bg-cyan-600 focus:outline-none focus:ring-4 focus:ring-cyan-300 transition duration-150 ease-in-out text-lg"
+              disabled={isLoading}
+              className="px-8 py-3 bg-cyan-500 text-white font-bold rounded-lg shadow-md hover:bg-cyan-600 focus:outline-none focus:ring-4 focus:ring-cyan-300 transition duration-150 ease-in-out text-lg disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Create
+              {isLoading ? "Creating..." : "Create"}
             </button>
           </div>
         </form>

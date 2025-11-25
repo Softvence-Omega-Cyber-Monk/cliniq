@@ -31,7 +31,6 @@ const DashboardContent: React.FC = () => {
     status: "completed",
     reportType: "performance_overview",
   });
-  console.log(stats);
 
   const statCards: StatCardType[] = stats
     ? [

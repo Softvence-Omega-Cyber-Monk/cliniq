@@ -22,11 +22,15 @@ import {
   Bar,
 } from "recharts";
 import {
+  useGetCrisisAlertsQuery,
   useGetDashboardStatsQuery,
   useGetSessionDataQuery,
+  useGetSessionTrendsQuery,
+  useGetTherapistActivityQuery,
 } from "@/store/api/ReportsApi";
-import { RootState } from "@/store/store";
+
 import { useSelector } from "react-redux";
+import { RootState } from "@/store/store";
 
 // --- Interfaces ---
 
@@ -40,9 +44,9 @@ interface Stat {
 }
 
 interface TherapistData {
-  name: string;
+  therapistName: string;
   sessions: number;
-  duration: string;
+  avgDuration: string;
   completionRate: string;
   status: "Active" | "High Risk" | "Scheduled";
   avatarInitials: string;
@@ -55,65 +59,6 @@ export interface TherapistStat {
   completionRate: number;
   status: "active" | "inactive" | "highRisk" | "scheduled";
 }
-// --- Mock Data ---
-
-const sessionTrendsData = [
-  { name: "Week-1", Completed: 80, Scheduled: 40, Cancelled: 10 },
-  { name: "Week-2", Completed: 110, Scheduled: 50, Cancelled: 15 },
-  { name: "Week-3", Completed: 50, Scheduled: 20, Cancelled: 5 },
-  { name: "Week-4", Completed: 160, Scheduled: 80, Cancelled: 25 },
-];
-
-const therapistActivityData = [
-  { name: "Dr. Williams", "This Week": 15, "Last Week": 18 },
-  { name: "Dr. Rodriguez", "This Week": 16, "Last Week": 20 },
-  { name: "Dr. Chen", "This Week": 18, "Last Week": 22 },
-  { name: "Dr. Johnson", "This Week": 16, "Last Week": 20 },
-  { name: "Dr. Davis", "This Week": 14, "Last Week": 19 },
-];
-
-const therapistReportData: TherapistData[] = [
-  {
-    name: "Brooklyn Simmons",
-    sessions: 53,
-    duration: "50 min",
-    completionRate: "95%",
-    status: "Active",
-    avatarInitials: "BS",
-  },
-  {
-    name: "Annette Black",
-    sessions: 23,
-    duration: "45 min",
-    completionRate: "99%",
-    status: "Active",
-    avatarInitials: "AB",
-  },
-  {
-    name: "Esther Howard",
-    sessions: 9,
-    duration: "54 min",
-    completionRate: "94%",
-    status: "Active",
-    avatarInitials: "EH",
-  },
-  {
-    name: "Wade Warren",
-    sessions: 37,
-    duration: "35 min",
-    completionRate: "93%",
-    status: "High Risk",
-    avatarInitials: "WW",
-  },
-  {
-    name: "Savannah Nguyen",
-    sessions: 47,
-    duration: "48 min",
-    completionRate: "98%",
-    status: "Active",
-    avatarInitials: "SN",
-  },
-];
 
 // --- Components ---
 
@@ -199,132 +144,164 @@ const FilterBar: React.FC = () => {
     </div>
   );
 };
-
-const SessionTrendsChart: React.FC = () => (
-  <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-    <h3 className="text-lg font-semibold text-gray-800 mb-4">Session Trends</h3>
-    <div className="h-64 w-full">
-      <ResponsiveContainer width="100%" height="100%">
-        <LineChart
-          data={sessionTrendsData}
-          margin={{ top: 5, right: 20, left: -20, bottom: 5 }}
-        >
-          <CartesianGrid
-            strokeDasharray="3 3"
-            vertical={false}
-            stroke="#f0f0f0"
-          />
-          <XAxis
-            dataKey="name"
-            stroke="#a0a0a0"
-            tickLine={false}
-            axisLine={{ stroke: "#e0e0e0" }}
-          />
-          <YAxis stroke="#a0a0a0" tickLine={false} axisLine={false} />
-          <Tooltip
-            contentStyle={{
-              borderRadius: 8,
-              fontSize: 12,
-              border: "none",
-              boxShadow: "0 2px 10px rgba(0,0,0,0.1)",
-            }}
-          />
-          <Legend
-            wrapperStyle={{ paddingTop: 20 }}
-            iconType="circle"
-            layout="horizontal"
-            align="center"
-            verticalAlign="bottom"
-          />
-          <Line
-            type="monotone"
-            dataKey="Completed"
-            stroke="#6bcf8a"
-            strokeWidth={2}
-            dot={{ r: 4 }}
-            activeDot={{ r: 6 }}
-          />
-          <Line
-            type="monotone"
-            dataKey="Scheduled"
-            stroke="#f6bb42"
-            strokeWidth={2}
-            dot={{ r: 4 }}
-            activeDot={{ r: 6 }}
-          />
-          <Line
-            type="monotone"
-            dataKey="Cancelled"
-            stroke="#e9573f"
-            strokeWidth={2}
-            dot={{ r: 4 }}
-            activeDot={{ r: 6 }}
-          />
-        </LineChart>
-      </ResponsiveContainer>
-    </div>
-  </div>
-);
-
-const TherapistActivityChart: React.FC = () => (
-  <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-    <h3 className="text-lg font-semibold text-gray-800 mb-4">
-      Therapist Activity
-    </h3>
-    <div className="h-64 w-full">
-      <ResponsiveContainer width="100%" height="100%">
-        <BarChart
-          data={therapistActivityData}
-          margin={{ top: 5, right: 20, left: -20, bottom: 5 }}
-        >
-          <CartesianGrid
-            strokeDasharray="3 3"
-            vertical={false}
-            stroke="#f0f0f0"
-          />
-          <XAxis
-            dataKey="name"
-            stroke="#a0a0a0"
-            tickLine={false}
-            axisLine={false}
-            angle={-30}
-            textAnchor="end"
-            height={50}
-            interval={0}
-            style={{ fontSize: "10px" }}
-          />
-          <YAxis
-            stroke="#a0a0a0"
-            tickLine={false}
-            axisLine={false}
-            domain={[0, 30]}
-          />
-          <Tooltip
-            contentStyle={{
-              borderRadius: 8,
-              fontSize: 12,
-              border: "none",
-              boxShadow: "0 2px 10px rgba(0,0,0,0.1)",
-            }}
-          />
-          <Legend
-            wrapperStyle={{ paddingTop: 20 }}
-            iconType="square"
-            layout="horizontal"
-            align="center"
-            verticalAlign="bottom"
-          />
-          <Bar dataKey="This Week" fill="#4a89dc" radius={[4, 4, 0, 0]} />
-          <Bar dataKey="Last Week" fill="#3bafda" radius={[4, 4, 0, 0]} />
-        </BarChart>
-      </ResponsiveContainer>
-    </div>
-  </div>
-);
-interface SessionReportTableProps {
-  SessionDataReport: TherapistData[];
+interface SessionTrend {
+  week: string;
+  completed: number;
+  scheduled: number;
+  cancelled: number;
 }
-const SessionReportTable: React.FC<SessionReportTableProps> = () => {
+
+interface SessionTrendsChartProps {
+  sessionTrends: SessionTrend[];
+}
+
+const SessionTrendsChart: React.FC<SessionTrendsChartProps> = ({
+  sessionTrends,
+}) => {
+  return (
+    <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+      <h3 className="text-lg font-semibold text-gray-800 mb-4">
+        Session Trends
+      </h3>
+      <div className="h-64 w-full">
+        <ResponsiveContainer width="100%" height="100%">
+          <LineChart
+            data={sessionTrends}
+            margin={{ top: 5, right: 20, left: -20, bottom: 5 }}
+          >
+            <CartesianGrid
+              strokeDasharray="3 3"
+              vertical={false}
+              stroke="#f0f0f0"
+            />
+            <XAxis
+              dataKey="week"
+              stroke="#a0a0a0"
+              tickLine={false}
+              axisLine={{ stroke: "#e0e0e0" }}
+            />
+            <YAxis stroke="#a0a0a0" tickLine={false} axisLine={false} />
+            <Tooltip
+              contentStyle={{
+                borderRadius: 8,
+                fontSize: 12,
+                border: "none",
+                boxShadow: "0 2px 10px rgba(0,0,0,0.1)",
+              }}
+            />
+            <Legend
+              wrapperStyle={{ paddingTop: 20 }}
+              iconType="circle"
+              layout="horizontal"
+              align="center"
+              verticalAlign="bottom"
+            />
+            <Line
+              type="monotone"
+              dataKey="completed"
+              stroke="#6bcf8a"
+              strokeWidth={2}
+              dot={{ r: 4 }}
+              activeDot={{ r: 6 }}
+            />
+            <Line
+              type="monotone"
+              dataKey="scheduled"
+              stroke="#f6bb42"
+              strokeWidth={2}
+              dot={{ r: 4 }}
+              activeDot={{ r: 6 }}
+            />
+            <Line
+              type="monotone"
+              dataKey="cancelled"
+              stroke="#e9573f"
+              strokeWidth={2}
+              dot={{ r: 4 }}
+              activeDot={{ r: 6 }}
+            />
+          </LineChart>
+        </ResponsiveContainer>
+      </div>
+    </div>
+  );
+};
+interface TherapistWeekData {
+  therapistId: string;
+  therapistName: string;
+  thisWeek: number;
+  lastWeek: number;
+}
+interface TherapistWeekDataResponse {
+  data: TherapistWeekData[];
+}
+
+const TherapistActivityChart: React.FC<TherapistWeekDataResponse> = ({
+  data,
+}) => {
+  return (
+    <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+      <h3 className="text-lg font-semibold text-gray-800 mb-4">
+        Therapist Activity
+      </h3>
+      <div className="h-64 w-full">
+        <ResponsiveContainer width="100%" height="100%">
+          <BarChart
+            data={data} // make sure this matches your prop name
+            margin={{ top: 5, right: 20, left: -20, bottom: 5 }}
+          >
+            <CartesianGrid
+              strokeDasharray="3 3"
+              vertical={false}
+              stroke="#f0f0f0"
+            />
+            <XAxis
+              dataKey="therapistName"
+              stroke="#a0a0a0"
+              tickLine={false}
+              axisLine={false}
+              angle={-30}
+              textAnchor="end"
+              height={50}
+              interval={0}
+              style={{ fontSize: "10px" }}
+            />
+            <YAxis
+              stroke="#a0a0a0"
+              tickLine={false}
+              axisLine={false}
+              domain={[0, 30]}
+            />
+            <Tooltip
+              contentStyle={{
+                borderRadius: 8,
+                fontSize: 12,
+                border: "none",
+                boxShadow: "0 2px 10px rgba(0,0,0,0.1)",
+              }}
+            />
+            <Legend
+              wrapperStyle={{ paddingTop: 20 }}
+              iconType="square"
+              layout="horizontal"
+              align="center"
+              verticalAlign="bottom"
+            />
+            <Bar dataKey="thisWeek" fill="#4a89dc" radius={[4, 4, 0, 0]} />
+            <Bar dataKey="lastWeek" fill="#3bafda" radius={[4, 4, 0, 0]} />
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
+    </div>
+  );
+};
+
+interface SessionReportTableProps {
+  sessionDataReport: TherapistData[];
+}
+const SessionReportTable: React.FC<SessionReportTableProps> = ({
+  sessionDataReport,
+}) => {
   const getStatusClasses = (status: TherapistData["status"]) => {
     switch (status) {
       case "Active":
@@ -338,11 +315,15 @@ const SessionReportTable: React.FC<SessionReportTableProps> = () => {
     }
   };
 
-  const Avatar: React.FC<{ initials: string }> = ({ initials }) => (
-    <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-sm font-semibold text-gray-700 border border-gray-300">
-      {initials}
-    </div>
-  );
+  const Avatar: React.FC<{ initials: string }> = ({ initials }) => {
+    const displayInitials = initials.slice(0, 2).toUpperCase();
+
+    return (
+      <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-sm font-semibold text-gray-700 border border-gray-300">
+        {displayInitials}
+      </div>
+    );
+  };
 
   return (
     <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mt-6">
@@ -369,17 +350,19 @@ const SessionReportTable: React.FC<SessionReportTableProps> = () => {
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200 text-gray-700">
-            {therapistReportData.map((data, index) => (
+            {sessionDataReport?.map((data, index) => (
               <tr
                 key={index}
                 className="hover:bg-gray-50 transition duration-100"
               >
                 <td className="py-3 px-4 flex items-center space-x-3">
-                  <Avatar initials={data.avatarInitials} />
-                  <span className="font-medium text-gray-800">{data.name}</span>
+                  <Avatar initials={data.therapistName} />
+                  <span className="font-medium text-gray-800">
+                    {data.therapistName}
+                  </span>
                 </td>
                 <td className="py-3 px-4 text-sm">{data.sessions}</td>
-                <td className="py-3 px-4 text-sm">{data.duration}</td>
+                <td className="py-3 px-4 text-sm">{data.avgDuration}</td>
                 <td className="py-3 px-4 text-sm">{data.completionRate}</td>
                 <td className="py-3 px-4 text-right">
                   <span
@@ -398,34 +381,44 @@ const SessionReportTable: React.FC<SessionReportTableProps> = () => {
     </div>
   );
 };
+interface CrisisAlert {
+  id: string;
+  title: string;
+  clientId: string;
+  clientName: string;
+  severity: "low" | "medium" | "high";
+  timeAgo: string;
+  createdAt: string;
+}
 
-const CrisisAlerts: React.FC = () => {
-  const alerts = [1, 2, 3, 4].map((i) => ({
-    id: `#284${i}`,
-    time: `${i}h ago`,
-  }));
+interface CrisisAlertsProps {
+  alerts: CrisisAlert[];
+}
 
+const CrisisAlerts: React.FC<CrisisAlertsProps> = ({ alerts }) => {
   return (
     <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mt-6">
       <h3 className="text-lg font-semibold text-gray-800 mb-4">
         Recent Crisis Alerts
       </h3>
       <div className="divide-y divide-gray-100">
-        {alerts.map((alert, index) => (
+        {alerts.map((alert) => (
           <div
-            key={index}
+            key={alert.id}
             className="flex items-center justify-between py-3 hover:bg-red-50/50 transition duration-100 rounded-lg -mx-2 px-2"
           >
             <div className="flex items-center space-x-3">
               <AlertTriangle className="w-5 h-5 text-red-500" />
               <div>
                 <p className="text-sm font-medium text-gray-800">
-                  High Risk Assessment
+                  {alert.title}
                 </p>
-                <p className="text-xs text-gray-500">Client ID: {alert.id}</p>
+                <p className="text-xs text-gray-500">
+                  Client ID: {alert.clientId}
+                </p>
               </div>
             </div>
-            <span className="text-xs text-gray-400">{alert.time}</span>
+            <span className="text-xs text-gray-400">{alert.timeAgo}</span>
           </div>
         ))}
       </div>
@@ -437,57 +430,80 @@ const CrisisAlerts: React.FC = () => {
 
 const App: React.FC = () => {
   const user = useSelector((state: RootState) => state.auth.user);
-  const { data, isLoading } = useGetDashboardStatsQuery({
-    dateRange: "last_30_days",
-    therapistId: user?.user.id,
-    status: "completed",
-    reportType: "financial_summary",
+  const userId = user?.user.id;
+
+  // Fetch data
+  const { data: dashboardData, isLoading: loadingStats } =
+    useGetDashboardStatsQuery({
+      dateRange: "last_30_days",
+      therapistId: userId,
+      status: "completed",
+      reportType: "financial_summary",
+    });
+
+  const { data: sessionData, isLoading: loadingSession } =
+    useGetSessionDataQuery({
+      dateRange: "last_30_days",
+      therapistId: userId,
+      status: "completed",
+      reportType: "performance_overview",
+    });
+
+  const { data: sessionTrends, isLoading: loadingTrends } =
+    useGetSessionTrendsQuery({
+      dateRange: "last_30_days",
+      therapistId: userId,
+      status: "completed",
+      reportType: "performance_overview",
+    });
+
+  const { data: therapistActivity, isLoading: loadingTherapists } =
+    useGetTherapistActivityQuery({
+      dateRange: "last_30_days",
+      therapistId: userId,
+      status: "completed",
+      reportType: "performance_overview",
+    });
+
+  const { data: alerts, isLoading: loadingAlerts } = useGetCrisisAlertsQuery({
+    limit: 10,
   });
-  const {
-    data: sessionDate,
-    isError,
-  } = useGetSessionDataQuery({
-    dateRange: "last_30_days",
-    therapistId: user?.user.id,
-    status: "completed",
-    reportType: "performance_overview",
-  });
-  console.log(isError);
-  console.log(sessionDate);
+
   const statsData: Stat[] = [
     {
       label: "Total Sessions",
-      value: data?.totalSessions ?? 0,
+      value: dashboardData?.totalSessions ?? 0,
       icon: CalendarCheck,
-      change: `${Math.abs(data?.sessionsGrowth ?? 0)}%`,
-      isPositive: (data?.sessionsGrowth ?? 0) >= 0,
-      color: (data?.sessionsGrowth ?? 0) >= 0 ? "emerald" : "red",
+      change: `${Math.abs(dashboardData?.sessionsGrowth ?? 0)}%`,
+      isPositive: (dashboardData?.sessionsGrowth ?? 0) >= 0,
+      color: (dashboardData?.sessionsGrowth ?? 0) >= 0 ? "emerald" : "red",
     },
     {
       label: "Active Therapists",
-      value: data?.activeTherapists ?? 0,
+      value: dashboardData?.activeTherapists ?? 0,
       icon: Users,
-      change: `${Math.abs(data?.therapistsGrowth ?? 0)}%`,
-      isPositive: (data?.therapistsGrowth ?? 0) >= 0,
-      color: (data?.therapistsGrowth ?? 0) >= 0 ? "emerald" : "red",
+      change: `${Math.abs(dashboardData?.therapistsGrowth ?? 0)}%`,
+      isPositive: (dashboardData?.therapistsGrowth ?? 0) >= 0,
+      color: (dashboardData?.therapistsGrowth ?? 0) >= 0 ? "emerald" : "red",
     },
     {
       label: "Active Clients",
-      value: data?.activeClients ?? 0,
+      value: dashboardData?.activeClients ?? 0,
       icon: User,
-      change: `${Math.abs(data?.clientsGrowth ?? 0)}%`,
-      isPositive: (data?.clientsGrowth ?? 0) >= 0,
-      color: (data?.clientsGrowth ?? 0) >= 0 ? "emerald" : "red",
+      change: `${Math.abs(dashboardData?.clientsGrowth ?? 0)}%`,
+      isPositive: (dashboardData?.clientsGrowth ?? 0) >= 0,
+      color: (dashboardData?.clientsGrowth ?? 0) >= 0 ? "emerald" : "red",
     },
     {
       label: "Crisis Alerts",
-      value: data?.crisisAlerts ?? 0,
+      value: dashboardData?.crisisAlerts ?? 0,
       icon: AlertTriangle,
       change: "0%",
       isPositive: false,
       color: "red",
     },
   ];
+
   return (
     <div className="min-h-screen bg-gray-50 p-4 sm:p-6 lg:p-8 font-inter">
       {/* Header */}
@@ -508,7 +524,7 @@ const App: React.FC = () => {
 
       {/* Stat Cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        {isLoading
+        {loadingStats
           ? Array.from({ length: 4 }).map((_, idx) => (
               <div
                 key={idx}
@@ -530,15 +546,36 @@ const App: React.FC = () => {
 
       {/* Charts Row */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
-        <SessionTrendsChart />
-        <TherapistActivityChart />
+        {loadingTrends ? (
+          <div className="bg-white h-64 animate-pulse rounded-xl shadow-sm border border-gray-100" />
+        ) : (
+          <SessionTrendsChart sessionTrends={sessionTrends?.weeklyData} />
+        )}
+
+        {loadingTherapists ? (
+          <div className="bg-white h-64 animate-pulse rounded-xl shadow-sm border border-gray-100" />
+        ) : (
+          <TherapistActivityChart data={therapistActivity?.therapists} />
+        )}
       </div>
 
-      {/* Session Data Report (Now Full Width) */}
-      <SessionReportTable SessionDataReport={sessionDate} />
+      {/* Session Data Report */}
+      {loadingSession ? (
+        <div className="bg-white h-64 animate-pulse rounded-xl shadow-sm border border-gray-100 mt-6" />
+      ) : (
+        <SessionReportTable sessionDataReport={sessionData?.data} />
+      )}
 
-      {/* Recent Crisis Alerts (Now Full Width) */}
-      <CrisisAlerts />
+      {/* Crisis Alerts */}
+      {loadingAlerts ? (
+        <div className="bg-white h-64 animate-pulse rounded-xl shadow-sm border border-gray-100 mt-6" />
+      ) : alerts && alerts.length > 0 ? (
+        <CrisisAlerts alerts={alerts} />
+      ) : (
+        <p className="mt-6 text-gray-500 text-center">
+          No crisis alerts available.
+        </p>
+      )}
     </div>
   );
 };

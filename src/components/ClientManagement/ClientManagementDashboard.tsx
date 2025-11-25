@@ -1,9 +1,9 @@
-import { useState, useCallback } from 'react';
-import { Client } from './types';
-import { MOCK_CLIENTS } from './mockData';
-import ClientListDashboard from './ClientListDashboard';
-import ClientDetailView from './ClientDetailView';
-import UpdateProgressModal from './UpdateProgressModal';
+import { useState, useCallback } from "react";
+import { Client } from "./types";
+import { MOCK_CLIENTS } from "./mockData";
+import ClientListDashboard from "./ClientListDashboard";
+import ClientDetailView from "./ClientDetailView";
+import UpdateProgressModal from "./UpdateProgressModal";
 
 
 const ClientManagementDashboard = () => {
@@ -12,7 +12,7 @@ const ClientManagementDashboard = () => {
 
   const handleSelectClient = useCallback((client: Client) => {
     setSelectedClient(client);
-    window.scrollTo(0, 0); 
+    window.scrollTo(0, 0);
   }, []);
 
   const handleBackToList = useCallback(() => {
@@ -21,10 +21,10 @@ const ClientManagementDashboard = () => {
   }, []);
 
   const handleUpdateProgress = (notes: string) => {
-    console.log('Progress Notes Submitted:', notes);
+    console.log("Progress Notes Submitted:", notes);
     // In a real app, you would send this to Firestore/API
     setIsModalOpen(false);
-    alert('Progress Note saved successfully!');
+    alert("Progress Note saved successfully!");
   };
 
   return (

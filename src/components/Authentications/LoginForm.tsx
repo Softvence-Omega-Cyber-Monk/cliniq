@@ -126,7 +126,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSwitchToSignUp }) => {
         state.userType === "CLINIC" ? Role.PRIVATE_PRACTICE : Role.INDIVIDUAL,
     },
   });
-
+  console.log(state)
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const currentRole = watch("role");
@@ -134,10 +134,11 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSwitchToSignUp }) => {
   const onSubmit: SubmitHandler<LoginFormInputs> = async (data) => {
     try {
       const response = await login({
-        email: data.email,
-        password: data.password,
-        userType: state.userType,
+        email: data?.email,
+        password: data?.password,
+        userType: state?.userType,
       }).unwrap();
+
       console.log(response);
       localStorage.setItem("token", response.accessToken);
       dispatch(
@@ -148,21 +149,11 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSwitchToSignUp }) => {
           userType: response.userType,
         })
       );
+
       if (response.userType === "THERAPIST") {
-        dispatch(
-          setCredentials({
-            user: response.user,
-            userType:response.userType,
-            accessToken: response.accessToken,
-            refreshToken: response.refreshToken,
-          })
-        );
         navigate("/individual-therapist-dashboard");
       } else if (response.userType === "CLINIC") {
         navigate("/private-practice-admin");
-        // }else {
-        //   dispatch(authSliceLogin({ role: "user" }));
-        // navigate("/private-practice-admin");
       }
     } catch (error) {
       console.error("Login error:", error);
