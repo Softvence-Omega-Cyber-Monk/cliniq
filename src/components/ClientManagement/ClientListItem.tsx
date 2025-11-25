@@ -1,8 +1,11 @@
-import React from 'react';
-import { Client } from './types';
-import { IconUser, StatusBadge } from './utilityComponents';
+import React from "react";
+import { Client } from "./types";
+import { IconUser, StatusBadge } from "./utilityComponents";
 
-const ClientListItem: React.FC<{ client: Client, onClick: (client: Client) => void }> = ({ client, onClick }) => (
+const ClientListItem: React.FC<{
+  client: Client;
+  onClick: (client: Client) => void;
+}> = ({ client, onClick }) => (
   <div
     className="bg-white p-5 rounded-xl shadow-lg hover:shadow-xl transition duration-300 cursor-pointer flex items-center justify-between space-x-4 mb-4"
     onClick={() => onClick(client)}
@@ -17,7 +20,8 @@ const ClientListItem: React.FC<{ client: Client, onClick: (client: Client) => vo
           <StatusBadge status={client.status} />
         </div>
         <p className="text-sm text-gray-500 mt-1">
-          <span className="font-medium text-gray-600">Condition:</span> {client.condition}
+          <span className="font-medium text-gray-600">Condition:</span>{" "}
+          {client.condition}
         </p>
       </div>
     </div>
@@ -33,17 +37,24 @@ const ClientListItem: React.FC<{ client: Client, onClick: (client: Client) => vo
       </div>
       <div className="flex flex-col">
         <span className="font-medium text-gray-500">Next Session</span>
-        <span className={`font-medium ${client.nextSession === 'N/A' ? 'text-gray-500' : 'text-emerald-600'}`}>
+        <span
+          className={`font-medium ${
+            client.nextSession === "N/A" ? "text-gray-500" : "text-emerald-600"
+          }`}
+        >
           {client.nextSession}
         </span>
       </div>
     </div>
 
     <button
-      onClick={(e) => { e.stopPropagation(); onClick(client); }}
+      onClick={(e) => {
+        e.stopPropagation();
+        onClick(client);
+      }}
       className="hidden md:inline-flex items-center justify-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition duration-150"
     >
-      View Details gfbfgb
+      View Details
     </button>
   </div>
 );

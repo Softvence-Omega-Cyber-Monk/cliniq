@@ -65,9 +65,26 @@ const clientsApi = baseApi.injectEndpoints({
                 body: credentials,
             }),
         }),
+        getAllClient: builder.query({
+            query: ({ therapistId, search, condition, status, page, limit }) => {
+                const params = new URLSearchParams();
+                if (search) params.append("search", search);
+                if (condition) params.append("condition", condition);
+                if (status) params.append("status", status);
+                if (page) params.append("page", page.toString());
+                if (limit) params.append("limit", limit.toString());
+
+                return {
+                    url: `/therapists/${therapistId}/clients?${params.toString()}`,
+                    method: "GET",
+                };
+            },
+        }),
+
+
 
     }),
 })
 
-export const { useCreateNewClientMutation, useAddCrisisHistoryMutation, useUpdateCrisisHistoryMutation, useUpdateOverallProgressMutation, useAddSessionHistoryMutation, useUpdateSessionHistoryMutation, useUpdateTreatmentGoalsMutation, useAddTreatmentProgressMutation, useUpdateTreatmentProgressMutation } = clientsApi
+export const { useCreateNewClientMutation, useAddCrisisHistoryMutation, useUpdateCrisisHistoryMutation, useUpdateOverallProgressMutation, useAddSessionHistoryMutation, useUpdateSessionHistoryMutation, useUpdateTreatmentGoalsMutation, useAddTreatmentProgressMutation, useUpdateTreatmentProgressMutation, useGetAllClientQuery } = clientsApi
 export default clientsApi
