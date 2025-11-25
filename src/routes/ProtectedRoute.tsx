@@ -1,13 +1,14 @@
-import { useSelector } from "react-redux";
+
+import { useAppSelector } from "@/hooks/useRedux";
 import { Navigate, Outlet } from "react-router-dom";
-import type { RootState } from "../store/store";
+
 
 interface ProtectedRouteProps {
   allowedRoles: string[];
 }
 
 const ProtectedRoute = ({ allowedRoles }: ProtectedRouteProps) => {
-  const user = useSelector((state: RootState) => state.auth.user);
+  const user = useAppSelector(state => state.auth.user)
   const token = localStorage.getItem("token");
   console.log(user);
 
@@ -15,18 +16,28 @@ const ProtectedRoute = ({ allowedRoles }: ProtectedRouteProps) => {
     return <Navigate to="/login" replace />;
   }
 
-  if (allowedRoles && !allowedRoles.includes(user.userType)) {
-    switch (user.userType) {
-      case "ADMIN":
-        return <Navigate to="/admin-dashboard" replace />;
-      case "THERAPIST":
-        return <Navigate to="/private-practice-admin" replace />;
-      case "PRIVATE_PRACTICE":
-        return <Navigate to="/client-dashboard" replace />;
-      default:
-        return <Navigate to="/login" replace />;
-    }
+if (!user) return <Navigate to="/login" replace />;
+
+if (allowedRoles && !allowedRoles.includes(user.userType)) {
+  switch (user.userType) {
+    case "ADMIN":
+      return <Navigate to="/admin-dashboard" replace />;
+
+    case "THERAPIST":
+      // Redirect based on clinicId existence
+      if (user.clinicId) {
+        return <Navigate to="/private-practice-dashboard" replace />;
+      } else {
+        return <Navigate to="/individual-therapist-dashboard" replace />;
+      }
+      case "CLINIC":
+      return <Navigate to="/private-practice-admin" replace />;
+
+    default:
+      return <Navigate to="/login" replace />;
   }
+}
+
 
   return <Outlet />;
 };

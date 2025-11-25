@@ -1,10 +1,14 @@
-
-import React, { useState, useRef, useEffect } from 'react';
-import { useForm, SubmitHandler } from 'react-hook-form';
-import { Role } from './types';
-import { UserIcon, UsersIcon, ChevronDownIcon } from './Icons';
-import { useRegisterClinicMutation } from '@/store/api/AuthApi';
-
+import React, { useState, useRef, useEffect } from "react";
+import { useForm, SubmitHandler } from "react-hook-form";
+import { Role } from "./types";
+import { UserIcon, UsersIcon, ChevronDownIcon } from "./Icons";
+import { toast } from "sonner";
+import { Eye, EyeOff } from "lucide-react";
+import {
+  useRegistrationClinicMutation,
+  useRegistrationTherapistMutation,
+} from "@/store/api/AuthApi";
+import { useNavigate } from "react-router-dom";
 
 interface SignUpFormProps {
   initialRole: Role;
@@ -215,13 +219,11 @@ const countries = [
   { name: "Vietnam", code: "+84", flag: "🇻🇳" },
   { name: "Yemen", code: "+967", flag: "🇾🇪" },
   { name: "Zambia", code: "+260", flag: "🇿🇲" },
-  { name: "Zimbabwe", code: "+263", flag: "🇿🇼" }
+  { name: "Zimbabwe", code: "+263", flag: "🇿🇼" },
 ];
 
-// hbvkfhgvfrgevufbvfbvfbvfhbvfvbrfbvufbf
-
-const RoleSelector: React.FC<{ 
-  selectedRole: Role; 
+const RoleSelector: React.FC<{
+  selectedRole: Role;
   onRoleChange: (role: Role) => void;
   disabled?: boolean;
 }> = ({ selectedRole, onRoleChange, disabled = false }) => {
@@ -229,18 +231,27 @@ const RoleSelector: React.FC<{
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const roleData = {
-    [Role.PRIVATE_PRACTICE]: { icon: <UsersIcon className="w-5 h-5" />, label: 'PRIVATE PRACTICE' },
-    [Role.INDIVIDUAL]: { icon: <UserIcon className="w-5 h-5" />, label: 'INDIVIDUAL' },
+    [Role?.PRIVATE_PRACTICE]: {
+      icon: <UsersIcon className="w-5 h-5" />,
+      label: "PRIVATE PRACTICE",
+    },
+    [Role?.INDIVIDUAL]: {
+      icon: <UserIcon className="w-5 h-5" />,
+      label: "INDIVIDUAL",
+    },
   };
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
         setIsOpen(false);
       }
     };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   const handleSelect = (role: Role) => {
@@ -259,13 +270,15 @@ const RoleSelector: React.FC<{
         aria-expanded={isOpen}
       >
         <span className="flex items-center">
-          <span className="mr-3 text-clinic-accent">{roleData[selectedRole as keyof typeof roleData].icon}</span>
-          {roleData[selectedRole as keyof typeof roleData].label}
+          <span className="mr-3 text-clinic-accent">
+            {roleData[selectedRole as keyof typeof roleData]?.icon}
+          </span>
+          {roleData[selectedRole as keyof typeof roleData]?.label}
         </span>
-        <ChevronDownIcon 
+        <ChevronDownIcon
           className={`w-5 h-5 ml-2 text-gray-400 transform transition-transform ${
-            isOpen ? 'rotate-180' : ''
-          }`} 
+            isOpen ? "rotate-180" : ""
+          }`}
         />
       </button>
       {isOpen && (
@@ -278,7 +291,9 @@ const RoleSelector: React.FC<{
                   onClick={() => handleSelect(role as Role)}
                   className="w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 flex items-center focus:outline-none focus:bg-gray-50"
                 >
-                  <span className="mr-3 text-gray-500">{roleData[role as keyof typeof roleData].icon}</span>
+                  <span className="mr-3 text-gray-500">
+                    {roleData[role as keyof typeof roleData]?.icon}
+                  </span>
                   {roleData[role as keyof typeof roleData].label}
                 </button>
               </li>
@@ -298,16 +313,21 @@ const CountrySelector: React.FC<{
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  const selectedCountryData = countries.find(country => country.code === selectedCountry) || countries[0];
+  const selectedCountryData =
+    countries.find((country) => country.code === selectedCountry) ||
+    countries[0];
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
         setIsOpen(false);
       }
     };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   const handleSelect = (countryCode: string) => {
@@ -329,10 +349,10 @@ const CountrySelector: React.FC<{
           <span className="mr-2">{selectedCountryData.flag}</span>
           <span className="text-gray-700">{selectedCountryData.code}</span>
         </span>
-        <ChevronDownIcon 
+        <ChevronDownIcon
           className={`w-4 h-4 ml-1 text-gray-400 transform transition-transform ${
-            isOpen ? 'rotate-180' : ''
-          }`} 
+            isOpen ? "rotate-180" : ""
+          }`}
         />
       </button>
       {isOpen && (
@@ -358,15 +378,31 @@ const CountrySelector: React.FC<{
   );
 };
 
-const SignUpForm: React.FC<SignUpFormProps> = ({ initialRole, onSwitchToLogin }) => {
+const SignUpForm: React.FC<SignUpFormProps> = ({
+  initialRole,
+  onSwitchToLogin,
+}) => {
   const [currentRole, setCurrentRole] = useState<Role>(initialRole);
-  const [registerClinic, { isLoading }] = useRegisterClinicMutation();
-  const { register, handleSubmit, formState: { errors }, watch, setValue } = useForm<FormData>({
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const navigate = useNavigate();
+  const [registrationClinic, { isLoading }] = useRegistrationClinicMutation();
+  const [registrationTherapist] = useRegistrationTherapistMutation();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    watch,
+    setValue,
+  } = useForm<FormData>({
     defaultValues: {
-      countryCode: '+1'
-    }
+      countryCode: "+1",
+    },
   });
-  
+  const togglePasswordVisibility = () => setShowPassword(!showPassword);
+  const toggleConfirmPasswordVisibility = () =>
+    setShowConfirmPassword(!showConfirmPassword);
+
   const password = watch("password");
   const acceptPolicy = watch("acceptPolicy");
   const countryCode = watch("countryCode");
@@ -378,75 +414,98 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ initialRole, onSwitchToLogin })
         email: data.email,
         password: data.password,
         phone: `${data.countryCode}${data.phone}`,
-        ...(currentRole === Role.PRIVATE_PRACTICE && { privatePracticeName: data.privatePracticeName }),
+        ...(currentRole === Role.PRIVATE_PRACTICE && {
+          privatePracticeName: data.privatePracticeName,
+        }),
       };
-      await registerClinic(payload).unwrap();
-      alert("Account created successfully! Please log in.");
+      let result;
+      if (currentRole === Role.PRIVATE_PRACTICE) {
+        result = await registrationClinic(payload).unwrap();
+        console.log(result)
+      } else {
+        result = await registrationTherapist(payload).unwrap();
+        console.log(result)
+      }
+      console.log(result)
+      toast.success("Account created successfully!");
+      navigate("/login", {
+        state: {email: data.email, password: data.password,userType:result.userType},
+      });
       onSwitchToLogin();
     } catch (error) {
-      console.error('Signup error:', error);
-      alert("Account creation failed. Please try again.");
+      console.error("Signup error:", error);
+      toast.error("Account creation failed. Please try again.");
     }
   };
 
   const handleCountryChange = (newCountryCode: string) => {
-    setValue('countryCode', newCountryCode);
+    setValue("countryCode", newCountryCode);
   };
 
   return (
-    <div className="flex flex-col h-full min-h-[600px] mx-4">
-          <div className="flex justify-between items-center gap-9 mb-8 mt-4">
-            <div>
-              {/* <label className="text-sm font-bold text-gray-700 block mb-2">
+    <div className="flex flex-col h-full min-h-[600px] mx-20">
+      <div className="flex justify-between items-center gap-9 mb-8 mt-4">
+        <div>
+          {/* <label className="text-sm font-bold text-gray-700 block mb-2">
                 Account Type
               </label> */}
-              <RoleSelector 
-                selectedRole={currentRole} 
-                onRoleChange={setCurrentRole}
-                disabled={isLoading}
-              />
-            </div>
-            <p className="text-sm">
-              Already have an account?{' '}
-              <button 
-                type="button"
-                onClick={onSwitchToLogin} 
-                className="font-bold text-clinic-accent hover:underline focus:outline-none focus:ring-2 focus:ring-clinic-accent focus:ring-offset-2 rounded text-[#3FDCBF]"
-                disabled={isLoading}
-              >
-                Sign In
-              </button>
-            </p>
-          </div>
+          <RoleSelector
+            selectedRole={currentRole}
+            onRoleChange={setCurrentRole}
+            disabled={isLoading}
+          />
+        </div>
+        <p className="text-sm">
+          Already have an account?{" "}
+          <button
+            type="button"
+            onClick={onSwitchToLogin}
+            className="font-bold text-clinic-accent hover:underline focus:outline-none focus:ring-2 focus:ring-clinic-accent focus:ring-offset-2 rounded text-[#3FDCBF]"
+            disabled={isLoading}
+          >
+            Sign In
+          </button>
+        </p>
+      </div>
       <div className="flex flex-col justify-center">
         <div className="w-full">
           <div className="text-center mb-8">
             <h2 className="text-3xl font-bold text-gray-800">Create Account</h2>
-            <p className="text-gray-500 mt-2">Join us today! Please fill in your details.</p>
+            <p className="text-gray-500 mt-2">
+              Join us today! Please fill in your details.
+            </p>
           </div>
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <div>
-              <label htmlFor="fullName" className="text-sm font-bold text-gray-700 block mb-2">
+              <label
+                htmlFor="fullName"
+                className="text-sm font-bold text-gray-700 block mb-2"
+              >
                 Your Name
               </label>
-              <input 
+              <input
                 id="fullName"
                 type="text"
-                {...register("fullName", { 
+                {...register("fullName", {
                   required: "Name is required",
                   minLength: {
                     value: 2,
-                    message: "Name must be at least 2 characters"
-                  }
-                })} 
+                    message: "Name must be at least 2 characters",
+                  },
+                })}
                 placeholder="Enter your full name"
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-clinic-primary focus:border-transparent transition-colors bg-[#fff]"
-                aria-describedby={errors.fullName ? "fullName-error" : undefined}
+                aria-describedby={
+                  errors.fullName ? "fullName-error" : undefined
+                }
                 disabled={isLoading}
               />
               {errors.fullName && (
-                <p id="fullName-error" className="text-red-500 text-xs mt-2 flex items-center">
+                <p
+                  id="fullName-error"
+                  className="text-red-500 text-xs mt-2 flex items-center"
+                >
                   <span className="mr-1">⚠</span>
                   {errors.fullName.message}
                 </p>
@@ -455,26 +514,36 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ initialRole, onSwitchToLogin })
 
             {currentRole === Role.PRIVATE_PRACTICE && (
               <div>
-                <label htmlFor="privatePracticeName" className="text-sm font-bold text-gray-700 block mb-2">
+                <label
+                  htmlFor="privatePracticeName"
+                  className="text-sm font-bold text-gray-700 block mb-2"
+                >
                   Private Practice Name
                 </label>
-                <input 
+                <input
                   id="privatePracticeName"
                   type="text"
-                  {...register("privatePracticeName", { 
+                  {...register("privatePracticeName", {
                     required: "Practice name is required",
                     minLength: {
                       value: 2,
-                      message: "Practice name must be at least 2 characters"
-                    }
-                  })} 
+                      message: "Practice name must be at least 2 characters",
+                    },
+                  })}
                   placeholder="Enter your practice name"
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-clinic-primary focus:border-transparent transition-colors bg-[#fff]"
-                  aria-describedby={errors.privatePracticeName ? "privatePracticeName-error" : undefined}
+                  aria-describedby={
+                    errors.privatePracticeName
+                      ? "privatePracticeName-error"
+                      : undefined
+                  }
                   disabled={isLoading}
                 />
                 {errors.privatePracticeName && (
-                  <p id="privatePracticeName-error" className="text-red-500 text-xs mt-2 flex items-center">
+                  <p
+                    id="privatePracticeName-error"
+                    className="text-red-500 text-xs mt-2 flex items-center"
+                  >
                     <span className="mr-1">⚠</span>
                     {errors.privatePracticeName.message}
                   </p>
@@ -483,31 +552,34 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ initialRole, onSwitchToLogin })
             )}
 
             <div>
-              <label htmlFor="phone" className="text-sm font-bold text-gray-700 block mb-2">
+              <label
+                htmlFor="phone"
+                className="text-sm font-bold text-gray-700 block mb-2"
+              >
                 Phone Number
               </label>
               <div className="flex items-center border border-gray-300 rounded-lg focus-within:ring-2 focus-within:ring-clinic-primary focus-within:border-transparent transition-colors">
                 <div className="border-r border-gray-300">
-                  <CountrySelector 
+                  <CountrySelector
                     selectedCountry={countryCode}
                     onCountryChange={handleCountryChange}
                     disabled={isLoading}
                   />
                 </div>
-                <input 
+                <input
                   id="phone"
                   type="tel"
-                  {...register("phone", { 
+                  {...register("phone", {
                     required: "Phone number is required",
                     pattern: {
                       value: /^[0-9+\-\s()]+$/,
-                      message: "Please enter a valid phone number"
+                      message: "Please enter a valid phone number",
                     },
                     minLength: {
                       value: 6,
-                      message: "Phone number must be at least 6 digits"
-                    }
-                  })} 
+                      message: "Phone number must be at least 6 digits",
+                    },
+                  })}
                   placeholder="Enter your phone number"
                   className="w-full px-4 py-3 border-none rounded-r-lg focus:outline-none focus:ring-0 bg-[#fff]"
                   aria-describedby={errors.phone ? "phone-error" : undefined}
@@ -515,7 +587,10 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ initialRole, onSwitchToLogin })
                 />
               </div>
               {errors.phone && (
-                <p id="phone-error" className="text-red-500 text-xs mt-2 flex items-center">
+                <p
+                  id="phone-error"
+                  className="text-red-500 text-xs mt-2 flex items-center"
+                >
                   <span className="mr-1">⚠</span>
                   {errors.phone.message}
                 </p>
@@ -523,26 +598,32 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ initialRole, onSwitchToLogin })
             </div>
 
             <div>
-              <label htmlFor="email" className="text-sm font-bold text-gray-700 block mb-2">
+              <label
+                htmlFor="email"
+                className="text-sm font-bold text-gray-700 block mb-2"
+              >
                 Email
               </label>
-              <input 
+              <input
                 id="email"
                 type="email"
-                {...register("email", { 
-                  required: "Email is required", 
-                  pattern: { 
-                    value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i, 
-                    message: "Please enter a valid email address" 
-                  } 
-                })} 
+                {...register("email", {
+                  required: "Email is required",
+                  pattern: {
+                    value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                    message: "Please enter a valid email address",
+                  },
+                })}
                 placeholder="Enter your email"
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-clinic-primary focus:border-transparent transition-colors bg-[#fff]"
                 aria-describedby={errors.email ? "email-error" : undefined}
                 disabled={isLoading}
               />
               {errors.email && (
-                <p id="email-error" className="text-red-500 text-xs mt-2 flex items-center">
+                <p
+                  id="email-error"
+                  className="text-red-500 text-xs mt-2 flex items-center"
+                >
                   <span className="mr-1">⚠</span>
                   {errors.email.message}
                 </p>
@@ -550,68 +631,118 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ initialRole, onSwitchToLogin })
             </div>
 
             <div>
-              <label htmlFor="password" className="text-sm font-bold text-gray-700 block mb-2">
+              <label
+                htmlFor="password"
+                className="text-sm font-bold text-gray-700 block mb-2"
+              >
                 Password
               </label>
-              <input 
-                id="password"
-                type="password"
-                {...register("password", { 
-                  required: "Password is required", 
-                  minLength: { 
-                    value: 6, 
-                    message: "Password must be at least 6 characters" 
-                  } 
-                })} 
-                placeholder="Create a password"
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-clinic-primary focus:border-transparent transition-colors bg-[#fff]"
-                aria-describedby={errors.password ? "password-error" : undefined}
-                disabled={isLoading}
-              />
+
+              <div className="relative">
+                <input
+                  id="password"
+                  type={showPassword ? "text" : "password"}
+                  {...register("password", {
+                    required: "Password is required",
+                    minLength: {
+                      value: 6,
+                      message: "Password must be at least 6 characters",
+                    },
+                  })}
+                  placeholder="Create a password"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-clinic-primary focus:border-transparent transition-colors"
+                  aria-describedby={
+                    errors.password ? "password-error" : undefined
+                  }
+                  disabled={isLoading}
+                />
+
+                <button
+                  type="button"
+                  onClick={togglePasswordVisibility}
+                  className="absolute inset-y-0 right-3 flex items-center text-gray-500 hover:text-gray-700"
+                >
+                  {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                </button>
+              </div>
+
               {errors.password && (
-                <p id="password-error" className="text-red-500 text-xs mt-2 flex items-center">
+                <p
+                  id="password-error"
+                  className="text-red-500 text-xs mt-2 flex items-center"
+                >
                   <span className="mr-1">⚠</span>
                   {errors.password.message}
                 </p>
               )}
             </div>
-            
+
             <div>
-              <label htmlFor="confirmPassword" className="text-sm font-bold text-gray-700 block mb-2">
+              <label
+                htmlFor="confirmPassword"
+                className="text-sm font-bold text-gray-700 block mb-2"
+              >
                 Confirm Password
               </label>
-              <input 
-                id="confirmPassword"
-                type="password"
-                {...register("confirmPassword", { 
-                  required: "Please confirm your password", 
-                  validate: value => value === password || "Passwords do not match" 
-                })} 
-                placeholder="Retype your password"
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-clinic-primary focus:border-transparent transition-colors bg-[#fff]"
-                aria-describedby={errors.confirmPassword ? "confirmPassword-error" : undefined}
-                disabled={isLoading}
-              />
+
+              <div className="relative">
+                <input
+                  id="confirmPassword"
+                  type={showConfirmPassword ? "text" : "password"}
+                  {...register("confirmPassword", {
+                    required: "Please confirm your password",
+                    validate: (value) =>
+                      value === password || "Passwords do not match",
+                  })}
+                  placeholder="Retype your password"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-clinic-primary focus:border-transparent transition-colors"
+                  aria-describedby={
+                    errors.confirmPassword ? "confirmPassword-error" : undefined
+                  }
+                  disabled={isLoading}
+                />
+
+                <button
+                  type="button"
+                  onClick={toggleConfirmPasswordVisibility}
+                  className="absolute inset-y-0 right-3 flex items-center text-gray-500 hover:text-gray-700"
+                >
+                  {showConfirmPassword ? (
+                    <EyeOff size={20} />
+                  ) : (
+                    <Eye size={20} />
+                  )}
+                </button>
+              </div>
+
               {errors.confirmPassword && (
-                <p id="confirmPassword-error" className="text-red-500 text-xs mt-2 flex items-center">
+                <p
+                  id="confirmPassword-error"
+                  className="text-red-500 text-xs mt-2 flex items-center"
+                >
                   <span className="mr-1">⚠</span>
                   {errors.confirmPassword.message}
                 </p>
               )}
             </div>
-            
+
             <div className="flex items-start space-x-3 pt-2">
-              <input 
+              <input
                 id="acceptPolicy"
                 type="checkbox"
-                {...register("acceptPolicy", { 
-                  required: "You must accept the privacy policy to continue" 
-                })} 
+                {...register("acceptPolicy", {
+                  required: "You must accept the privacy policy to continue",
+                })}
                 className="h-5 w-5 text-clinic-primary border-gray-300 rounded focus:ring-clinic-primary mt-0.5 flex-shrink-0"
                 disabled={isLoading}
               />
-              <label htmlFor="acceptPolicy" className="text-sm text-gray-600 leading-5">
-                I accept the privacy policy. We value your personal information and outline how we collect, use, and protect your data. By using our services, you agree to these terms.
+              <label
+                htmlFor="acceptPolicy"
+                className="text-sm text-gray-600 leading-5"
+              >
+                I accept the privacy policy. We value your personal information
+                and outline how we collect, use, and protect your data. By using
+                our services, you agree to these terms.
               </label>
             </div>
             {errors.acceptPolicy && (
@@ -622,23 +753,39 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ initialRole, onSwitchToLogin })
             )}
 
             <div className="flex justify-center">
-            <button 
-              type="submit" 
-              disabled={isLoading || !acceptPolicy}
-              className="w-full flex items-center justify-center h-[60px] px-10 py-2 bg-[#298CDF] text-white font-bold rounded-[20px] gap-2 hover:bg-opacity-90 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#298CDF] disabled:opacity-50 disabled:cursor-not-allowed mt-4"
-            >
-              {isLoading ? (
-                <span className="flex items-center justify-center">
-                  <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                  </svg>
-                  Creating Account...
-                </span>
-              ) : (
-                'Create Account'
-              )}
-            </button>
+              <button
+                type="submit"
+                disabled={isLoading || !acceptPolicy}
+                className="w-full flex items-center justify-center h-[60px] px-10 py-2 bg-[#298CDF] text-white font-bold rounded-[20px] gap-2 hover:bg-opacity-90 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#298CDF] disabled:opacity-50 disabled:cursor-not-allowed mt-4"
+              >
+                {isLoading ? (
+                  <span className="flex items-center justify-center">
+                    <svg
+                      className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      ></circle>
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                      ></path>
+                    </svg>
+                    Creating Account...
+                  </span>
+                ) : (
+                  "Create Account"
+                )}
+              </button>
             </div>
           </form>
         </div>

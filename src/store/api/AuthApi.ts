@@ -9,9 +9,16 @@ const authApi = baseApi.injectEndpoints({
                 body: credentials,
             }),
         }),
-        register: builder.mutation({
+        registrationClinic: builder.mutation({
             query: (credentials) => ({
-                url: '/auth/register',
+                url: '/auth/register/clinic',
+                method: 'POST',
+                body: credentials,
+            }),
+        }),
+        registrationTherapist: builder.mutation({
+            query: (credentials) => ({
+                url: '/auth/register/therapist',
                 method: 'POST',
                 body: credentials,
             }),
@@ -63,5 +70,5 @@ const authApi = baseApi.injectEndpoints({
     }),
 })
 
-export const { useLoginMutation, useRegisterMutation, useGetProfileQuery, useChangePasswordMutation, useForgotPasswordMutation, useLogoutMutation, useRegisterClinicMutation, useRegisterTherapistMutation, useResetPasswordMutation } = authApi
+export const { useLoginMutation, useRegistrationClinicMutation, useRegistrationTherapistMutation, useGetProfileQuery, useChangePasswordMutation, useForgotPasswordMutation, useLogoutMutation, useRegisterClinicMutation, useRegisterTherapistMutation, useResetPasswordMutation } = authApi
 export default authApi

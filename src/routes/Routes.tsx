@@ -34,7 +34,7 @@ const routes = createBrowserRouter([
     element: <Layout />,
     children: [
       {
-        element: <ProtectedRoute allowedRoles={["admin"]} />,
+        element: <ProtectedRoute allowedRoles={["THERAPIST"]} />,
         children: [
           {
             index: true,
@@ -62,12 +62,12 @@ const routes = createBrowserRouter([
   },
   {
     path: "/admin",
-    element: <ProtectedRoute allowedRoles={["admin"]} />,
+    element: <ProtectedRoute allowedRoles={["ADMIN"]} />,
     children: [{ path: "", element: <AdminDashboard /> }],
   },
   {
     path: "/private-practice-admin",
-    element: <ProtectedRoute allowedRoles={["THERAPIST"]} />,
+    element: <ProtectedRoute allowedRoles={["CLINIC"]} />,
     children: [
       {
         path: "",

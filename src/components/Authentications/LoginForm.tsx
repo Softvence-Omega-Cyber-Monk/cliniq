@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import {
   login as authSliceLogin,
@@ -11,7 +11,6 @@ import {
 import { Role } from "./types";
 import { UserIcon, UsersIcon, ChevronDownIcon } from "./Icons";
 import { useLoginMutation } from "@/store/api/AuthApi";
-
 
 const loginSchema = z.object({
   email: z.string().email("Invalid email format"),
@@ -76,9 +75,9 @@ const RoleSelector: React.FC<{
       >
         <span className="flex items-center">
           <span className="mr-3 text-clinic-accent">
-            {roleData[selectedRole as keyof typeof roleData].icon}
+            {roleData[selectedRole as keyof typeof roleData]?.icon}
           </span>
-          {roleData[selectedRole as keyof typeof roleData].label}
+          {roleData[selectedRole as keyof typeof roleData]?.label}
         </span>
         <ChevronDownIcon
           className={`w-5 h-5 ml-2 text-gray-400 transform transition-transform ${
@@ -112,7 +111,8 @@ const RoleSelector: React.FC<{
 
 const LoginForm: React.FC<LoginFormProps> = ({ onSwitchToSignUp }) => {
   const [login, { isLoading }] = useLoginMutation();
-
+  const {state} = useLocation();
+  console.log(state)
   const {
     register,
     handleSubmit,
@@ -122,10 +122,10 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSwitchToSignUp }) => {
   } = useForm<LoginFormInputs>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      role: Role.INDIVIDUAL,
-      email: "therapist@gmail.com",
-      password: "123456",
-    },
+      email: state?.email || "",
+      password: state?.password || "",
+      role: state.userType === "CLINIC" ? Role.PRIVATE_PRACTICE : Role.INDIVIDUAL,
+    }
   });
 
   const navigate = useNavigate();
@@ -134,34 +134,34 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSwitchToSignUp }) => {
 
   const onSubmit: SubmitHandler<LoginFormInputs> = async (data) => {
     try {
-      const userType = "THERAPIST";
+  
       const response = await login({
         email: data.email,
         password: data.password,
-        userType,
+        userType:state.userType
       }).unwrap();
       console.log(response);
       localStorage.setItem("token", response.accessToken);
-      const profileResponse = await fetch(
-        `${import.meta.env.VITE_API_BASE_URL}/auth/profile`,
-        {
-          headers: { Authorization: `Bearer ${response.accessToken}` },
-        }
-      );
-      const user = await profileResponse.json();
-      console.log(user);
+      // const profileResponse = await fetch(
+      //   `${import.meta.env.VITE_API_BASE_URL}/auth/profile`,
+      //   {
+      //     headers: { Authorization: `Bearer ${response.accessToken}` },
+      //   }
+      // );
+      // const user = await profileResponse.json();
+      console.log(response.user);
       dispatch(
         setCredentials({
-          user,
+          user:response.user,
           accessToken: response.accessToken,
           refreshToken: response.refreshToken,
         })
       );
       console.log(data);
-      if (user.userType === "THERAPIST") {
+      if (response.user.userType === "THERAPIST") {
         dispatch(
           setCredentials({
-            user,
+            user:response.user,
             accessToken: response.accessToken,
             refreshToken: response.refreshToken,
           })
