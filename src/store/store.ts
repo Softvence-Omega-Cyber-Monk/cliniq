@@ -1,32 +1,43 @@
 import { configureStore } from "@reduxjs/toolkit";
-import { persistStore, persistReducer } from "redux-persist";
+import {
+  persistStore,
+  persistReducer,
+  FLUSH,
+  REHYDRATE,
+  PAUSE,
+  PERSIST,
+  PURGE,
+  REGISTER
+} from "redux-persist";
 import storage from "redux-persist/lib/storage";
 import counterReducer from "./Slices/counterSlice/counterSlice";
 import authReducer from "./Slices/AuthSlice/authSlice";
 import formReducer from "./Slices/FormSlice/FormSlice";
-// import { apiSlice } from "./api/apiSlice";
 import baseApi from "./api/BaseApi/BaseApi";
 import aiApi from "./api/BaseApi/AiApi";
 
 const authPersistConfig = {
   key: "auth",
   storage,
-  whitelist: ["user", "accessToken", "refreshToken","userType"],
+  whitelist: ["user", "accessToken", "refreshToken", "userType"],
 };
-const persistedAuthReducer = persistReducer(authPersistConfig, authReducer);
+
+const rootReducer = {
+  [baseApi.reducerPath]: baseApi.reducer,
+  [aiApi.reducerPath]: aiApi.reducer,
+  counter: counterReducer,
+  auth: persistReducer(authPersistConfig, authReducer),
+  form: formReducer,
+};
 
 export const store = configureStore({
-  reducer: {
-    [baseApi.reducerPath]: baseApi.reducer,
-    [aiApi.reducerPath] : aiApi.reducer,
-    counter: counterReducer,
-    auth: persistedAuthReducer,
-    form: formReducer,
-
-  },
+  reducer: rootReducer,
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware({ serializableCheck: false })
-      .concat(baseApi.middleware)
+    getDefaultMiddleware({
+      serializableCheck: {
+        ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
+      },
+    }).concat(baseApi.middleware, aiApi.middleware),
 });
 
 export const persistor = persistStore(store);

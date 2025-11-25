@@ -3,9 +3,9 @@ import baseApi from "./BaseApi/BaseApi";
 const clientsApi = baseApi.injectEndpoints({
     endpoints: (builder) => ({
         createNewClient: builder.mutation({
-            query: (credentials) => ({
-                url: '/therapists/{therapistId}/clients',
-                method: 'POST',
+            query: ({ therapistId, credentials }) => ({
+                url: `/therapists/${therapistId}/clients`,
+                method: "POST",
                 body: credentials,
             }),
         }),
@@ -68,5 +68,5 @@ const clientsApi = baseApi.injectEndpoints({
     }),
 })
 
-export const {useCreateNewClientMutation, useAddCrisisHistoryMutation, useUpdateCrisisHistoryMutation, useUpdateOverallProgressMutation, useAddSessionHistoryMutation, useUpdateSessionHistoryMutation, useUpdateTreatmentGoalsMutation, useAddTreatmentProgressMutation, useUpdateTreatmentProgressMutation } = clientsApi
+export const { useCreateNewClientMutation, useAddCrisisHistoryMutation, useUpdateCrisisHistoryMutation, useUpdateOverallProgressMutation, useAddSessionHistoryMutation, useUpdateSessionHistoryMutation, useUpdateTreatmentGoalsMutation, useAddTreatmentProgressMutation, useUpdateTreatmentProgressMutation } = clientsApi
 export default clientsApi

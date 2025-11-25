@@ -4,9 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import {
-  setCredentials,
-} from "../../store/Slices/AuthSlice/authSlice";
+import { setCredentials } from "../../store/Slices/AuthSlice/authSlice";
 import { Role } from "./types";
 import { UserIcon, UsersIcon, ChevronDownIcon } from "./Icons";
 import { useLoginMutation } from "@/store/api/AuthApi";
@@ -138,6 +136,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSwitchToSignUp }) => {
         password: data?.password,
         userType: state?.userType,
       }).unwrap();
+
       console.log(response);
       localStorage.setItem("token", response.accessToken);
       dispatch(
@@ -148,21 +147,11 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSwitchToSignUp }) => {
           userType: response.userType,
         })
       );
-      if (response?.userType === "THERAPIST") {
-        dispatch(
-          setCredentials({
-            user: response.user,
-            userType:response.userType,
-            accessToken: response.accessToken,
-            refreshToken: response.refreshToken,
-          })
-        );
+
+      if (response.userType === "THERAPIST") {
         navigate("/individual-therapist-dashboard");
       } else if (response.userType === "CLINIC") {
         navigate("/private-practice-admin");
-        // }else {
-        //   dispatch(authSliceLogin({ role: "user" }));
-        // navigate("/private-practice-admin");
       }
     } catch (error) {
       console.error("Login error:", error);
