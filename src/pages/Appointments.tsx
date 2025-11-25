@@ -1,23 +1,26 @@
-import React, { useState, useCallback } from 'react';
-import { MOCK_APPOINTMENTS, MOCK_STATS } from '@/components/Appointments/mockData';
-import { Client } from '@/components/Appointments/types';
-import DashboardView from '@/components/Appointments/DashboardView';
-import SessionView from '@/components/Appointments/SessionView';
-import ScheduleModal from '@/components/Appointments/ScheduleModal';
+import React, { useState, useCallback } from "react";
+import {
+  MOCK_APPOINTMENTS,
+  MOCK_STATS,
+} from "@/components/Appointments/mockData";
+import { Client } from "@/components/Appointments/types";
+import DashboardView from "@/components/Appointments/DashboardView";
+import SessionView from "@/components/Appointments/SessionView";
+import ScheduleModal from "@/components/Appointments/ScheduleModal";
 
 const Appointments: React.FC = () => {
-  const [view, setView] = useState<'dashboard' | 'session'>('dashboard');
+  const [view, setView] = useState<"dashboard" | "session">("dashboard");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [activeClient, setActiveClient] = useState<Client | null>(null);
 
   const handleStartSession = useCallback((client: Client) => {
     setActiveClient(client);
-    setView('session');
+    setView("session");
   }, []);
 
   const handleEndSession = useCallback(() => {
     setActiveClient(null);
-    setView('dashboard');
+    setView("dashboard");
   }, []);
 
   const handleOpenModal = useCallback(() => {
@@ -29,8 +32,8 @@ const Appointments: React.FC = () => {
   }, []);
 
   return (
-    <div className="font-sans min-h-screen">
-      {view === 'dashboard' && (
+    <div className=" min-h-screen">
+      {view === "dashboard" && (
         <DashboardView
           stats={MOCK_STATS}
           appointments={MOCK_APPOINTMENTS}
@@ -39,7 +42,7 @@ const Appointments: React.FC = () => {
         />
       )}
 
-      {view === 'session' && activeClient && (
+      {view === "session" && activeClient && (
         <SessionView client={activeClient} onEndSession={handleEndSession} />
       )}
 
