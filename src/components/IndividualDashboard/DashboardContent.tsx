@@ -25,7 +25,7 @@ const DashboardContent: React.FC = () => {
   console.log(user);
   const { data: stats, isLoading } = useGetDashboardStatsQuery({
     dateRange: "last_30_days",
-    startDate: "2024-01-01",
+    startDate: "2024-01-01",  
     endDate: "2024-01-31",
     therapistId: "123e4567-e89b-12d3-a456-426614174000",
     status: "completed",

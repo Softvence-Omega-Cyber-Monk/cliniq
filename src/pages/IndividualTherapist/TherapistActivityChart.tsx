@@ -1,6 +1,7 @@
-import { BarChart } from "lucide-react";
+
 import {
   Bar,
+  BarChart,
   CartesianGrid,
   Legend,
   ResponsiveContainer,

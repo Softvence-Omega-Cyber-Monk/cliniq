@@ -173,9 +173,7 @@ const AddTherapistModal: React.FC<AddTherapistModalProps> = ({
     
     setIsSaving(true);
     setSaveMessage(null);
-
     await new Promise(resolve => setTimeout(resolve, 1200));
-
     onSave(profile); 
     
     if (!isEditMode) {
