@@ -123,10 +123,10 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSwitchToSignUp }) => {
       email: state?.email || "",
       password: state?.password || "",
       role:
-        state.userType === "CLINIC" ? Role.PRIVATE_PRACTICE : Role.INDIVIDUAL,
+        state?.userType === "CLINIC" ? Role.PRIVATE_PRACTICE : Role.INDIVIDUAL,
     },
   });
-
+  console.log(state)
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const currentRole = watch("role");
@@ -134,9 +134,9 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSwitchToSignUp }) => {
   const onSubmit: SubmitHandler<LoginFormInputs> = async (data) => {
     try {
       const response = await login({
-        email: data.email,
-        password: data.password,
-        userType: state.userType,
+        email: data?.email,
+        password: data?.password,
+        userType: state?.userType,
       }).unwrap();
       console.log(response);
       localStorage.setItem("token", response.accessToken);
@@ -148,7 +148,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSwitchToSignUp }) => {
           userType: response.userType,
         })
       );
-      if (response.userType === "THERAPIST") {
+      if (response?.userType === "THERAPIST") {
         dispatch(
           setCredentials({
             user: response.user,

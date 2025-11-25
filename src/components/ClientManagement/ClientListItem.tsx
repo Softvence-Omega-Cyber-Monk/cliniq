@@ -43,7 +43,7 @@ const ClientListItem: React.FC<{ client: Client, onClick: (client: Client) => vo
       onClick={(e) => { e.stopPropagation(); onClick(client); }}
       className="hidden md:inline-flex items-center justify-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition duration-150"
     >
-      View Details gfbfgb
+      View Details
     </button>
   </div>
 );

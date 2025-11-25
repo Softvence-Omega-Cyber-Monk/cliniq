@@ -12,7 +12,7 @@ const ClientManagementDashboard = () => {
 
   const handleSelectClient = useCallback((client: Client) => {
     setSelectedClient(client);
-    window.scrollTo(0, 0); 
+    window.scrollTo(0, 0);
   }, []);
 
   const handleBackToList = useCallback(() => {
