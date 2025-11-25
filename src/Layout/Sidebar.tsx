@@ -12,7 +12,7 @@ interface NavItem {
 
 // Data for the sidebar navigation links
 const navItems: NavItem[] = [
-  { id: 1, label: 'Dashboard', icon: LayoutGrid, href: '/dashboard' },
+  { id: 1, label: 'Dashboard', icon: LayoutGrid, href: '/individual-therapist-dashboard' },
   { id: 2, label: 'Clients', icon: Users, href: '/clients' },
   { id: 3, label: 'Appointments', icon: Calendar, href: '/appointments' },
   { id: 4, label: 'Reports', icon: BarChart, href: '/reports' },

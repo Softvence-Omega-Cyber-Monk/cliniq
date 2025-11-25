@@ -1,0 +1,27 @@
+
+export enum Role {
+  INDIVIDUAL = 'INDIVIDUAL',
+  PRIVATE_PRACTICE = 'PRIVATE PRACTICE',
+  THERAPIST = 'THERAPIST',
+}
+export interface User {
+  id: string;
+  email: string;
+  fullName: string;
+  clinicId: string | null;
+  stripeCustomerId: string | null;
+}
+
+export type UserType = "THERAPIST" | "PATIENT" | string;
+
+export interface LoginRequest {
+  email: string;
+  password: string;
+}
+
+export interface AuthResponse {
+  accessToken: string;
+  refreshToken: string;
+  user: User;
+  userType: UserType;
+}

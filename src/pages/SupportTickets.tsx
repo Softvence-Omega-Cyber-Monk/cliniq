@@ -1,158 +1,224 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState } from 'react';
+import { ChevronDown, Mail, Phone, MessageSquare, Search, Lock, RefreshCcw, Bug, Link, ChevronUp } from 'lucide-react'; // CheckCircle removed
 
-// --- TypeScript Interfaces ---
+// --- Data Structures ---
 
-type TicketStatus = 'Pending' | 'Resolved';
-
-interface Ticket {
-  id: string;
-  subject: string;
-  user: string;
-  date: string;
-  status: TicketStatus;
-  userMessage: string;
-  from: string;
+interface FAQ {
+  id: number;
+  question: string;
+  answer: string;
 }
 
-interface StatsItem {
+interface Guide {
   icon: React.ReactNode;
   title: string;
-  count: number;
 }
 
 // --- Mock Data ---
 
-const MOCK_TICKETS: Ticket[] = [
-  { id: '001234', subject: 'Order #123456 Issue', user: 'Alex Johnson', date: '15/10/2023', status: 'Pending', from: 'John Doe', userMessage: 'Product received damaged. Can you please help with a refund or replacement?' },
-  { id: '001235', subject: 'Login Problem', user: 'Maria Smith', date: '16/10/2023', status: 'Resolved', from: 'Maria Smith', userMessage: 'I cannot log into my account. I have tried resetting my password multiple times with no luck.' },
-  { id: '001236', subject: 'Account Verification', user: 'David Brown', date: '17/10/2023', status: 'Resolved', from: 'David Brown', userMessage: 'My account shows that I need to verify my identity, but the link you sent expired.' },
-  { id: '001237', subject: 'Order #123456 Issue', user: 'Emily Davis', date: '18/10/2023', status: 'Pending', from: 'Emily Davis', userMessage: 'My tracking number hasn\'t updated in five days. Can you check on the status of my shipment?' },
-  { id: '001238', subject: 'Account Verification', user: 'Michael Wilson', date: '19/10/2023', status: 'Resolved', from: 'Michael Wilson', userMessage: 'I am trying to change my email address but the security system keeps flagging it as suspicious activity.' },
-  { id: '001239', subject: 'Login Problem', user: 'Sarah Taylor', date: '20/10/2023', status: 'Pending', from: 'Sarah Taylor', userMessage: 'I forgot my password and my phone number linked to the account is no longer active. How can I recover access?' },
+const faqData: FAQ[] = [
+  {
+    id: 1,
+    question: 'How do I add a new therapist to my private practice?',
+    answer: 'To add a new therapist, go to the Therapists section in the Private Practice Dashboard, click on the Add New Therapist button, and fill out their details. Once added, you can assign clients to them.',
+  },
+  {
+    id: 2,
+    question: "Can I change a therapist's role or permissions?",
+    answer: 'Yes, role and permission management is available in the Therapist Settings page. You can customize access levels for patient data, billing information, and practice settings.',
+  },
+  {
+    id: 3,
+    question: 'How do I manage patient data for my therapists?',
+    answer: 'Patient data access is centrally managed through the Practice Owner account. You can configure data visibility and editing rights per therapist or per patient file.',
+  },
+  {
+    id: 4,
+    question: "How do I update my practice's billing information?",
+    answer: 'Billing details can be updated securely in the Subscription & Billing tab located in your main settings. Changes take effect immediately for the next billing cycle.',
+  },
+  {
+    id: 5,
+    question: 'Can I upgrade or downgrade my subscription plan?',
+    answer: 'Subscription changes can be initiated at any time from the Billing page. Upgrades are effective immediately, and downgrades take effect at the end of the current billing period.',
+  },
 ];
 
-const getStats = (tickets: Ticket[]): StatsItem[] => [
-  { 
-    icon: (<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>), 
-    title: 'Pending', 
-    count: tickets.filter(t => t.status === 'Pending').length 
-  },
-  { 
-    icon: (<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>), 
-    title: 'Completed Sessions', 
-    count: 5 
-  },
-  { 
-    icon: (<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>), 
-    title: 'Resolved Tickets', 
-    count: tickets.filter(t => t.status === 'Resolved').length 
-  },
+const guideData: Guide[] = [
+  { icon: <Lock className="w-4 h-4 text-red-500" />, title: 'Login Issues Resolution' },
+  { icon: <RefreshCcw className="w-4 h-4 text-green-500" />, title: 'Session Syncing Problems' },
+  { icon: <Bug className="w-4 h-4 text-orange-500" />, title: 'Platform Bug Reporting' },
+  { icon: <Link className="w-4 h-4 text-blue-500" />, title: 'Connection Issues' },
 ];
 
+// --- Components ---
 
-// --- Sub-Components ---
-
-/**
- * Renders a small card for dashboard statistics.
- */
-const StatsCard: React.FC<{ item: StatsItem }> = ({ item }) => (
-  <div className="bg-white p-6 rounded-xl shadow-lg flex-1 min-w-[200px]">
-    <div className="flex justify-between items-start">
-      <h3 className="text-gray-500 text-sm font-medium">{item.title}</h3>
-      <div className="text-gray-400">
-        {item.icon}
-      </div>
+const FAQItem: React.FC<{ faq: FAQ; isOpen: boolean; toggle: () => void }> = ({ faq, isOpen, toggle }) => (
+  <div className="border-b border-gray-200">
+    <button
+      className="flex justify-between items-center w-full py-4 text-left font-semibold text-gray-800 transition duration-150 ease-in-out hover:bg-gray-50 px-0"
+      onClick={toggle}
+      aria-expanded={isOpen}
+      aria-controls={`faq-answer-${faq.id}`}
+    >
+      <span>{faq.question}</span>
+      <span className="flex items-center">
+        {/* Checkmark icon removed as requested */}
+        
+        {/* Circle container for the Chevron icons */}
+        <div className="w-6 h-6 rounded-full flex items-center justify-center bg-[#3FDCBF] text-white ml-3">
+          {isOpen ? (
+            <ChevronUp className="w-4 h-4 transition-transform" />
+          ) : (
+            <ChevronDown className="w-4 h-4 transition-transform" />
+          )}
+        </div>
+      </span>
+    </button>
+    <div
+      id={`faq-answer-${faq.id}`}
+      className={`overflow-hidden transition-all duration-300 ease-in-out ${isOpen ? 'max-h-96 opacity-100 pb-4' : 'max-h-0 opacity-0'}`}
+    >
+      <p className="text-gray-600 pl-0 pr-8 text-sm">{faq.answer}</p>
     </div>
-    <p className="text-3xl font-semibold mt-2 text-gray-800">{item.count}</p>
   </div>
 );
 
-/**
- * Renders the status badge for the ticket table.
- */
-const StatusBadge: React.FC<{ status: TicketStatus }> = ({ status }) => (
-  <span className={`px-3 py-1 text-xs font-medium rounded-full ${
-    status === 'Pending' 
-      ? 'bg-yellow-100 text-yellow-800' 
-      : 'bg-green-100 text-green-800'
-  }`}>
-    {status}
-  </span>
-);
+const FAQSection: React.FC = () => {
+  const [openId, setOpenId] = useState<number | null>(faqData[0].id); // Open the first one by default
 
-/**
- * Renders the detail and reply modal.
- */
-const TicketDetailModal: React.FC<{ ticket: Ticket; onClose: () => void }> = ({ ticket, onClose }) => {
-  const [replySubject, setReplySubject] = useState('');
-  const [replyMessage, setReplyMessage] = useState('');
-
-  const handleSave = () => {
-    // In a real app, this would send the reply and update the ticket status.
-    console.log(`Sending reply for ${ticket.id}: Subject - ${replySubject}, Message - ${replyMessage}`);
-    onClose();
+  const toggleItem = (id: number) => {
+    setOpenId(openId === id ? null : id);
   };
 
   return (
-    <div className="fixed inset-0 bg-gray-900/50 bg-opacity-50 flex items-center justify-center p-4 z-50 transition-opacity duration-300">
-      <div className="bg-white w-full max-w-xl rounded-xl shadow-2xl p-6 relative transform transition-all duration-300 scale-100">
-        <div className="flex justify-between items-center pb-4 border-b">
-          <h2 className="text-xl font-bold text-gray-800">Ticket ID: {ticket.id}</h2>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 transition">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
-          </button>
+    <div className="p-0">
+      {faqData.map((faq) => (
+        <FAQItem
+          key={faq.id}
+          faq={faq}
+          isOpen={openId === faq.id}
+          toggle={() => toggleItem(faq.id)}
+        />
+      ))}
+    </div>
+  );
+};
+
+const TroubleshootingGuides: React.FC = () => {
+  return (
+    <div className="mt-8">
+      <h3 className="text-lg font-semibold text-gray-800 mb-3">Troubleshooting Guides</h3>
+      
+      <div className="relative mb-6">
+        <input
+          type="text"
+          placeholder="Search troubleshooting guides..."
+          // Adjusted padding to 'pl-4 pr-10' to make room for the icon on the right
+          className="w-full pl-4 pr-10 py-3 border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 text-sm shadow-sm transition"
+        />
+        {/* Moved Search icon to the right side */}
+        <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+      </div>
+
+      <div className="space-y-3">
+        {guideData.map((guide, index) => (
+          <div key={index} className="flex items-center text-gray-600 text-sm hover:text-emerald-600 cursor-pointer transition">
+            <span className="mr-3">{guide.icon}</span>
+            <span className="underline-offset-4 hover:underline">{guide.title}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+const TicketSubmission: React.FC = () => {
+  const [subject, setSubject] = useState('');
+  const [therapist, setTherapist] = useState('');
+  const [description, setDescription] = useState('');
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    console.log({ subject, therapist, description });
+    // In a real app, you would send this to an API
+  };
+
+  return (
+    <div className="bg-white p-6 rounded-xl shadow-lg border border-gray-100">
+      <h2 className="text-xl font-bold text-gray-800 mb-4">Submit Support Ticket</h2>
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div>
+          <label htmlFor="subject" className="block text-sm font-medium text-gray-700">Subject</label>
+          <input
+            id="subject"
+            type="text"
+            value={subject}
+            onChange={(e) => setSubject(e.target.value)}
+            placeholder="Brief description of the issue"
+            className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-lg text-sm shadow-sm focus:ring-emerald-500 focus:border-emerald-500 transition"
+          />
         </div>
 
-        <div className="py-4 space-y-3">
-          {/* Ticket Information */}
-          <p className="text-sm">
-            <span className="font-semibold text-gray-700">From:</span> {ticket.from}
-          </p>
-          <p className="text-sm">
-            <span className="font-semibold text-gray-700">Ticket ID:</span> {ticket.id}
-          </p>
-          
-          {/* User Message Card */}
-          <div className="p-4 bg-gray-50 border border-gray-200 rounded-lg">
-            <p className="text-gray-800 italic">{ticket.userMessage}</p>
-          </div>
-          
-          {/* Reply Section */}
-          <h3 className="text-lg font-semibold pt-4 border-t mt-4">Reply to User</h3>
-          <div className="space-y-4">
-            <div>
-              <label htmlFor="replySubject" className="block text-sm font-medium text-gray-700 mb-1">Subject</label>
-              <input
-                id="replySubject"
-                type="text"
-                placeholder="..."
-                value={replySubject}
-                onChange={(e) => setReplySubject(e.target.value)}
-                className="w-full p-2 border border-gray-300 rounded-lg focus:ring-teal-500 focus:border-teal-500 transition duration-150"
-              />
-            </div>
-            <div>
-              <label htmlFor="replyMessage" className="block text-sm font-medium text-gray-700 mb-1">Message</label>
-              <textarea
-                id="replyMessage"
-                placeholder="Write your message here..."
-                rows={5}
-                value={replyMessage}
-                onChange={(e) => setReplyMessage(e.target.value)}
-                className="w-full p-2 border border-gray-300 rounded-lg focus:ring-teal-500 focus:border-teal-500 transition duration-150 resize-none"
-              />
-            </div>
-          </div>
-        </div>
-
-        {/* Save Button */}
-        <div className="pt-4 flex justify-end">
-          <button 
-            onClick={handleSave}
-            className="px-6 py-2 bg-teal-400 text-white font-semibold rounded-lg shadow-md hover:bg-teal-500 transition duration-200 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-opacity-50"
+        <div>
+          <label htmlFor="therapist" className="block text-sm font-medium text-gray-700">Therapist (Optional)</label>
+          <select
+            id="therapist"
+            value={therapist}
+            onChange={(e) => setTherapist(e.target.value)}
+            className="mt-1 w-full px-3 py-2 border border-gray-300 bg-white rounded-lg text-sm shadow-sm focus:ring-emerald-500 focus:border-emerald-500 appearance-none cursor-pointer transition"
+            style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%236B7280'%3E%3Cpath fill-rule='evenodd' d='M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 111.06 1.06l-4.25 4.25a.75.75 0 01-1.06 0L5.21 8.27a.75.75 0 01.02-1.06z' clip-rule='evenodd' /%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 0.75rem center', backgroundSize: '1.5em 1.5em' }}
           >
-            Save changes
-          </button>
+            <option value="">Select therapist</option>
+            <option value="jane-doe">Jane Doe</option>
+            <option value="john-smith">John Smith</option>
+          </select>
+        </div>
+
+        <div>
+          <label htmlFor="description" className="block text-sm font-medium text-gray-700">Description</label>
+          <textarea
+            id="description"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            placeholder="Detailed description of the issue"
+            rows={4}
+            className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-lg text-sm shadow-sm focus:ring-emerald-500 focus:border-emerald-500 resize-none transition"
+          />
+        </div>
+
+        <button
+          type="submit"
+          className="w-full bg-[#298CDF] text-white font-semibold py-3 px-4 rounded-lg hover:bg-blue-700 transition duration-150 ease-in-out shadow-md"
+        >
+          Submit Ticket
+        </button>
+      </form>
+    </div>
+  );
+};
+
+const ContactSupport: React.FC = () => {
+  return (
+    <div className="mt-8 p-6 bg-white rounded-xl shadow-lg border border-gray-100">
+      <h2 className="text-xl font-bold text-gray-800 mb-4">Contact Support</h2>
+      
+      <div className="space-y-4">
+        <div className="flex items-center text-gray-700">
+          <Mail className="w-5 h-5 text-gray-500 mr-3 flex-shrink-0" />
+          <a href="mailto:support@practiceadmin.com" className="text-sm font-medium hover:text-blue-600 transition">
+            support@practiceadmin.com
+          </a>
+        </div>
+        
+        <div className="flex items-center text-gray-700">
+          <Phone className="w-5 h-5 text-gray-500 mr-3 flex-shrink-0" />
+          <span className="text-sm font-medium">1-800-SUPPORT</span>
+        </div>
+
+        <div className="flex items-center text-gray-700">
+          <MessageSquare className="w-5 h-5 text-gray-500 mr-3 flex-shrink-0" />
+          <span className="text-sm font-medium">Live Chat Available</span>
         </div>
       </div>
     </div>
@@ -160,131 +226,40 @@ const TicketDetailModal: React.FC<{ ticket: Ticket; onClose: () => void }> = ({ 
 };
 
 
-/**
- * Main Application Component (App)
- */
-const App: React.FC = () => {
-  const [tickets] = useState<Ticket[]>(MOCK_TICKETS);
-  const [selectedTicketId, setSelectedTicketId] = useState<string | null>(null);
-  const [autoReplyTemplate, setAutoReplyTemplate] = useState('Write your auto-reply here...');
-  const [showToast, setShowToast] = useState(false);
-
-  const selectedTicket = tickets.find(t => t.id === selectedTicketId);
-
-  // Handle opening the modal
-  const handleViewTicket = useCallback((id: string) => {
-    setSelectedTicketId(id);
-  }, []);
-
-  // Handle closing the modal
-  const handleCloseModal = useCallback(() => {
-    setSelectedTicketId(null);
-  }, []);
-
-  // Handle saving support settings
-  const handleSaveSettings = () => {
-    // In a real application, this would save the template to the backend.
-    console.log("Template saved:", autoReplyTemplate);
-    setShowToast(true);
-    setTimeout(() => setShowToast(false), 3000);
-  };
-
-  const stats = getStats(tickets);
-
+export default function App() {
   return (
-    <div className="min-h-screen bg-gray-100 p-4 md:p-8 font-sans">
-      
-      {/* Toast Notification */}
-      {showToast && (
-        <div className="fixed top-4 right-4 bg-green-500 text-white p-3 rounded-lg shadow-xl z-50 transition-opacity duration-300">
-          Settings saved successfully!
-        </div>
-      )}
+    <div className="min-h-screen bg-gray-50 font-sans p-4 sm:p-8 lg:p-12">
+      <div className="max-w-7xl mx-auto">
+        
+        {/* Header Section */}
+        <header className="mb-10 pt-4">
+          <h1 className="text-3xl font-bold text-gray-900 mb-1">SUPPORT CENTER</h1>
+          <p className="text-gray-600">Find answers, troubleshoot issues, and get help when you need it</p>
+        </header>
 
-      {/* Header */}
-      <header className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-800">Support Tickets</h1>
-        <p className="text-gray-500 text-sm mt-1">Configure system preferences, security, and platform features</p>
-      </header>
+        {/* Content Grid */}
+        <div className="lg:grid lg:grid-cols-3 lg:gap-10">
+          
+          {/* Left Column (FAQ & Guides) */}
+          <div className="lg:col-span-2 space-y-8 bg-white p-6 sm:p-8 rounded-xl shadow-md border border-gray-100">
+            
+            <section aria-labelledby="faq-title">
+              <h2 id="faq-title" className="text-xl font-bold text-gray-800 mb-4 hidden">Frequently Asked Questions</h2>
+              <FAQSection />
+            </section>
 
-      {/* Stats Cards */}
-      <section className="flex flex-wrap gap-4 mb-8">
-        {stats.map((item) => (
-          <StatsCard key={item.title} item={item} />
-        ))}
-      </section>
+            <section aria-labelledby="troubleshooting-title">
+              <TroubleshootingGuides />
+            </section>
+          </div>
 
-      {/* Tickets Table */}
-      <section className="bg-white p-6 rounded-xl shadow-lg mb-8 overflow-x-auto">
-        <h2 className="text-xl font-semibold text-gray-800 mb-4 hidden">Ticket List</h2>
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ticked ID</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Subject</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-            </tr>
-          </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
-            {tickets.map((ticket) => (
-              <tr key={ticket.id} className="hover:bg-gray-50 transition duration-150">
-                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Ticket ID: {ticket.id}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{ticket.subject}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{ticket.user}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{ticket.date}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm">
-                  <StatusBadge status={ticket.status} />
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                  <button
-                    onClick={() => handleViewTicket(ticket.id)}
-                    className="text-blue-600 hover:text-blue-900 font-semibold transition duration-150"
-                  >
-                    View
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </section>
-
-      {/* Support Settings */}
-      <section className="mb-8">
-        <h2 className="text-xl font-bold text-gray-800 mb-4">Support Settings</h2>
-        <div className="bg-white p-6 rounded-xl shadow-lg">
-          <label htmlFor="autoReply" className="block text-sm font-medium text-gray-700 mb-2">Auto Reply Template</label>
-          <textarea
-            id="autoReply"
-            rows={6}
-            value={autoReplyTemplate}
-            onChange={(e) => setAutoReplyTemplate(e.target.value)}
-            className="w-full p-4 border border-gray-300 rounded-lg focus:ring-teal-500 focus:border-teal-500 transition duration-150 resize-none"
-            placeholder="Write your auto-reply here..."
-          ></textarea>
-          <div className="mt-4 flex justify-end">
-            <button
-              onClick={handleSaveSettings}
-              className="px-6 py-2 bg-teal-400 text-white font-semibold rounded-lg shadow-md hover:bg-teal-500 transition duration-200 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-opacity-50"
-            >
-              Save changes
-            </button>
+          {/* Right Column (Ticket & Contact) */}
+          <div className="lg:col-span-1 mt-8 lg:mt-0 space-y-8">
+            <TicketSubmission />
+            <ContactSupport />
           </div>
         </div>
-      </section>
-
-      {/* Ticket Detail Modal */}
-      {selectedTicket && (
-        <TicketDetailModal 
-          ticket={selectedTicket} 
-          onClose={handleCloseModal} 
-        />
-      )}
+      </div>
     </div>
   );
 }
-
-export default App;
