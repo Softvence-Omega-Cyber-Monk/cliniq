@@ -4,7 +4,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { setCredentials } from "../../store/Slices/AuthSlice/authSlice";
+import {
+  setCredentials,
+} from "../../store/Slices/AuthSlice/authSlice";
 import { Role } from "./types";
 import { UserIcon, UsersIcon, ChevronDownIcon } from "./Icons";
 import { useLoginMutation } from "@/store/api/AuthApi";
@@ -121,7 +123,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSwitchToSignUp }) => {
       email: state?.email || "",
       password: state?.password || "",
       role:
-        state?.userType === "CLINIC" ? Role.PRIVATE_PRACTICE : Role.INDIVIDUAL,
+        state.userType === "CLINIC" ? Role.PRIVATE_PRACTICE : Role.INDIVIDUAL,
     },
   });
   console.log(state)
