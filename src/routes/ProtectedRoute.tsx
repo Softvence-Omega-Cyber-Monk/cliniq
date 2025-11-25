@@ -8,28 +8,25 @@ interface ProtectedRouteProps {
 }
 
 const ProtectedRoute = ({ allowedRoles }: ProtectedRouteProps) => {
-  const user = useAppSelector(state => state.auth.user)
+  const userType = useAppSelector(state => state.auth.userType)
   const token = localStorage.getItem("token");
-  console.log(user);
+  console.log(userType);
 
-  if (!user || !token) {
+  if (!userType || !token) {
     return <Navigate to="/login" replace />;
   }
 
-if (!user) return <Navigate to="/login" replace />;
+if (!userType) return <Navigate to="/login" replace />;
 
-if (allowedRoles && !allowedRoles.includes(user.userType)) {
-  switch (user.userType) {
+if (allowedRoles && !allowedRoles.includes(userType)) {
+  switch (userType) {
     case "ADMIN":
       return <Navigate to="/admin-dashboard" replace />;
-
+    
     case "THERAPIST":
-      // Redirect based on clinicId existence
-      if (user.clinicId) {
-        return <Navigate to="/private-practice-dashboard" replace />;
-      } else {
+    
         return <Navigate to="/individual-therapist-dashboard" replace />;
-      }
+      
       case "CLINIC":
       return <Navigate to="/private-practice-admin" replace />;
 

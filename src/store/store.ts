@@ -11,7 +11,7 @@ import aiApi from "./api/BaseApi/AiApi";
 const authPersistConfig = {
   key: "auth",
   storage,
-  whitelist: ["user", "accessToken", "refreshToken"],
+  whitelist: ["user", "accessToken", "refreshToken","userType"],
 };
 const persistedAuthReducer = persistReducer(authPersistConfig, authReducer);
 
