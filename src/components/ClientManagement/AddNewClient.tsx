@@ -1,21 +1,24 @@
-import React, { useState } from 'react';
+import { useUserId } from "@/hooks/useUserId";
+import { useCreateNewClientMutation } from "@/store/api/ClientsApi";
+import React, { useState } from "react";
+import { toast } from "sonner";
 
 // Define the type for the client form data
 export interface ClientForm {
   name: string;
   email: string;
   phoneNumber: string;
-  speciality: string;
+  healthIssues: string;
   condition: string;
 }
 
 // Initial state with empty values
 const initialFormState: ClientForm = {
-  name: '',
-  email: '',
-  phoneNumber: '',
-  speciality: '',
-  condition: '',
+  name: "",
+  email: "",
+  phoneNumber: "",
+  healthIssues: "",
+  condition: "",
 };
 
 // Define a type for the Input component props
@@ -30,7 +33,13 @@ interface FormInputProps {
 /**
  * Custom Input Component with shared styling
  */
-const FormInput: React.FC<FormInputProps> = ({ id, label, value, onChange, placeholder = '' }) => (
+const FormInput: React.FC<FormInputProps> = ({
+  id,
+  label,
+  value,
+  onChange,
+  placeholder = "",
+}) => (
   <div className="flex flex-col space-y-2">
     <label htmlFor={id} className="text-sm font-semibold text-gray-700">
       {label}
@@ -48,9 +57,14 @@ const FormInput: React.FC<FormInputProps> = ({ id, label, value, onChange, place
   </div>
 );
 
-
-export const AddNewClient: React.FC<{ onClose: () => void }> = ({ onClose }) => {
+export const AddNewClient: React.FC<{ onClose: () => void }> = ({
+  onClose,
+}) => {
   const [formData, setFormData] = useState<ClientForm>(initialFormState);
+  const userId = useUserId();
+  console.log(userId);
+  const [createNewClient, { isLoading, error, data }] =
+    useCreateNewClientMutation();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -60,16 +74,29 @@ export const AddNewClient: React.FC<{ onClose: () => void }> = ({ onClose }) => 
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Client Data Submitted:', formData);
-    onClose();
+    console.log("Client Data Submitted:", formData);
+    const updatedFormData = {
+      ...formData,
+      status: "active",
+    };
+    try {
+      const response = await createNewClient({
+        therapistId: userId,
+        credentials: updatedFormData,
+      }).unwrap();
+      console.log(response);
+      toast.success("New client added successfully!");
+    } catch (error) {
+      console.log(error);
+      toast.error("Failed to add new client.");
+    }
   };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#fff]/50 bg-opacity-30 p-4 font-sans backdrop-blur-sm">
       <div className="bg-white w-full max-w-4xl rounded-xl shadow-2xl p-6 md:p-10">
-        
         {/* Header */}
         <div className="flex justify-between items-center mb-8">
           <h2 className="text-2xl font-bold text-gray-800">Add New Client</h2>
@@ -97,7 +124,6 @@ export const AddNewClient: React.FC<{ onClose: () => void }> = ({ onClose }) => 
 
         {/* Form */}
         <form onSubmit={handleSubmit}>
-          
           {/* Two-Column Layout for Name/Email and Phone/Speciality */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6 mb-6">
             <FormInput
@@ -119,9 +145,9 @@ export const AddNewClient: React.FC<{ onClose: () => void }> = ({ onClose }) => 
               onChange={handleChange}
             />
             <FormInput
-              id="speciality"
-              label="Speciality"
-              value={formData.speciality}
+              id="healthIssues"
+              label="healthIssues"
+              value={formData.healthIssues}
               onChange={handleChange}
             />
           </div>
