@@ -23,7 +23,7 @@ interface AuthState {
   user: User | null;
   accessToken: string | null;
   refreshToken: string | null;
-  userType: "THERAPIST" | "ADMIN" | "PRIVATE_PRACTICE" | null;
+  userType: "THERAPIST" | "ADMIN" | "PRIVATE_PRACTICE" | "CLINIC" | null;
 }
 
 const initialState: AuthState = {
@@ -43,9 +43,11 @@ const authSlice = createSlice({
         user: User;
         accessToken: string;
         refreshToken?: string;
+        userType: "THERAPIST" | "ADMIN" | "PRIVATE_PRACTICE" | "CLINIC";
       }>
     ) => {
       state.user = action.payload.user;
+      state.userType = action.payload.userType;
       state.accessToken = action.payload.accessToken;
       if (action.payload.refreshToken) {
         state.refreshToken = action.payload.refreshToken;

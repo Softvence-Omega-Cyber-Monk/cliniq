@@ -5,7 +5,6 @@ import { z } from "zod";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import {
-  login as authSliceLogin,
   setCredentials,
 } from "../../store/Slices/AuthSlice/authSlice";
 import { Role } from "./types";
@@ -111,8 +110,7 @@ const RoleSelector: React.FC<{
 
 const LoginForm: React.FC<LoginFormProps> = ({ onSwitchToSignUp }) => {
   const [login, { isLoading }] = useLoginMutation();
-  const {state} = useLocation();
-  console.log(state)
+  const { state } = useLocation();
   const {
     register,
     handleSubmit,
@@ -124,8 +122,9 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSwitchToSignUp }) => {
     defaultValues: {
       email: state?.email || "",
       password: state?.password || "",
-      role: state.userType === "CLINIC" ? Role.PRIVATE_PRACTICE : Role.INDIVIDUAL,
-    }
+      role:
+        state.userType === "CLINIC" ? Role.PRIVATE_PRACTICE : Role.INDIVIDUAL,
+    },
   });
 
   const navigate = useNavigate();
@@ -134,43 +133,36 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSwitchToSignUp }) => {
 
   const onSubmit: SubmitHandler<LoginFormInputs> = async (data) => {
     try {
-  
       const response = await login({
         email: data.email,
         password: data.password,
-        userType:state.userType
+        userType: state.userType,
       }).unwrap();
       console.log(response);
       localStorage.setItem("token", response.accessToken);
-      // const profileResponse = await fetch(
-      //   `${import.meta.env.VITE_API_BASE_URL}/auth/profile`,
-      //   {
-      //     headers: { Authorization: `Bearer ${response.accessToken}` },
-      //   }
-      // );
-      // const user = await profileResponse.json();
-      console.log(response.user);
       dispatch(
         setCredentials({
-          user:response.user,
+          user: response.user,
           accessToken: response.accessToken,
           refreshToken: response.refreshToken,
+          userType: response.userType,
         })
       );
-      console.log(data);
-      if (response.user.userType === "THERAPIST") {
+      if (response.userType === "THERAPIST") {
         dispatch(
           setCredentials({
-            user:response.user,
+            user: response.user,
+            userType:response.userType,
             accessToken: response.accessToken,
             refreshToken: response.refreshToken,
           })
         );
+        navigate("/individual-therapist-dashboard");
+      } else if (response.userType === "CLINIC") {
         navigate("/private-practice-admin");
-      } else {
-        dispatch(authSliceLogin({ role: "user" }));
-
-        navigate("/private-practice-admin");
+        // }else {
+        //   dispatch(authSliceLogin({ role: "user" }));
+        // navigate("/private-practice-admin");
       }
     } catch (error) {
       console.error("Login error:", error);
