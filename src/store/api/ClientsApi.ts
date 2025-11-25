@@ -2,27 +2,19 @@ import baseApi from "./BaseApi/BaseApi";
 
 export const reportsApi = baseApi.injectEndpoints({
     endpoints: (builder) => ({
-        getUpcomingAppointment: builder.query({
-            query: (params) => ({
-                url: "/appointments/upcoming",
-                method: "GET",
-                params: {
-                    days: params.days,
-                    limit: params.limit,
-                }
-            })
-        }),
+
         createAppointment: builder.mutation({
-            query: (appointment) => ({
-                url: "/appointments",
+            query: ({ therapistId, appointment }) => ({
+                url: `/therapists/${therapistId}/clients`,
                 method: "POST",
-                body: appointment
+                body: appointment,
             })
+
         })
 
     }),
 });
 
 export const {
-    useGetUpcomingAppointmentQuery
+    useCreateAppointmentMutation
 } = reportsApi;
