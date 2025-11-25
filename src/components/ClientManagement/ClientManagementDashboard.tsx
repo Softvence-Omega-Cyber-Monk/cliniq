@@ -1,6 +1,5 @@
 import React, { useState, useCallback } from "react";
 import { Client } from "./types";
-import { MOCK_CLIENTS } from "./mockData";
 import ClientListDashboard from "./ClientListDashboard";
 import ClientDetailView from "./ClientDetailView";
 import UpdateProgressModal from "./UpdateProgressModal";
@@ -41,10 +40,7 @@ const ClientManagementDashboard: React.FC<
           onOpenModal={() => setIsModalOpen(true)}
         />
       ) : (
-        <ClientListDashboard
-          clients={MOCK_CLIENTS}
-          onSelectClient={handleSelectClient}
-        />
+        <ClientListDashboard onSelectClient={handleSelectClient} />
       )}
 
       {/* Modal is rendered outside the main view components */}
