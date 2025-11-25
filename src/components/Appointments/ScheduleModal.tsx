@@ -37,7 +37,6 @@ const ScheduleModal: React.FC<ScheduleModalProps> = ({ onClose }) => {
   const [email, setEmail] = useState("");
   const [notes, setNotes] = useState("");
 
-  // Auto-fill email & phone when client changes
   useEffect(() => {
     if (!clientId || !data?.data) return;
 

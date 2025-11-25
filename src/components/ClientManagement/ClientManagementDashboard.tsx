@@ -20,7 +20,6 @@ const ClientManagementDashboard = () => {
 
   const handleUpdateProgress = (notes: string) => {
     console.log("Progress Notes Submitted:", notes);
-    // In a real app, you would send this to Firestore/API
     setIsModalOpen(false);
     alert("Progress Note saved successfully!");
   };

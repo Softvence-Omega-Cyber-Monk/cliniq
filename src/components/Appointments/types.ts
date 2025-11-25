@@ -7,9 +7,25 @@ export interface Client {
   status: 'active' | 'inactive';
   healthIssues: string[];
 }
+export interface Therapist {
+  id: string;
+  fullName: string;
+  email: string;
+  speciality: string;
+}
+export interface Client {
+  id: string;
+  name: string;
+  email: string;
+  phone: string;
+}
 
 export interface Appointment {
   id: string;
+  therapist: Therapist
+  scheduledTime: string;
+  status: string;
+  scheduledDate: string;
   client: Client;
   type: 'Initial Assessment' | 'Follow-up Session';
   scheduleStatus: 'Scheduled' | 'Completed' | 'Canceled';
@@ -20,12 +36,12 @@ export interface Appointment {
 }
 
 export interface Stats {
-    totalAppointments: number;
-    todaySessions: number;
-    virtualSessions: number;
-    inPersonSessions: number;
-    totalAppointmentsDelta: number; // percentage change
-    todaySessionsDelta: number;
-    virtualSessionsDelta: number;
-    inPersonSessionsDelta: number;
+  totalAppointments: number;
+  todaySessions: number;
+  virtualSessions: number;
+  inPersonSessions: number;
+  totalAppointmentsDelta: number; // percentage change
+  todaySessionsDelta: number;
+  virtualSessionsDelta: number;
+  inPersonSessionsDelta: number;
 }

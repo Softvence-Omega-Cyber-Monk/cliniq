@@ -14,6 +14,7 @@ const baseApi = createApi({
     }
   }),
   endpoints: () => ({}),
+  tagTypes:["APPOINTMENT"]
 });
 
 export default baseApi;

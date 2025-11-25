@@ -8,9 +8,11 @@ const appointmentsApi = baseApi.injectEndpoints({
         method: "POST",
         body: credentials,
       }),
-    }),
+      invalidatesTags:["APPOINTMENT"]
+      }),
     getAllAppointments: builder.query({
       query: () => "/appointments",
+      providesTags: ["APPOINTMENT"],
     }),
     getAppointmentDetails: builder.query({
       query: (id) => `/appointments/${id}`,
@@ -21,12 +23,14 @@ const appointmentsApi = baseApi.injectEndpoints({
         method: "PUT",
         body: credentials,
       }),
+      invalidatesTags: ["APPOINTMENT"]
     }),
     deleteAppointments: builder.mutation({
       query: (id) => ({
         url: `/appointments/${id}`,
         method: "DELETE",
       }),
+      invalidatesTags: ["APPOINTMENT"]
     }),
     updateAppointmentsStatus: builder.mutation({
       query: (data) => ({
@@ -34,6 +38,7 @@ const appointmentsApi = baseApi.injectEndpoints({
         method: "PUT",
         body: data.data,
       }),
+      invalidatesTags: ["APPOINTMENT"]
     }),
     getAppointmentsByDate: builder.query({
       query: (date) => `/appointments/by-date/${date}`,
@@ -58,14 +63,18 @@ const appointmentsApi = baseApi.injectEndpoints({
       query: () => "/appointments/today",
     }),
     getUpcomingAppointments: builder.query({
-      query: () => "/appointments/upcoming",
+      query: ({ days, limit }) => ({
+        url: "/appointments/upcoming",
+        method: "GET",
+        params: { days, limit },
+      }),
     }),
   }),
 });
 
-export const { useCreateAppointmentMutation, useGetAllAppointmentsQuery, useGetAppointmentDetailsQuery, useUpdateAppointmentsMutation, useDeleteAppointmentsMutation, 
-  useUpdateAppointmentsStatusMutation, useGetAppointmentsByDateQuery, useGetClientAppointmentsQuery, useGetAppointmentsByDateRangeQuery, 
+export const { useCreateAppointmentMutation, useGetAllAppointmentsQuery, useGetAppointmentDetailsQuery, useUpdateAppointmentsMutation, useDeleteAppointmentsMutation,
+  useUpdateAppointmentsStatusMutation, useGetAppointmentsByDateQuery, useGetClientAppointmentsQuery, useGetAppointmentsByDateRangeQuery,
   useGetTherapistAppointmentsQuery, useGetTodaysAppointmentsQuery, useGetUpcomingAppointmentsQuery
- } =
+} =
   appointmentsApi;
 export default appointmentsApi;
