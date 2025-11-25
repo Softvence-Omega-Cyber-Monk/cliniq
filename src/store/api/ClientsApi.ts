@@ -65,7 +65,6 @@ const clientsApi = baseApi.injectEndpoints({
                 body: credentials,
             }),
         }),
-
     }),
 })
 

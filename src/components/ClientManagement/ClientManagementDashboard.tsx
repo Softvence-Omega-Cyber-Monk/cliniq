@@ -5,13 +5,8 @@ import ClientListDashboard from "./ClientListDashboard";
 import ClientDetailView from "./ClientDetailView";
 import UpdateProgressModal from "./UpdateProgressModal";
 
-interface ClientManagementDashboardProps {
-  // This component is now self-contained and doesn't need props
-}
 
-const ClientManagementDashboard: React.FC<
-  ClientManagementDashboardProps
-> = () => {
+const ClientManagementDashboard = () => {
   const [selectedClient, setSelectedClient] = useState<Client | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
