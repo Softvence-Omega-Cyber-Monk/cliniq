@@ -27,6 +27,7 @@ import IndividualTherapistAppointments from "../pages/IndividualTherapist/Indivi
 import IndividualTherapistOldreport from "../pages/IndividualTherapist/IndividualTherapistOldreport";
 import IndividualTherapistSettings from "../pages/IndividualTherapist/IndividualTherapistSettings";
 import IndividualTherapistSupport from "../pages/IndividualTherapist/IndividualTherapistSupport";
+import TherapistClientDetails from "@/pages/IndividualTherapist/TherapistClientDetails ";
 
 const routes = createBrowserRouter([
   {
@@ -45,6 +46,10 @@ const routes = createBrowserRouter([
             element: <IndividualTherapistDashboard />,
           },
           { path: "clients", element: <IndividualTherapistClients /> },
+          {
+            path: "clients/:id",
+            element: <TherapistClientDetails></TherapistClientDetails>,
+          },
           {
             path: "appointments",
             element: <IndividualTherapistAppointments />,

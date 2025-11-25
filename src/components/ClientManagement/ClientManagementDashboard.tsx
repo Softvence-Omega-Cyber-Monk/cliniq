@@ -4,7 +4,6 @@ import ClientListDashboard from "./ClientListDashboard";
 import ClientDetailView from "./ClientDetailView";
 import UpdateProgressModal from "./UpdateProgressModal";
 
-
 const ClientManagementDashboard = () => {
   const [selectedClient, setSelectedClient] = useState<Client | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -35,7 +34,7 @@ const ClientManagementDashboard = () => {
           onOpenModal={() => setIsModalOpen(true)}
         />
       ) : (
-        <ClientListDashboard onSelectClient={handleSelectClient} />
+        <ClientListDashboard />
       )}
 
       {/* Modal is rendered outside the main view components */}
