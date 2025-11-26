@@ -1,57 +1,84 @@
-import React, { useState } from "react";
-import { ChevronDown, X } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { X } from "lucide-react";
+import { useGetAllClientQuery } from "@/store/api/ClientsApi";
+import { useUserId } from "@/hooks/useUserId";
+import { useCreateAppointmentMutation } from "@/store/api/AppoinmentsApi";
+import { toast } from "sonner";
 
 interface ScheduleModalProps {
   onClose: () => void;
 }
 
+interface Client {
+  id: string;
+  name: string;
+  email: string;
+  phone?: string;
+  sessionCount: number;
+  overallProgress: number;
+  status: string;
+}
+
 const ScheduleModal: React.FC<ScheduleModalProps> = ({ onClose }) => {
-  const [client, setClient] = useState("");
-  const [date, setDate] = useState("");
-  const [time, setTime] = useState("");
-  const [duration, setDuration] = useState("");
-  const [sessionType, setSessionType] = useState("");
-  const [appointmentType, setAppointmentType] = useState("");
+  const userId = useUserId();
+  const [createAppointment, { isLoading }] = useCreateAppointmentMutation();
+  const { data } = useGetAllClientQuery({
+    therapistId: userId,
+    search: "",
+    status: "",
+  });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const [clientId, setClientId] = useState("");
+  const [scheduledDate, setScheduledDate] = useState("");
+  const [scheduledTime, setScheduledTime] = useState("");
+  const [duration, setDuration] = useState(60);
+  const [sessionType, setSessionType] = useState("virtual");
+  const [phone, setPhone] = useState("");
+  const [email, setEmail] = useState("");
+  const [notes, setNotes] = useState("");
+
+  useEffect(() => {
+    if (!clientId || !data?.data) return;
+
+    const selectedClient = data.data.find((c: Client) => c.id === clientId);
+    if (selectedClient) {
+      setEmail(selectedClient.email || "");
+      setPhone(selectedClient.phone || "");
+    }
+  }, [clientId, data]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Scheduling appointment...");
-    onClose();
-  };
+    if (!clientId || !scheduledDate || !scheduledTime) {
+      toast.error("Please fill all required fields");
+      return;
+    }
 
-  const InputField: React.FC<{
-    label: string;
-    placeholder: string;
-    value: string;
-    onChange: (v: string) => void;
-    isSelect?: boolean;
-  }> = ({ label, placeholder, value, onChange, isSelect = false }) => (
-    <div className="mb-4">
-      <label className="block text-sm font-medium text-gray-700 mb-1">
-        {label}
-      </label>
-      <div className={`relative ${isSelect ? "cursor-pointer" : ""}`}>
-        <input
-          type="text"
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          placeholder={placeholder}
-          className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-mint-500 focus:border-mint-500 transition duration-150 text-gray-800 bg-white shadow-inner"
-          readOnly={isSelect}
-        />
-        {isSelect && (
-          <ChevronDown
-            size={20}
-            className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none"
-          />
-        )}
-      </div>
-    </div>
-  );
+    const payload = {
+      clientId,
+      therapistId: userId,
+      scheduledDate,
+      scheduledTime,
+      duration,
+      sessionType,
+      phone,
+      email,
+      notes,
+    };
+
+    try {
+      await createAppointment(payload).unwrap();
+      toast.success("Appointment created successfully!");
+      onClose();
+    } catch (err) {
+      console.error("Error creating appointment:", err);
+      toast.error("Failed to create appointment.");
+    }
+  };
 
   return (
     <div
-      className="fixed inset-0 bg-white/50  flex items-center justify-center backdrop-blur-[1px] z-50 p-4"
+      className="fixed inset-0 bg-white/50 flex items-center justify-center backdrop-blur-[1px] z-50 p-4"
       onClick={onClose}
     >
       <div
@@ -71,48 +98,120 @@ const ScheduleModal: React.FC<ScheduleModalProps> = ({ onClose }) => {
         </div>
 
         <form className="p-6 space-y-4" onSubmit={handleSubmit}>
-          <InputField
-            label="Client"
-            placeholder="Select Client"
-            value={client}
-            onChange={setClient}
-            isSelect={true}
-          />
+          {/* Client Select */}
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Client
+            </label>
+            <select
+              value={clientId}
+              onChange={(e) => setClientId(e.target.value)}
+              className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-mint-500 focus:border-mint-500 transition duration-150 text-gray-800 bg-white shadow-inner"
+            >
+              <option value="">Select Client</option>
+              {data?.data?.map((c: Client) => (
+                <option key={c.id} value={c.id}>
+                  {c.name} ({c.email})
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Date & Time */}
           <div className="grid grid-cols-2 gap-4">
-            <InputField
-              label="Date"
-              placeholder="DD/MM/YY"
-              value={date}
-              onChange={setDate}
-            />
-            <InputField
-              label="Time"
-              placeholder="--/--"
-              value={time}
-              onChange={setTime}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Date
+              </label>
+              <input
+                type="date"
+                value={scheduledDate}
+                onChange={(e) => setScheduledDate(e.target.value)}
+                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-mint-500 focus:border-mint-500 transition duration-150 text-gray-800 bg-white shadow-inner"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Time
+              </label>
+              <input
+                type="time"
+                value={scheduledTime}
+                onChange={(e) => setScheduledTime(e.target.value)}
+                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-mint-500 focus:border-mint-500 transition duration-150 text-gray-800 bg-white shadow-inner"
+              />
+            </div>
+          </div>
+
+          {/* Duration */}
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Duration (minutes)
+            </label>
+            <input
+              type="number"
+              min={15}
+              value={duration}
+              onChange={(e) => setDuration(Number(e.target.value))}
+              className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-mint-500 focus:border-mint-500 transition duration-150 text-gray-800 bg-white shadow-inner"
             />
           </div>
-          <InputField
-            label="Duration"
-            placeholder="Select Duration"
-            value={duration}
-            onChange={setDuration}
-            isSelect={true}
-          />
-          <InputField
-            label="Session Type"
-            placeholder="Select Session Type"
-            value={sessionType}
-            onChange={setSessionType}
-            isSelect={true}
-          />
-          <InputField
-            label="Appointment Type"
-            placeholder="Select Appointment Type"
-            value={appointmentType}
-            onChange={setAppointmentType}
-            isSelect={true}
-          />
+
+          {/* Session Type */}
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Session Type
+            </label>
+            <select
+              value={sessionType}
+              onChange={(e) => setSessionType(e.target.value)}
+              className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-mint-500 focus:border-mint-500 transition duration-150 text-gray-800 bg-white shadow-inner"
+            >
+              <option value="virtual">Virtual</option>
+              <option value="in-person">In-Person</option>
+            </select>
+          </div>
+
+          {/* Phone */}
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Phone
+            </label>
+            <input
+              type="tel"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              placeholder="+1234567890"
+              className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-mint-500 focus:border-mint-500 transition duration-150 text-gray-800 bg-white shadow-inner"
+            />
+          </div>
+
+          {/* Email */}
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Email
+            </label>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="client@example.com"
+              className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-mint-500 focus:border-mint-500 transition duration-150 text-gray-800 bg-white shadow-inner"
+            />
+          </div>
+
+          {/* Notes */}
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Notes
+            </label>
+            <textarea
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+              placeholder="Client requested early morning session"
+              className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-mint-500 focus:border-mint-500 transition duration-150 text-gray-800 bg-white shadow-inner"
+            />
+          </div>
 
           <div className="pt-6 flex justify-end space-x-3">
             <button
@@ -126,7 +225,7 @@ const ScheduleModal: React.FC<ScheduleModalProps> = ({ onClose }) => {
               type="submit"
               className="px-6 py-3 font-semibold rounded-full bg-mint-500 text-black hover:bg-mint-600 transition-colors shadow-lg shadow-mint-500/30"
             >
-              Schedule Appointment
+              {isLoading ? "Scheduling..." : "Schedule Appointment"}
             </button>
           </div>
         </form>

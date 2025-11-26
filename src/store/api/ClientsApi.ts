@@ -65,8 +65,31 @@ const clientsApi = baseApi.injectEndpoints({
                 body: credentials,
             }),
         }),
+        getAllClient: builder.query({
+            query: ({ therapistId, search, status, page = 1, limit = 10 }) => {
+                const params = new URLSearchParams();
+                if (search) params.append("search", search);
+                if (status) params.append("status", status);
+                params.append("page", page.toString());
+                params.append("limit", limit.toString());
+
+                return {
+                    url: `/therapists/${therapistId}/clients?${params.toString()}`,
+                    method: "GET",
+                };
+            },
+        }),
+        getClientById: builder.query({
+            query: ({ therapistId, clientId }) => ({
+                url: `/therapists/${therapistId}/clients/${clientId}`,
+                method: "GET",
+            }),
+        }),
+
+
+
     }),
 })
 
-export const { useCreateNewClientMutation, useAddCrisisHistoryMutation, useUpdateCrisisHistoryMutation, useUpdateOverallProgressMutation, useAddSessionHistoryMutation, useUpdateSessionHistoryMutation, useUpdateTreatmentGoalsMutation, useAddTreatmentProgressMutation, useUpdateTreatmentProgressMutation } = clientsApi
+export const { useCreateNewClientMutation, useAddCrisisHistoryMutation, useUpdateCrisisHistoryMutation, useUpdateOverallProgressMutation, useAddSessionHistoryMutation, useUpdateSessionHistoryMutation, useUpdateTreatmentGoalsMutation, useAddTreatmentProgressMutation, useUpdateTreatmentProgressMutation, useGetAllClientQuery, useGetClientByIdQuery } = clientsApi
 export default clientsApi
