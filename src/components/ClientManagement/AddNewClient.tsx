@@ -121,6 +121,7 @@ export const AddNewClient: React.FC<{
   const [formData, setFormData] = useState<ClientForm>(initialFormState);
   const userId = useUserId();
   console.log(userId);
+  console.log(userId);
   const [createNewClient, { isLoading }] = useCreateNewClientMutation();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {

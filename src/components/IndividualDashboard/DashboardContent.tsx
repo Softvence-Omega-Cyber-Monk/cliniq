@@ -25,18 +25,18 @@ const DashboardContent: React.FC = () => {
   console.log(user);
   const { data: stats, isLoading } = useGetDashboardStatsQuery({
     dateRange: "last_30_days",
-    startDate: "2024-01-01",  
+    startDate: "2024-01-01",
     endDate: "2024-01-31",
     therapistId: "123e4567-e89b-12d3-a456-426614174000",
     status: "completed",
     reportType: "performance_overview",
   });
-
+  console.log(stats);
   const statCards: StatCardType[] = stats
     ? [
         {
           title: "Total Therapists",
-          value: stats?.activeTherapists.toString(),
+          value: stats?.totalTherapists,
           icon: StatUserIcon,
           percentage: stats.therapistsGrowth,
           trend: "up",
@@ -44,22 +44,22 @@ const DashboardContent: React.FC = () => {
         },
         {
           title: "Upcoming Sessions",
-          value: stats?.totalSessions.toString(),
+          value: stats?.upcomingSessions,
           icon: StatCalendarIcon,
-          percentage: stats.sessionsGrowth,
+          percentage: stats.upcomingGrowth,
           trend: "up",
           iconBgColor: "bg-blue-100 text-blue-600",
         },
         {
           title: "Crisis Alerts",
-          value: stats?.crisisAlerts.toString(),
+          value: stats?.crisisAlerts,
           icon: StatAlertIcon,
           iconBgColor: "bg-red-100 text-red-600",
           trend: "up",
         },
         {
           title: "Completed Sessions",
-          value: stats?.totalSessions.toString(),
+          value: stats?.totalSessions,
           icon: StatCheckIcon,
           iconBgColor: "bg-cyan-100 text-cyan-600",
           trend: "up",

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { use } from "react";
 import {
   Download,
   ChevronDown,
@@ -31,6 +31,7 @@ import {
 
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
+import { useUserId } from "@/hooks/useUserId";
 
 // --- Interfaces ---
 
@@ -429,8 +430,7 @@ const CrisisAlerts: React.FC<CrisisAlertsProps> = ({ alerts }) => {
 // --- Main App Component ---
 
 const App: React.FC = () => {
-  const user = useSelector((state: RootState) => state.auth.user);
-  const userId = user?.user.id;
+  const userId = useUserId();
 
   // Fetch data
   const { data: dashboardData, isLoading: loadingStats } =

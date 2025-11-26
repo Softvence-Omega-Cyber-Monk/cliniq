@@ -2,9 +2,7 @@ import React from "react";
 import SummaryCard, {
   summaryCardsData,
 } from "@/components/Dashboard/SummaryCard";
-import SessionAlert, {
-  sessionAlertsData,
-} from "@/components/Dashboard/SessionAlert";
+import SessionAlert from "@/components/Dashboard/SessionAlert";
 import AppointmentItem from "@/components/Dashboard/AppointmentItem";
 import { useGetUpcomingAppointmentsQuery } from "@/store/api/AppoinmentsApi";
 import { Appointment } from "@/components/Appointments/types";
@@ -56,7 +54,7 @@ const IndividualTherapistDashboard: React.FC<
       <div className="space-y-4 mb-8">
         {loadingAlerts && (
           <>
-            {Array.from({ length: 4 }).map((_, idx) => (
+            {Array.from({ length: 2 }).map((_, idx) => (
               <SessionAlertSkeleton key={idx} />
             ))}
           </>

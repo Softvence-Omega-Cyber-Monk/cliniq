@@ -1,8 +1,8 @@
 const SessionAlertSkeleton: React.FC = () => {
   return (
-    <div className="p-5 rounded-xl bg-gray-200 flex items-start space-x-4 animate-pulse">
+    <div className="p-4 rounded-xl bg-gray-200 flex items-start space-x-4 animate-pulse">
       {/* Icon placeholder */}
-      <div className="w-6 h-6 rounded-full bg-gray-300 dark:bg-gray-600 mt-0.5" />
+      <div className="w-6 h-6 rounded-full bg-gray-300 " />
 
       {/* Text placeholder */}
       <div className="flex-1 space-y-2">

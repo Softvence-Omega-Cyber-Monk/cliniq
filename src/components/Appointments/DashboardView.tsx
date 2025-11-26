@@ -69,27 +69,37 @@ const DashboardView: React.FC<DashboardViewProps> = ({
         <Grid size={24} className="mr-2 text-mint-500" /> Upcoming Sessions
       </h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        {/* loading state */}
+        {/* Loading state */}
         {isLoading &&
           Array.from({ length: 8 }).map((_, idx) => (
             <AppointmentCardSkeleton key={idx} />
           ))}
-        {/* error state */}
-        {error && (
-          <p className="text-red-500">
-            Error fetching appointments: {error as string}
-          </p>
+
+        {/* Error state */}
+        {!isLoading && error && (
+          <div className="col-span-full flex justify-center">
+            <p className="text-red-500 font-medium">
+              Failed to load appointments. Please try again.
+            </p>
+          </div>
         )}
-        {/* empty state */}
+
+        {/* Empty state */}
         {!isLoading && !error && appointments?.data?.length === 0 && (
-          <p className="col-span-full text-center text-gray-500">
-            No upcoming appointments.
-          </p>
+          <div className="col-span-full flex justify-center">
+            <p className="text-gray-500 text-center">
+              No upcoming appointments in the next 7 days.
+            </p>
+          </div>
         )}
+
+        {/* Data list */}
         {!isLoading &&
           !error &&
           appointments?.data?.map((appt: Appointment) => (
-            <AppointmentCard key={appt.id} appointment={appt} />
+            <div key={appt.id} className="animate-fadeIn">
+              <AppointmentCard appointment={appt} />
+            </div>
           ))}
       </div>
     </div>
