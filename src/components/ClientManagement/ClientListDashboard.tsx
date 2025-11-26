@@ -7,8 +7,11 @@ import { toast } from "sonner";
 import { useUserId } from "@/hooks/useUserId";
 import ClientListItemSkeleton from "../Skeleton/ClientListItemSkeleton";
 import { SearchIcon } from "lucide-react";
+import { useAppSelector } from "@/hooks/useRedux";
 
 const ClientListDashboard: React.FC = () => {
+  const userType = useAppSelector((state) => state.auth.userType);
+
   const userId = useUserId();
   const [searchTerm, setSearchTerm] = useState("");
   const [filter, setFilter] = useState<Status | "all">("all");

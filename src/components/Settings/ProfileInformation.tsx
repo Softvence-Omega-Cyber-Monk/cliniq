@@ -10,7 +10,7 @@ const ProfileInformation: React.FC = () => (
       subtitle="Manage your contact and identity settings."
     />
     <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6">
-      <InputField label="First Name" id="firstName" />
+      <InputField  label="First Name" id="firstName" />
       <InputField label="Last Name" id="lastName" />
       <InputField label="Email" id="email" type="email" />
       <InputField label="Phone" id="phone" />
