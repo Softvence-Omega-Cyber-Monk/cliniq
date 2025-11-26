@@ -19,19 +19,14 @@ const IndividualTherapistSettings: React.FC<
   IndividualTherapistSettingsProps
 > = () => {
   return (
-    <div className="min-h-screen  ">
-      {/* <header className="py-8 px-6 bg-white shadow-sm border-b border-gray-100">
-        <div className="max-w-7xl mx-auto">
-          <h1 className="text-2xl font-extrabold text-gray-800">
-            INDIVIDUAL THERAPIST SETTINGS
-          </h1>
-          <p className="text-sm text-gray-500">
+    <div className="min-h-screen">
+      <main className=" px-4 sm:px-6 lg:px-8 py-10">
+        <div className="mb-8">
+          <h1 className="text-3xl font-semibold text-gray-800">SETTINGS</h1>
+          <p className="text-basic text-[#7E8086]">
             Manage your account and preferences.
           </p>
         </div>
-      </header> */}
-
-      <main className=" px-4 sm:px-6 lg:px-8 py-10">
         <div className="space-y-8">
           <ProfileInformation />
           <Notifications />
