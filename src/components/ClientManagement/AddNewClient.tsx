@@ -160,7 +160,7 @@ export const AddNewClient: React.FC<{
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#fff]/50 backdrop-blur-sm p-4 font-sans">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#fff]/50 backdrop-blur-sm p-4">
       <div className="bg-white w-full max-w-4xl rounded-xl shadow-2xl p-6 md:p-10">
         {/* Header */}
         <div className="flex justify-between items-center mb-8">

@@ -1416,7 +1416,7 @@ const App: React.FC = () => {
     selectedPatientId !== null && selectedPatient && selectedTherapist;
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4 sm:p-8 font-sans">
+    <div className="min-h-screen bg-gray-50 p-4 sm:p-8 ">
       {/* List Header and Controls - Show only in list view */}
       {isListView && (
         <>
@@ -1529,4 +1529,3 @@ const App: React.FC = () => {
 };
 
 export default App;
- 

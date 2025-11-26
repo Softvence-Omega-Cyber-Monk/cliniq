@@ -7,7 +7,7 @@ import BillingAndSubscription from '@/components/Settings/BillingAndSubscription
 
 const Settings: React.FC = () => {
   return (
-    <div className="min-h-screen bg-gray-50 font-sans">
+    <div className="min-h-screen bg-gray-50 """>
       <header className="py-8 px-6 bg-white shadow-sm border-b border-gray-100">
         <div className="max-w-7xl mx-auto">
           <h1 className="text-2xl font-extrabold text-gray-800">SETTINGS</h1>

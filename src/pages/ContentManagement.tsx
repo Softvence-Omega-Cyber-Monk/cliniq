@@ -91,7 +91,7 @@ const ContentManagementPage: React.FC = () => {
 
   return (
     <>
-      <div className="p-4 sm:p-6 lg:p-8 font-sans">
+      <div className="p-4 sm:p-6 lg:p-8 """>
         <header className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8">
           <h1 className="text-3xl font-bold text-slate-800">Content Management</h1>
           <button onClick={() => handleOpenAddModal()} className="mt-4 sm:mt-0 flex items-center justify-center bg-teal-500 text-white font-semibold py-2 px-4 rounded-lg shadow-md hover:bg-teal-600 transition-colors">

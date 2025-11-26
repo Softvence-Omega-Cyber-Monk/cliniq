@@ -41,10 +41,7 @@ const IndividualTherapistAppointments: React.FC<
   }, []);
 
   return (
-    <div className="font-sans min-h-screen">
-      <h1 className="text-3xl font-bold mb-4">
-        Individual Therapist Appointments
-      </h1>
+    <div className=" min-h-screen">
       {view === "dashboard" && (
         <DashboardView stats={MOCK_STATS} onOpenModal={handleOpenModal} />
       )}

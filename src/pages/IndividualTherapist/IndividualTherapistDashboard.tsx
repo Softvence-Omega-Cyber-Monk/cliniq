@@ -39,9 +39,6 @@ const IndividualTherapistDashboard: React.FC<
   console.log(alerts);
   return (
     <div className="flex-1 p-4 md:p-8  min-h-[calc(100vh-80px)]">
-      <h1 className="text-3xl font-bold mb-4">
-        Individual Therapist Dashboard
-      </h1>
       {/* 1. Summary Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         {summaryCardsData.map((card, index) => (

@@ -7,7 +7,7 @@ import { statsData, reportsData } from '@/components/oldreposty/mockData';
 
 const Oldreport: FC = () => {
   return (
-    <div className="min-h-screen bg-gray-50 p-4 sm:p-8 font-sans">
+    <div className="min-h-screen bg-gray-50 p-4 sm:p-8 """>
       <header className="mb-8">
         <h1 className="text-3xl font-extrabold text-gray-900">Therapy Dashboard</h1>
         <p className="text-gray-500">Welcome back, here is an overview of your practice.</p>

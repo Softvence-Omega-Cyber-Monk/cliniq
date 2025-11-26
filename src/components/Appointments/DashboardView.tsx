@@ -25,7 +25,7 @@ const DashboardView: React.FC<DashboardViewProps> = ({
   });
   console.log(appointments?.data);
   return (
-    <div className="min-h-screen bg-gray-50 p-4 sm:p-8">
+    <div className="min-h-screen  p-4 sm:p-8">
       {/* Header */}
       <header className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-extrabold text-gray-800">APPOINTMENTS</h1>

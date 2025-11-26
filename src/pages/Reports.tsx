@@ -3,7 +3,7 @@ import { StatCard, SessionTrendsChart, TopTherapistsChart, SessionTypeDistributi
 
 const ReportsPage: React.FC = () => {
   return (
-    <div className="bg-slate-50 min-h-screen text-slate-800 font-sans p-4 sm:p-6 lg:p-8">
+    <div className="bg-slate-50 min-h-screen text-slate-800 "" p-4 sm:p-6 lg:p-8">
       <div className="max-w-7xl mx-auto">
         <header className="mb-8">
           <h1 className="text-3xl font-bold text-slate-800">Reports & Analytics</h1>
