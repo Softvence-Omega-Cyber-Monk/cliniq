@@ -18,7 +18,7 @@ const Layout: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 font-sans">
+    <div className="min-h-screen bg-[#f3f3ec] font-sans">
       {isSidebarOpen && (
         <div
           className="fixed inset-0 bg-black opacity-50 z-10 md:hidden"
