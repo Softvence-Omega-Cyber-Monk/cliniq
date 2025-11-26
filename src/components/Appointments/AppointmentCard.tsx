@@ -33,7 +33,7 @@ const AppointmentCard: React.FC<AppointmentCardProps> = ({ appointment }) => {
       <User size={16} className="text-gray-500" />
     );
   return (
-    <div className="bg-white p-5 rounded-xl shadow-lg border border-gray-100 flex flex-col justify-between transition-all duration-300 hover:shadow-xl hover:border-mint-200">
+    <div className="bg-[#FAFAF7] p-5 rounded-xl  border border-gray-100 flex flex-col justify-between transition-all duration-300 hover:shadow-xl hover:border-mint-200">
       <div>
         <div className="flex justify-between items-start mb-3">
           <div className="flex items-center">

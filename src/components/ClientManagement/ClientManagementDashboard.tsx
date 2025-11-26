@@ -25,7 +25,7 @@ const ClientManagementDashboard = () => {
   };
 
   return (
-    <div className="min-h-screen font-sans bg-gray-50">
+    <div className="">
       {selectedClient ? (
         <ClientDetailView
           client={selectedClient}

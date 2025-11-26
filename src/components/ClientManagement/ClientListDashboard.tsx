@@ -2,12 +2,21 @@ import React, { useState, useEffect, useRef } from "react";
 import { Client, Status } from "./types";
 import ClientListItem from "./ClientListItem";
 import { AddNewClient } from "./AddNewClient";
-import { useGetAllClientQuery } from "@/store/api/ClientsApi";
-import { toast } from "sonner";
+import ClientListItemSkeleton from "../Skeleton/ClientListItemSkeleton";
+import { SearchIcon } from "lucide-react";
+import { useAppSelector } from "@/hooks/useRedux";
 import { useUserId } from "@/hooks/useUserId";
+import { toast } from "sonner";
+import { useGetAllClientQuery } from "@/store/api/ClientsApi";
+
+import { skipToken } from "@reduxjs/toolkit/query/react";
+import { useGetAllClinicClientsQuery } from "@/store/api/ClinicClientsApi";
 
 const ClientListDashboard: React.FC = () => {
+  const userType = useAppSelector((state) => state.auth.userType);
   const userId = useUserId();
+  console.log(userId);
+
   const [searchTerm, setSearchTerm] = useState("");
   const [filter, setFilter] = useState<Status | "all">("all");
   const [page, setPage] = useState(1);
@@ -16,20 +25,52 @@ const ClientListDashboard: React.FC = () => {
   const [showAddNewClientModal, setShowAddNewClientModal] = useState(false);
 
   const scrollContainerRef = useRef<HTMLDivElement>(null);
+  console.log(userType);
+  const therapistQuery = useGetAllClientQuery(
+    userType === "THERAPIST"
+      ? {
+          therapistId: userId,
+          search: searchTerm,
+          status: filter === "all" ? "" : filter,
+          page,
+          limit,
+        }
+      : skipToken
+  );
 
-  const { data, isFetching, error, refetch } = useGetAllClientQuery({
-    therapistId: userId,
-    search: searchTerm,
-    status: filter === "all" ? "" : filter,
-    page,
-    limit,
-  });
+  const clinicQuery = useGetAllClinicClientsQuery(
+    userType === "CLINIC"
+      ? {
+          clinicId: userId,
+          therapistId: userId,
+          search: searchTerm,
+          status: filter === "all" ? "" : filter,
+          page,
+          limit,
+        }
+      : skipToken
+  );
 
-  console.log(data);
+  // Select the active query
+  const data =
+    userType === "THERAPIST" ? therapistQuery.data : clinicQuery.data;
+  const isFetching =
+    userType === "THERAPIST"
+      ? therapistQuery.isFetching
+      : clinicQuery.isFetching;
+  const isLoading =
+    userType === "THERAPIST" ? therapistQuery.isLoading : clinicQuery.isLoading;
+  const error =
+    userType === "THERAPIST" ? therapistQuery.error : clinicQuery.error;
+  const refetch =
+    userType === "THERAPIST" ? therapistQuery.refetch : clinicQuery.refetch;
+
+  // Reset page on search/filter change
   useEffect(() => {
     setPage(1);
   }, [searchTerm, filter]);
 
+  // Update clients when new data arrives
   useEffect(() => {
     if (data?.data) {
       setClients((prev) => {
@@ -59,6 +100,7 @@ const ClientListDashboard: React.FC = () => {
     }
   };
 
+  // Error toast
   useEffect(() => {
     if (error) {
       toast.error("Failed to load clients.");
@@ -66,7 +108,8 @@ const ClientListDashboard: React.FC = () => {
   }, [error]);
 
   return (
-    <div className="p-6 md:p-10 bg-gray-50 min-h-screen">
+    <div className="p-6 md:p-10 min-h-screen">
+      {/* Header */}
       <header className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
         <div>
           <h1 className="text-3xl font-bold text-gray-800">CLIENTS</h1>
@@ -75,7 +118,7 @@ const ClientListDashboard: React.FC = () => {
           </p>
         </div>
         <button
-          className="mt-4 md:mt-0 px-5 py-2.5 bg-emerald-500 text-white font-semibold rounded-lg hover:bg-emerald-600 transition shadow-md flex items-center space-x-2"
+          className="mt-4 md:mt-0 px-5 py-2.5 bg-[#3FDCBF] text-white font-semibold rounded-lg hover:bg-[#46ddc1] transition shadow-md flex items-center space-x-2"
           onClick={() => setShowAddNewClientModal(true)}
         >
           <svg
@@ -96,25 +139,29 @@ const ClientListDashboard: React.FC = () => {
       </header>
 
       {/* Search and Filter */}
-      <div className="flex flex-col sm:flex-row justify-between items-center mb-6 space-y-4 sm:space-y-0 sm:space-x-4">
+      <div className="flex flex-col sm:flex-row justify-between items-center py-4 px-3 rounded-[12px] bg-white space-y-4 sm:space-y-0 sm:space-x-4 mb-6">
         <div className="relative w-full sm:w-80">
+          <SearchIcon
+            size={18}
+            className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500"
+          />
           <input
             type="text"
             placeholder="Search clients..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full p-3 pl-10 border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 transition"
+            className="w-full p-2 pl-10 rounded-lg bg-gray-100 focus:outline-none"
           />
         </div>
-        <div className="flex space-x-2 bg-gray-200 p-1 rounded-lg">
+        <div className="flex space-x-2 p-1 rounded-lg">
           {(["all", "active", "inactive"] as const).map((f) => (
             <button
               key={f}
               onClick={() => setFilter(f)}
-              className={`px-4 py-2 text-sm font-medium rounded-lg transition ${
+              className={`px-4 py-2 text-sm font-medium rounded-lg transition-all duration-300 ease-in-out ${
                 filter === f
-                  ? "bg-white shadow text-emerald-600"
-                  : "text-gray-600 hover:bg-gray-300"
+                  ? "bg-[#298CDF] shadow text-white"
+                  : "text-gray-600 border border-[#A7A9AC] bg-[#EBEBEC] hover:bg-gray-300"
               }`}
             >
               {f.charAt(0).toUpperCase() + f.slice(1)}
@@ -125,29 +172,43 @@ const ClientListDashboard: React.FC = () => {
 
       {/* Client list with infinite scroll */}
       <div
-        className="space-y-4 h-[60vh] overflow-y-auto"
+        className="space-y-4 overflow-y-auto"
         ref={scrollContainerRef}
         onScroll={handleScroll}
       >
-        {clients.length > 0 ? (
+        {/* Loading Skeletons */}
+        {isLoading &&
+          Array.from({ length: 8 }).map((_, index) => (
+            <ClientListItemSkeleton key={index} />
+          ))}
+
+        {/* Empty State */}
+        {!isLoading && clients.length === 0 && (
+          <div className="text-center p-10 bg-white rounded-xl shadow-lg text-gray-500">
+            No clients found matching your criteria.
+          </div>
+        )}
+
+        {/* Client List */}
+        {!isLoading &&
+          clients.length > 0 &&
           clients.map((client) => (
             <ClientListItem
               key={client.id}
               client={client}
               onClick={() => {}}
             />
-          ))
-        ) : (
-          <div className="text-center p-10 bg-white rounded-xl shadow-lg text-gray-500">
-            No clients found matching your criteria.
-          </div>
-        )}
+          ))}
 
-        {isFetching && (
-          <div className="text-center text-gray-500">Loading more...</div>
-        )}
+        {/* Pagination Skeletons */}
+        {!isLoading &&
+          isFetching &&
+          Array.from({ length: 5 }).map((_, index) => (
+            <ClientListItemSkeleton key={index} />
+          ))}
       </div>
 
+      {/* Add New Client Modal */}
       {showAddNewClientModal && (
         <AddNewClient
           onClientAdded={refetch}
