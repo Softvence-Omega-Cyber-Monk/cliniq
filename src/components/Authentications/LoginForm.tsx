@@ -109,6 +109,7 @@ const RoleSelector: React.FC<{
 const LoginForm: React.FC<LoginFormProps> = ({ onSwitchToSignUp }) => {
   const [login, { isLoading }] = useLoginMutation();
   const { state } = useLocation();
+  console.log(Role)
   const {
     register,
     handleSubmit,
@@ -120,24 +121,22 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSwitchToSignUp }) => {
     defaultValues: {
       email: state?.email || "",
       password: state?.password || "",
-      role:
-        state?.userType === "CLINIC" ? Role.PRIVATE_PRACTICE : Role.INDIVIDUAL,
+      role: state?.userType || Role.PRIVATE_PRACTICE,
     },
   });
-
+  
+  const currentRole = watch("role");
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const currentRole = watch("role");
 
   const onSubmit: SubmitHandler<LoginFormInputs> = async (data) => {
     try {
       const response = await login({
-        email: data.email,
-        password: data.password,
-        userType: data.role === Role.PRIVATE_PRACTICE ? "CLINIC" : "THERAPIST",
+        email: data?.email,
+        password: data?.password,
+        userType:state?.userType ||  data.role,
       }).unwrap();
 
-      console.log(response);
       localStorage.setItem("token", response.accessToken);
       dispatch(
         setCredentials({
