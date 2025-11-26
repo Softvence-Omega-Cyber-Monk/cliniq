@@ -6,6 +6,7 @@ export interface User {
   licenseNumber: string;
   qualification: string;
   email: string;
+  photoUrl: string;
   phone: string;
   speciality: string;
   defaultSessionDuration: number;
