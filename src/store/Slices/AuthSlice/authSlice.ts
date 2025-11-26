@@ -23,7 +23,7 @@ interface AuthState {
   user: User | null;
   accessToken: string | null;
   refreshToken: string | null;
-  userType: "THERAPIST" | "ADMIN" | "PRIVATE_PRACTICE" | "CLINIC" | null;
+  userType?: "THERAPIST" | "ADMIN" | "PRIVATE_PRACTICE" | "CLINIC" | null;
 }
 
 const initialState: AuthState = {
@@ -54,6 +54,10 @@ const authSlice = createSlice({
       }
       localStorage.setItem("token", action.payload.accessToken);
     },
+    setToken: (state, action) => {
+      state.accessToken = action.payload;
+      state.refreshToken = action.payload;
+    },
     login: (state, action) => {
       state.user = action.payload;
     },
@@ -67,5 +71,5 @@ const authSlice = createSlice({
   },
 });
 
-export const { login, logout, setCredentials } = authSlice.actions;
+export const { login, logout, setCredentials, setToken } = authSlice.actions;
 export default authSlice.reducer;

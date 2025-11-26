@@ -6,7 +6,7 @@ const usersApi = baseApi.injectEndpoints({
             query: () => '/users/clinics',
         }),
         getTherapistByClinic: builder.query({
-            query: (id) => `/users/therapists/${id}`,
+            query: (id) => `/users/clinics/${id}/therapists`,
         }),
         getClinicById: builder.query({
             query: (id) => `/users/clinics/${id}`,
