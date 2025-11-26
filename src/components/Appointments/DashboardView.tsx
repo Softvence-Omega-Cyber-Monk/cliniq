@@ -28,7 +28,12 @@ const DashboardView: React.FC<DashboardViewProps> = ({
     <div className="min-h-screen  p-4 sm:p-8">
       {/* Header */}
       <header className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-extrabold text-gray-800">APPOINTMENTS</h1>
+        <div className="flex flex-col gap-1">
+          <h1 className="text-3xl font-semibold text-gray-800">APPOINTMENTS</h1>
+          <p className="text-lg text-[#7E8086] mb-8">
+            Manage your schedule and upcoming sessions
+          </p>
+        </div>
         <button
           onClick={onOpenModal}
           className="flex items-center px-6 py-3 font-semibold rounded-full bg-mint-500 text-white bg-[#3FDCBF] hover:bg-mint-600 transition-colors shadow-lg shadow-mint-500/30"
@@ -36,9 +41,6 @@ const DashboardView: React.FC<DashboardViewProps> = ({
           <Plus size={20} className="mr-2" /> Create New Appointment
         </button>
       </header>
-      <p className="text-lg text-gray-600 mb-8">
-        Manage your schedule and upcoming sessions
-      </p>
 
       {/* Stats Cards */}
       <div className="flex flex-wrap gap-4 mb-10">
@@ -65,9 +67,9 @@ const DashboardView: React.FC<DashboardViewProps> = ({
       </div>
 
       {/* Appointments Grid */}
-      <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+      {/* <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center">
         <Grid size={24} className="mr-2 text-mint-500" /> Upcoming Sessions
-      </h2>
+      </h2> */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         {/* Loading state */}
         {isLoading &&

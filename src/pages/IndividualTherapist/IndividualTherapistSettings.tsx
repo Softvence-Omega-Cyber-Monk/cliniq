@@ -31,7 +31,7 @@ const IndividualTherapistSettings: React.FC<
         </div>
       </header> */}
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+      <main className=" px-4 sm:px-6 lg:px-8 py-10">
         <div className="space-y-8">
           <ProfileInformation />
           <Notifications />
@@ -41,7 +41,6 @@ const IndividualTherapistSettings: React.FC<
         </div>
       </main>
 
-      {/* Tailwind classes that make the toggle switch work */}
       <style styled-tsx>{`
         .toggle-checkbox {
           top: 0;

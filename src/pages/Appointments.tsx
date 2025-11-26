@@ -5,7 +5,7 @@ import DashboardView from "@/components/Appointments/DashboardView";
 import SessionView from "@/components/Appointments/SessionView";
 import ScheduleModal from "@/components/Appointments/ScheduleModal";
 
-const Appointments: React.FC = () => {
+const  Appointments: React.FC = () => {
   const [view, setView] = useState<"dashboard" | "session">("dashboard");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [activeClient, setActiveClient] = useState<Client | null>(null);
