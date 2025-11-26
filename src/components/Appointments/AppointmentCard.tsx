@@ -14,7 +14,6 @@ import { Link } from "react-router-dom";
 
 interface AppointmentCardProps {
   appointment: Appointment;
-  onStartSession: (client: Appointment["client"]) => void;
 }
 
 const AppointmentCard: React.FC<AppointmentCardProps> = ({ appointment }) => {
@@ -43,7 +42,7 @@ const AppointmentCard: React.FC<AppointmentCardProps> = ({ appointment }) => {
             </div>
             <div>
               <p className="font-semibold text-gray-800">{client.name}</p>
-              <p className="text-sm text-gray-600">{appointment.type}</p>
+              {/* <p className="text-sm text-gray-600">{appointment.type}</p> */}
             </div>
           </div>
           <span className="text-xs font-medium capitalize text-white bg-[#298CDF] px-3 py-1 rounded-[6px]">

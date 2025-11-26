@@ -22,7 +22,7 @@ interface Client {
 const ScheduleModal: React.FC<ScheduleModalProps> = ({ onClose }) => {
   const userId = useUserId();
   const [createAppointment, { isLoading }] = useCreateAppointmentMutation();
-  const { data, isFetching, error } = useGetAllClientQuery({
+  const { data } = useGetAllClientQuery({
     therapistId: userId,
     search: "",
     status: "",

@@ -34,7 +34,7 @@ const TherapistClientDetails: React.FC = () => {
 
   const [isRecording, setIsRecording] = useState(false);
   const [elapsed, setElapsed] = useState(0);
-  const [audioURL, setAudioURL] = useState<string | null>(null);
+  const [, setAudioURL] = useState<string | null>(null);
 
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
@@ -96,7 +96,7 @@ const TherapistClientDetails: React.FC = () => {
         type: "audio/webm",
       });
       const formData = new FormData();
-      formData.append("therapistId", userId);
+      formData.append("therapistId", userId!);
       formData.append("clientId", id!);
       formData.append(
         "file",
@@ -152,7 +152,7 @@ const TherapistClientDetails: React.FC = () => {
         {/* Left Info */}
         <div className="flex items-start gap-4">
           <div className="w-14 h-14 bg-emerald-100 rounded-full flex items-center justify-center">
-            <IconUser size={24} />
+            <IconUser />
           </div>
           <div>
             <div className="flex items-center gap-2">

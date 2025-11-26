@@ -8,10 +8,10 @@ const ClientManagementDashboard = () => {
   const [selectedClient, setSelectedClient] = useState<Client | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const handleSelectClient = useCallback((client: Client) => {
-    setSelectedClient(client);
-    window.scrollTo(0, 0);
-  }, []);
+  // const handleSelectClient = useCallback((client: Client) => {
+  //   setSelectedClient(client);
+  //   window.scrollTo(0, 0);
+  // }, []);
 
   const handleBackToList = useCallback(() => {
     setSelectedClient(null);

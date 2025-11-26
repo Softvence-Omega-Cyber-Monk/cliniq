@@ -13,8 +13,8 @@ const baseApi = createApi({
       return headers;
     }
   }),
+  tagTypes: ["APPOINTMENT"],
   endpoints: () => ({}),
-  tagTypes:["APPOINTMENT"]
 });
 
 export default baseApi;

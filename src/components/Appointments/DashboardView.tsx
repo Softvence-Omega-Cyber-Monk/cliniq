@@ -4,17 +4,15 @@ import { Stats, Appointment } from "./types";
 import StatCard from "./StatCard";
 import AppointmentCard from "./AppointmentCard";
 import { useGetUpcomingAppointmentsQuery } from "@/store/api/AppoinmentsApi";
+import AppointmentCardSkeleton from "../Skeleton/AppointmentCardSkeleton";
 
 interface DashboardViewProps {
   stats: Stats;
-  appointments: Appointment[];
-  onStartSession: (client: Appointment["client"]) => void;
   onOpenModal: () => void;
 }
 
 const DashboardView: React.FC<DashboardViewProps> = ({
   stats,
-  onStartSession,
   onOpenModal,
 }) => {
   const {
@@ -71,13 +69,28 @@ const DashboardView: React.FC<DashboardViewProps> = ({
         <Grid size={24} className="mr-2 text-mint-500" /> Upcoming Sessions
       </h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        {appointments?.data.map((appt) => (
-          <AppointmentCard
-            key={appt.id}
-            appointment={appt}
-            onStartSession={onStartSession}
-          />
-        ))}
+        {/* loading state */}
+        {isLoading &&
+          Array.from({ length: 8 }).map((_, idx) => (
+            <AppointmentCardSkeleton key={idx} />
+          ))}
+        {/* error state */}
+        {error && (
+          <p className="text-red-500">
+            Error fetching appointments: {error as string}
+          </p>
+        )}
+        {/* empty state */}
+        {!isLoading && !error && appointments?.data?.length === 0 && (
+          <p className="col-span-full text-center text-gray-500">
+            No upcoming appointments.
+          </p>
+        )}
+        {!isLoading &&
+          !error &&
+          appointments?.data?.map((appt: Appointment) => (
+            <AppointmentCard key={appt.id} appointment={appt} />
+          ))}
       </div>
     </div>
   );

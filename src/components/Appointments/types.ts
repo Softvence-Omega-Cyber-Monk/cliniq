@@ -21,20 +21,39 @@ export interface Client {
 }
 
 export interface Appointment {
-  id: string;
-  therapist: Therapist
-  scheduledTime: string;
-  status: string;
-  scheduledDate: string;
-  client: Client;
-  type: 'Initial Assessment' | 'Follow-up Session';
-  scheduleStatus: 'Scheduled' | 'Completed' | 'Canceled';
-  date: string;
-  time: string;
-  duration: number; // in minutes
-  sessionType: 'Virtual Session' | 'In-Person Session';
-}
 
+  scheduleStatus: string;
+  type: string;
+  id: string;
+  time: string
+  date: string;
+  clientId: string;
+  therapistId: string;
+  scheduledDate: string; // ISO date string
+  scheduledTime: string; // "HH:mm"
+  duration: number;
+  sessionType: "virtual" | "in-person" | string;
+  phone: string;
+  email: string;
+  status: "scheduled" | "completed" | "cancelled" | string;
+  notes: string | null;
+  completionNotes: string | null;
+  createdAt: string;
+  updatedAt: string;
+  client: {
+    id: string;
+    name: string;
+    email: string;
+    phone: string;
+  };
+  therapist: {
+    id: string;
+    fullName: string;
+    email: string;
+    speciality: string;
+  };
+
+}
 export interface Stats {
   totalAppointments: number;
   todaySessions: number;
