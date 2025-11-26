@@ -1,4 +1,3 @@
-import React, { use } from "react";
 import {
   Download,
   ChevronDown,
@@ -29,8 +28,6 @@ import {
   useGetTherapistActivityQuery,
 } from "@/store/api/ReportsApi";
 
-import { useSelector } from "react-redux";
-import { RootState } from "@/store/store";
 import { useUserId } from "@/hooks/useUserId";
 
 // --- Interfaces ---

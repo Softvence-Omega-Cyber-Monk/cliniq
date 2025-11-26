@@ -2,8 +2,6 @@ import React from "react";
 import SummaryCard, {
   summaryCardsData,
 } from "@/components/Dashboard/SummaryCard";
-import SessionAlert from "@/components/Dashboard/SessionAlert";
-import AppointmentItem from "@/components/Dashboard/AppointmentItem";
 
 const Dashboard: React.FC = () => {
   return (
@@ -17,21 +15,21 @@ const Dashboard: React.FC = () => {
 
       {/* 2. Session Alerts */}
       <h2 className="text-xl font-bold text-gray-900 mb-4">Session Alerts</h2>
-      <div className="space-y-4 mb-8">
+      {/* <div className="space-y-4 mb-8">
         {sessionAlertsData.map((alert, index) => (
           <SessionAlert key={index} data={alert} />
         ))}
-      </div>
+      </div> */}
 
       {/* 3. Upcoming Appointments */}
       <h2 className="text-xl font-bold text-gray-900 mb-4">
         Upcoming Appointments
       </h2>
-      <div className="space-y-3">
+      {/* <div className="space-y-3">
         {appointmentsData.map((appointment, index) => (
           <AppointmentItem key={index} data={appointment} />
         ))}
-      </div>
+      </div> */}
     </div>
   );
 };

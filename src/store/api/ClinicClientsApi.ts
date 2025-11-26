@@ -2,20 +2,7 @@ import baseApi from "./BaseApi/BaseApi";
 
 const clientsApi = baseApi.injectEndpoints({
     endpoints: (builder) => ({
-        createNewClient: builder.mutation({
-            query: ({ therapistId, credentials }) => ({
-                url: `/therapists/${therapistId}/clients`,
-                method: "POST",
-                body: credentials,
-            }),
-        }),
-        addCrisisHistory: builder.mutation({
-            query: (credentials) => ({
-                url: '/therapists/{therapistId}/clients/{clientId}/crisis-history',
-                method: 'POST',
-                body: credentials,
-            }),
-        }),
+
         addClinicClient: builder.mutation({
             query: ({ clinicId, newClient }) => ({
                 url: `/clinics/${clinicId}/clients`,
@@ -24,7 +11,7 @@ const clientsApi = baseApi.injectEndpoints({
             }),
             invalidatesTags: ['ClINIC'],
         }),
-        getClients: builder.query({
+        getAllClinicClients: builder.query({
             query: ({
                 clinicId,
                 search = "",
@@ -42,5 +29,5 @@ const clientsApi = baseApi.injectEndpoints({
     }),
 })
 
-export const { useCreateNewClientMutation, useAddCrisisHistoryMutation } = clientsApi
+export const { useAddClinicClientMutation, useGetAllClinicClientsQuery } = clientsApi
 export default clientsApi

@@ -1,5 +1,5 @@
 import React from "react";
-import { Plus, Grid } from "lucide-react";
+import { Plus } from "lucide-react";
 import { Stats, Appointment } from "./types";
 import StatCard from "./StatCard";
 import AppointmentCard from "./AppointmentCard";
