@@ -6,11 +6,8 @@ import { useGetAllClientQuery } from "@/store/api/ClientsApi";
 import { toast } from "sonner";
 import { useUserId } from "@/hooks/useUserId";
 
-const ClientListDashboard: React.FC<{
-  onSelectClient: (client: Client) => void;
-}> = ({ onSelectClient }) => {
+const ClientListDashboard: React.FC = () => {
   const userId = useUserId();
-  console.log(onSelectClient);
   const [searchTerm, setSearchTerm] = useState("");
   const [filter, setFilter] = useState<Status | "all">("all");
   const [page, setPage] = useState(1);
@@ -137,7 +134,7 @@ const ClientListDashboard: React.FC<{
             <ClientListItem
               key={client.id}
               client={client}
-              onClick={onSelectClient}
+              onClick={() => {}}
             />
           ))
         ) : (
