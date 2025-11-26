@@ -8,6 +8,7 @@ import { setCredentials } from "../../store/Slices/AuthSlice/authSlice";
 import { Role } from "./types";
 import { UserIcon, UsersIcon, ChevronDownIcon } from "./Icons";
 import { useLoginMutation } from "@/store/api/AuthApi";
+import { toast } from "sonner";
 
 const loginSchema = z.object({
   email: z.string().email("Invalid email format"),
@@ -109,7 +110,6 @@ const RoleSelector: React.FC<{
 const LoginForm: React.FC<LoginFormProps> = ({ onSwitchToSignUp }) => {
   const [login, { isLoading }] = useLoginMutation();
   const { state } = useLocation();
-  console.log(Role)
   const {
     register,
     handleSubmit,
@@ -124,7 +124,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSwitchToSignUp }) => {
       role: state?.userType || Role.PRIVATE_PRACTICE,
     },
   });
-  
+
   const currentRole = watch("role");
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -134,7 +134,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSwitchToSignUp }) => {
       const response = await login({
         email: data?.email,
         password: data?.password,
-        userType:state?.userType ||  data.role,
+        userType: state?.userType || data.role,
       }).unwrap();
 
       localStorage.setItem("token", response.accessToken);
@@ -152,9 +152,14 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSwitchToSignUp }) => {
       } else if (response.userType === "CLINIC") {
         navigate("/private-practice-admin");
       }
-    } catch (error) {
-      console.error("Login error:", error);
-      alert("Login failed. Please check your credentials and try again.");
+      toast.success("Login successful!");
+    } catch (err: unknown) {
+      if (typeof err === "object" && err !== null && "data" in err) {
+        const data = (err as any).data; // or define a proper type
+        toast.error(data?.message || "Something went wrong");
+      } else {
+        toast.error("Something went wrong");
+      }
     }
   };
 
