@@ -9,6 +9,10 @@ import AppointmentItem from "@/components/Dashboard/AppointmentItem";
 import { useGetUpcomingAppointmentsQuery } from "@/store/api/AppoinmentsApi";
 import { Appointment } from "@/components/Appointments/types";
 import AppointmentItemSkeleton from "@/components/Skeleton/AppointmentItemSkeleton";
+import { useGetCrisisAlertsQuery } from "@/store/api/ReportsApi";
+import { AssessmentAlert } from "@/components/oldreposty/types";
+import SessionAlertSkeleton from "@/components/Skeleton/SessionAlertSkeleton";
+import { AlertTriangle } from "lucide-react";
 
 interface File {
   name: string;
@@ -29,9 +33,12 @@ const IndividualTherapistDashboard: React.FC<
     error,
   } = useGetUpcomingAppointmentsQuery({
     days: 7,
+    limit: 5,
+  });
+  const { data: alerts, isLoading: loadingAlerts } = useGetCrisisAlertsQuery({
     limit: 10,
   });
-  console.log(appointments?.data);
+  console.log(alerts);
   return (
     <div className="flex-1 p-4 md:p-8  min-h-[calc(100vh-80px)]">
       <h1 className="text-3xl font-bold mb-4">
@@ -47,9 +54,24 @@ const IndividualTherapistDashboard: React.FC<
       {/* 2. Session Alerts */}
       <h2 className="text-xl font-bold text-gray-900 mb-4">Session Alerts</h2>
       <div className="space-y-4 mb-8">
-        {sessionAlertsData.map((alert, index) => (
-          <SessionAlert key={index} data={alert} />
-        ))}
+        {loadingAlerts && (
+          <>
+            {Array.from({ length: 4 }).map((_, idx) => (
+              <SessionAlertSkeleton key={idx} />
+            ))}
+          </>
+        )}
+
+        {!loadingAlerts && alerts?.length > 0
+          ? alerts.map((alert: AssessmentAlert) => (
+              <SessionAlert key={alert.id} data={alert} />
+            ))
+          : !loadingAlerts && (
+              <div className="p-5 rounded-xl bg-[#F8F9FA] flex items-center justify-center space-x-3">
+                <AlertTriangle className="w-5 h-5 text-[#7E8086]" />
+                <p className="text-sm text-[#7E8086]">No alerts at this time</p>
+              </div>
+            )}
       </div>
 
       {/* 3. Upcoming Appointments */}
