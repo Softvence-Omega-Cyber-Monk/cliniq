@@ -40,7 +40,7 @@ const ChartCard: React.FC<{
 const SessionsCompletionChart: React.FC = () => {
   const user = useSelector((state: RootState) => state.auth.user);
   const [activeTab, setActiveTab] = useState("Week");
-  console.log(user);
+  
   const { startDate, endDate } = getDateRangeParams(activeTab);
   const dateRange = activeTab === "Week" ? "last_7_days" : "last_30_days";
 

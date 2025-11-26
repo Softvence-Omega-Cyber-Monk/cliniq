@@ -4,7 +4,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { setCredentials } from "../../store/Slices/AuthSlice/authSlice";
+import {
+  setCredentials,
+} from "../../store/Slices/AuthSlice/authSlice";
 import { Role } from "./types";
 import { UserIcon, UsersIcon, ChevronDownIcon } from "./Icons";
 import { useLoginMutation } from "@/store/api/AuthApi";
@@ -109,6 +111,7 @@ const RoleSelector: React.FC<{
 const LoginForm: React.FC<LoginFormProps> = ({ onSwitchToSignUp }) => {
   const [login, { isLoading }] = useLoginMutation();
   const { state } = useLocation();
+  console.log(Role)
   const {
     register,
     handleSubmit,
@@ -120,24 +123,22 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSwitchToSignUp }) => {
     defaultValues: {
       email: state?.email || "",
       password: state?.password || "",
-      role:
-        state?.userType === "CLINIC" ? Role.PRIVATE_PRACTICE : Role.INDIVIDUAL,
+      role: state?.userType || Role.PRIVATE_PRACTICE,
     },
   });
-  console.log(state)
+  
+  const currentRole = watch("role");
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const currentRole = watch("role");
 
   const onSubmit: SubmitHandler<LoginFormInputs> = async (data) => {
     try {
       const response = await login({
         email: data?.email,
         password: data?.password,
-        userType: state?.userType,
+        userType:state?.userType ||  data.role,
       }).unwrap();
 
-      console.log(response);
       localStorage.setItem("token", response.accessToken);
       dispatch(
         setCredentials({

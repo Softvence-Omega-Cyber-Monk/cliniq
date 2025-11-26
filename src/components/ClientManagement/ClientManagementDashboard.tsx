@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import { useState, useCallback } from "react";
 import { Client } from "./types";
 import { MOCK_CLIENTS } from "./mockData";
 import ClientListDashboard from "./ClientListDashboard";
