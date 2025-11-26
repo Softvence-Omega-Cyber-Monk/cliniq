@@ -114,9 +114,10 @@ const HealthIssuesInput: React.FC<{
   );
 };
 
-export const AddNewClient: React.FC<{ onClose: () => void }> = ({
-  onClose,
-}) => {
+export const AddNewClient: React.FC<{
+  onClose: () => void;
+  onClientAdded?: () => void;
+}> = ({ onClose, onClientAdded }) => {
   const [formData, setFormData] = useState<ClientForm>(initialFormState);
   const userId = useUserId();
   console.log(userId);
@@ -149,6 +150,7 @@ export const AddNewClient: React.FC<{ onClose: () => void }> = ({
       }).unwrap();
       toast.success("New client added successfully!");
       setFormData(initialFormState); // reset form
+      if (onClientAdded) onClientAdded();
       onClose(); // close modal
     } catch (err) {
       console.error(err);
