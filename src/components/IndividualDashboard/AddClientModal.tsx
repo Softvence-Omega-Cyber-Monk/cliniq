@@ -32,7 +32,6 @@ const AddClientModal = ({ onClose }: AddClientModalProps) => {
   const [healthIssues, setHealthIssues] = useState<string[]>(["Depression", "Anxiety", "Insomnia"]);
   const [selectedTherapist, setSelectedTherapist] = useState<string | null>(null);
   const userId = useUserId();
-console.log(userId)
   const [createNewClient] = useCreateNewClientMutation();
   const { data: therapist } = useGetTherapistByClinicQuery(userId);
 
@@ -79,11 +78,14 @@ console.log(userId)
 
     setIsSubmitting(true);
     const toastId = toast.loading("Adding client...");
-
+    const payload = {
+      ...data,
+      clinicId:userId
+    }
     try {
       const res = await createNewClient({
         therapistId: selectedTherapist,
-        credentials: {...data, clinicId: userId},
+        credentials: payload,
       }).unwrap();
       console.log(res)
       toast.success("Client added successfully!", { id: toastId });

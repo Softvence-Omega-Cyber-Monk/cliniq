@@ -13,7 +13,7 @@ import Services from "@/pages/Services";
 import Clients from "@/pages/Clients";
 import Appointments from "@/pages/Appointments";
 import UserDashboardReportsPage from "../pages/UserDashboardReports";
-import Therapists from "../pages/Therapists";
+import Therapists from "../pages/Therapist/Therapists";
 import Sessions from "../pages/Sessions";
 import DashboardContent from "@/components/IndividualDashboard/DashboardContent";
 import PlatformSettings from "@/pages/PlatformSettings";
@@ -82,6 +82,10 @@ const routes = createBrowserRouter([
           { path: "therapists", element: <Therapists /> },
           { path: "sessions", element: <Sessions /> },
           { path: "clients", element: <Clients /> },
+          {
+            path: "clients/:id",
+            element: <TherapistClientDetails></TherapistClientDetails>,
+          },
           { path: "appointments", element: <Appointments /> },
           { path: "reports", element: <UserDashboardReportsPage /> },
           { path: "reportstwo", element: <ReportsTwo /> },

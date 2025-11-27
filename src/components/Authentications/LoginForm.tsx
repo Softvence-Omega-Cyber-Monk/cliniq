@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState, useRef, useEffect } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -35,11 +36,15 @@ const RoleSelector: React.FC<{
   const roleData = {
     [Role.PRIVATE_PRACTICE]: {
       icon: <UserIcon className="w-5 h-5" />,
-      label: "PRIVATE PRACTICE",
+      label: "CLINIC",
     },
     [Role.INDIVIDUAL]: {
       icon: <UsersIcon className="w-5 h-5" />,
-      label: "INDIVIDUAL",
+      label: "INDIVIDUAL THERAPIST",
+    },
+    [Role.THERAPIST]: {
+      icon: <UsersIcon className="w-5 h-5" />,
+      label: "THERAPIST",
     },
   };
 
@@ -110,6 +115,7 @@ const RoleSelector: React.FC<{
 const LoginForm: React.FC<LoginFormProps> = ({ onSwitchToSignUp }) => {
   const [login, { isLoading }] = useLoginMutation();
   const { state } = useLocation();
+
   const {
     register,
     handleSubmit,
@@ -132,12 +138,15 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSwitchToSignUp }) => {
   const onSubmit: SubmitHandler<LoginFormInputs> = async (data) => {
     try {
       const response = await login({
-        email: data?.email,
-        password: data?.password,
-        userType: state?.userType || data.role,
+        email: data.email,
+        password: data.password,
+
+        // Ensure API receives correct role
+        userType: state?.userType ?? data.role,
       }).unwrap();
 
       localStorage.setItem("token", response.accessToken);
+
       dispatch(
         setCredentials({
           user: response.user,
@@ -147,16 +156,19 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSwitchToSignUp }) => {
         })
       );
 
-      if (response.userType === "THERAPIST") {
+      if (
+        response.userType === "INDIVIDUAL_THERAPIST" ||
+        response.userType === "THERAPIST"
+      ) {
         navigate("/individual-therapist-dashboard");
       } else if (response.userType === "CLINIC") {
         navigate("/private-practice-admin");
       }
+
       toast.success("Login successful!");
     } catch (err: unknown) {
       if (typeof err === "object" && err !== null && "data" in err) {
-        const data = (err as any).data; // or define a proper type
-        toast.error(data?.message || "Something went wrong");
+        toast.error((err as any).data?.message || "Something went wrong");
       } else {
         toast.error("Something went wrong");
       }
@@ -172,7 +184,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSwitchToSignUp }) => {
             onRoleChange={(role) =>
               setValue("role", role, { shouldValidate: true })
             }
-            disabled={isLoading}
+            disabled={isLoading} // FIX: no longer disabled by state.userType
           />
           {errors.role && (
             <p
@@ -184,12 +196,13 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSwitchToSignUp }) => {
             </p>
           )}
         </div>
+
         <p className="text-sm">
           Don't have an account?{" "}
           <button
             type="button"
             onClick={onSwitchToSignUp}
-            className="font-bold text-clinic-accent hover:underline focus:outline-none focus:ring-2 focus:ring-clinic-accent focus:ring-offset-2 rounded text-[#3FDCBF]"
+            className="font-bold text-clinic-accent hover:underline"
             disabled={isLoading}
           >
             Register
@@ -198,104 +211,51 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSwitchToSignUp }) => {
       </div>
 
       <div className="flex flex-col justify-center mx-4">
-        <div className="w-full">
-          <form
-            onSubmit={handleSubmit(onSubmit)}
-            className="space-y-6 mt-[150px]"
-          >
-            <div>
-              <label
-                htmlFor="login-email"
-                className="text-sm font-bold text-gray-700 block mb-2"
-              >
-                Email
-              </label>
-              <input
-                id="login-email"
-                type="email"
-                {...register("email")}
-                placeholder="Enter your email"
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-clinic-primary focus:border-transparent transition-colors bg-[#fff]"
-                aria-describedby={
-                  errors.email ? "login-email-error" : undefined
-                }
-                disabled={isLoading}
-              />
-              {errors.email && (
-                <p
-                  id="login-email-error"
-                  className="text-red-500 text-xs mt-2 flex items-center"
-                >
-                  <span className="mr-1">⚠</span>
-                  {errors.email.message}
-                </p>
-              )}
-            </div>
-
-            <div>
-              <label
-                htmlFor="login-password"
-                className="text-sm font-bold text-gray-700 block mb-2"
-              >
-                Password
-              </label>
-              <input
-                id="login-password"
-                type="password"
-                {...register("password")}
-                placeholder="Enter your password"
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-clinic-primary focus:border-transparent transition-colors bg-[#fff]"
-                aria-describedby={
-                  errors.password ? "login-password-error" : undefined
-                }
-                disabled={isLoading}
-              />
-              {errors.password && (
-                <p
-                  id="login-password-error"
-                  className="text-red-500 text-xs mt-2 flex items-center"
-                >
-                  <span className="mr-1">⚠</span>
-                  {errors.password.message}
-                </p>
-              )}
-            </div>
-
-            <button
-              type="submit"
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 mt-[150px]">
+          <div>
+            <label className="text-sm font-bold text-gray-700 block mb-2">
+              Email
+            </label>
+            <input
+              {...register("email")}
+              type="email"
+              placeholder="Enter your email"
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg"
               disabled={isLoading}
-              className="w-full bg-[#298CDF] text-white font-bold py-3 px-4 rounded-lg hover:bg-opacity-90 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-clinic-primary disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {isLoading ? (
-                <span className="flex items-center justify-center">
-                  <svg
-                    className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                  >
-                    <circle
-                      className="opacity-25"
-                      cx="12"
-                      cy="12"
-                      r="10"
-                      stroke="currentColor"
-                      strokeWidth="4"
-                    ></circle>
-                    <path
-                      className="opacity-75"
-                      fill="currentColor"
-                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                    ></path>
-                  </svg>
-                  Log In...
-                </span>
-              ) : (
-                "Log In"
-              )}
-            </button>
-          </form>
-        </div>
+            />
+            {errors.email && (
+              <p className="text-red-500 text-xs mt-2 flex items-center">
+                <span className="mr-1">⚠</span> {errors.email.message}
+              </p>
+            )}
+          </div>
+
+          <div>
+            <label className="text-sm font-bold text-gray-700 block mb-2">
+              Password
+            </label>
+            <input
+              {...register("password")}
+              type="password"
+              placeholder="Enter your password"
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg"
+              disabled={isLoading}
+            />
+            {errors.password && (
+              <p className="text-red-500 text-xs mt-2 flex items-center">
+                <span className="mr-1">⚠</span> {errors.password.message}
+              </p>
+            )}
+          </div>
+
+          <button
+            type="submit"
+            disabled={isLoading}
+            className="w-full bg-[#298CDF] text-white font-bold py-3 px-4 rounded-lg"
+          >
+            {isLoading ? "Log In..." : "Log In"}
+          </button>
+        </form>
       </div>
     </div>
   );

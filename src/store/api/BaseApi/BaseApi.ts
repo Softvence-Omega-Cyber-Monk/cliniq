@@ -1,4 +1,5 @@
-import { logout, setToken } from "@/store/Slices/AuthSlice/authSlice";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { logOut, setToken } from "@/store/Slices/AuthSlice/authSlice";
 import {
   BaseQueryFn,
   FetchArgs,
@@ -21,6 +22,7 @@ const baseQuery = fetchBaseQuery({
     }
     return headers;
   },
+  // credentials: "include",
 });
 
 const baseQueryWithReauth: BaseQueryFn<
@@ -29,9 +31,13 @@ const baseQueryWithReauth: BaseQueryFn<
   FetchBaseQueryError
 > = async (args, api, extraOptions) => {
   let result = await baseQuery(args, api, extraOptions);
-
+  const refreshToken = (api.getState() as any).auth.refreshToken
   if (result.error && result.error.status === 401) {
-    const refreshResult = await baseQuery("/auth/refresh", api, extraOptions);
+    const refreshResult = await baseQuery({
+      url: "/auth/refresh",
+      method: "POST",
+      body: {refreshToken} ,
+    }, api, extraOptions);
 
     if (
       refreshResult.data &&
@@ -48,7 +54,7 @@ const baseQueryWithReauth: BaseQueryFn<
 
       result = await baseQuery(args, api, extraOptions);
     } else {
-      api.dispatch(logout());
+      api.dispatch(logOut());
     }
   }
 
@@ -57,17 +63,8 @@ const baseQueryWithReauth: BaseQueryFn<
 
 const baseApi = createApi({
   reducerPath: "baseApi",
-  baseQuery: fetchBaseQuery({
-    baseUrl: import.meta.env.VITE_API_BASE_URL,
-    prepareHeaders: (headers) => {
-      const token = localStorage.getItem("token");
-      if (token) {
-        headers.set("Authorization", `Bearer ${token}`);
-      }
-      return headers;
-    }
-  }),
-  tagTypes: ["APPOINTMENT", "ClINIC"],
+  baseQuery: baseQueryWithReauth,
+  tagTypes: ["APPOINTMENT", "ClINICClIENT",],
 
   endpoints: () => ({}),
 });
