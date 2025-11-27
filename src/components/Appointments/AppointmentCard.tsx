@@ -11,7 +11,6 @@ import {
 } from "lucide-react";
 import { Appointment } from "./types";
 import { Link } from "react-router-dom";
-import { useSelector } from "react-redux";
 import { useAppSelector } from "@/hooks/useRedux";
 
 interface AppointmentCardProps {

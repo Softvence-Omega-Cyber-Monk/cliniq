@@ -30,6 +30,7 @@ interface Therapist {
 
 const ScheduleModal: React.FC<ScheduleModalProps> = ({ onClose }) => {
   const userType = useAppSelector((state) => state.auth.userType);
+  console.log(userType)
   const userId = useUserId();
   const [createAppointment, { isLoading: isCreating }] =
     useCreateAppointmentMutation();
