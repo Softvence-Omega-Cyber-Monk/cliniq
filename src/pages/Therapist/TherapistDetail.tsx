@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useMemo } from "react";
+import React, { useState, useEffect } from "react";
 import {
   User,
   Mail,
@@ -10,15 +10,13 @@ import {
   ChevronLeft,
 } from "lucide-react";
 import { Therapist } from "./TherapistType";
-import { MOCK_PATIENTS } from "./MockTherapist";
-import { useGetTherapistByIdQuery } from "@/store/api/UsersApi";
 import { useGetTherapistClientTableQuery } from "@/store/api/TherapistApi";
 
 interface TherapistDetailProps {
   therapist: Therapist;
   onBack: () => void;
   setIsEditModalOpen: (isOpen: boolean) => void;
-  onViewPatientDetails: (patientId: number) => void;
+  onViewPatientDetails: (patientId: string) => void;
 }
 
 const DetailItem: React.FC<{ icon: any; label: string; value: string }> = ({
@@ -37,7 +35,7 @@ const DetailItem: React.FC<{ icon: any; label: string; value: string }> = ({
 
 const DetailPatientRow: React.FC<{
   patient: any;
-  onViewPatientDetails: (patientId: number) => void;
+  onViewPatientDetails: (patientId: string) => void;
 }> = ({ patient, onViewPatientDetails }) => {
   const statusClasses =
     patient.status === "Active"
@@ -56,13 +54,17 @@ const DetailPatientRow: React.FC<{
             <div
               className="bg-teal-500 h-2 rounded-full"
               style={{ width: progressBarWidth }}
-            ></div>
+            />
           </div>
-          <span className="text-sm text-gray-600 w-10">{patient.progressPercent}%</span>
+          <span className="text-sm text-gray-600 w-10">
+            {patient.progressPercent}%
+          </span>
         </div>
       </td>
       <td className="p-4">
-        <span className={`text-xs font-medium px-2 py-1 rounded-full ${statusClasses}`}>
+        <span
+          className={`text-xs font-medium px-2 py-1 rounded-full ${statusClasses}`}
+        >
           {patient.status}
         </span>
       </td>
@@ -78,24 +80,38 @@ const DetailPatientRow: React.FC<{
   );
 };
 
-// --- Main TherapistDetail Component ---
-
 const TherapistDetail: React.FC<TherapistDetailProps> = ({
   therapist,
   onBack,
   setIsEditModalOpen,
   onViewPatientDetails,
 }) => {
-    // const {data : therapist } = useGetTherapistByIdQuery(therapist?.id)
-    const {data: therapistPatients} = useGetTherapistClientTableQuery(therapist?.id)
-console.log(therapistPatients)
-  const mockDetail = {
-    qualifications: "PhD in Psychology, Certified CBT Therapist",
-    speciality: "Cognitive Behavioral Therapy",
-    email: "michaelchen@cliniq.com",
-    phoneNumber: "+1 (555) 123-4567",
-    availability: "Available on weekdays from 9 AM to 5 PM",
-    isCurrentUser: therapist.isCurrentUser || false,
+  // --- Therapist Clients Data ---
+  const { data } = useGetTherapistClientTableQuery(therapist?.id);
+  const therapistPatients = data?.data || [];
+  const totalPatients = data?.meta?.total || 0;
+
+  // --- Therapist Status State ---
+  const [currentStatus, setCurrentStatus] = useState(
+    therapist.status === "Active"
+  );
+
+  useEffect(() => {
+    setCurrentStatus(therapist.status === "Active");
+  }, [therapist.status]);
+
+  // --- Status Toggle Handler ---
+  const handleStatusChange = async () => {
+    const newStatus = currentStatus ? "Inactive" : "Active";
+    setCurrentStatus(!currentStatus);
+
+    try {
+      // await updateTherapistStatus({ therapistId: therapist.id, status: newStatus });
+      console.log(`Therapist ${therapist.id} status changed to ${newStatus}`);
+    } catch (err) {
+      console.error("Failed to update status", err);
+      setCurrentStatus(currentStatus); // revert if API fails
+    }
   };
 
   return (
@@ -115,7 +131,7 @@ console.log(therapistPatients)
         </span>
       </div>
 
-      {/* Profile Header and Info Grid */}
+      {/* Profile Header and Info */}
       <div className="bg-white p-6 rounded-xl shadow-lg">
         <div className="flex justify-between items-start border-b pb-5 mb-5">
           <div className="flex items-center space-x-4">
@@ -126,9 +142,6 @@ console.log(therapistPatients)
               <h2 className="text-xl font-bold text-gray-900">
                 {therapist.fullName}
               </h2>
-              {mockDetail.isCurrentUser && (
-                <span className="text-sm font-normal text-gray-500">(Me)</span>
-              )}
             </div>
           </div>
 
@@ -145,20 +158,20 @@ console.log(therapistPatients)
         {/* Details Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           <DetailItem icon={User} label="Full Name" value={therapist.fullName} />
-          <DetailItem icon={Mail} label="Email Address" value={mockDetail.email} />
-          <DetailItem icon={Phone} label="Phone Number" value={mockDetail.phoneNumber} />
-          <DetailItem icon={BookOpen} label="Qualifications" value={mockDetail.qualifications} />
-          <DetailItem icon={Briefcase} label="Specialty" value={mockDetail.speciality} />
-          <DetailItem icon={Clock} label="Availability" value={mockDetail.availability} />
+          <DetailItem icon={Mail} label="Email Address" value={therapist.email} />
+          <DetailItem icon={Phone} label="Phone Number" value={therapist.phone} />
+          <DetailItem icon={BookOpen} label="Qualifications" value={therapist.qualification} />
+          <DetailItem icon={Briefcase} label="Specialty" value={therapist.speciality} />
+          <DetailItem icon={Clock} label="Availability" value={therapist.availability} />
         </div>
       </div>
 
-      {/* Stats and Status Row */}
+      {/* Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="bg-white p-5 rounded-xl shadow-lg flex items-center justify-between border-l-4 border-teal-500">
           <div>
             <p className="text-sm text-gray-500">Total Patients</p>
-            <p className="text-3xl font-bold text-gray-900 mt-1">{therapist.patients}</p>
+            <p className="text-3xl font-bold text-gray-900 mt-1">{totalPatients}</p>
           </div>
           <User size={32} className="text-teal-400 opacity-50" />
         </div>
@@ -174,14 +187,14 @@ console.log(therapistPatients)
         <div className="bg-white p-5 rounded-xl shadow-lg flex items-center justify-between border-l-4 border-gray-500">
           <div>
             <p className="text-sm text-gray-500">Account Status</p>
-            <p className="text-xl font-bold text-gray-900 mt-1">{therapist.status}</p>
+            <p className="text-xl font-bold text-gray-900 mt-1">{currentStatus ? "Active" : "Inactive"}</p>
           </div>
           <label className="relative inline-flex items-center cursor-pointer">
             <input
               type="checkbox"
-              value=""
               className="sr-only peer"
-              defaultChecked={therapist.status === "Active"}
+              checked={currentStatus}
+              onChange={handleStatusChange}
             />
             <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-teal-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-teal-600"></div>
           </label>
@@ -203,7 +216,7 @@ console.log(therapistPatients)
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
-              {therapistPatients?.data?.map((patient:any) => (
+              {therapistPatients.map((patient: any) => (
                 <DetailPatientRow
                   key={patient.id}
                   patient={patient}

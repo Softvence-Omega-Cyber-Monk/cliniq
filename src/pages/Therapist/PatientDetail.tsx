@@ -9,7 +9,6 @@ import {
   ChevronLeft,
 } from "lucide-react";
 import { Patient, Therapist, SessionHistory } from "./TherapistType";
-import { mockPatientData } from "./MockPatientData";
 
 // --- DetailItem Component ---
 interface DetailItemProps {
@@ -230,13 +229,24 @@ const PatientDetail: React.FC<PatientDetailProps> = ({
         <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4">
           <div className="space-y-3">
             <DetailItem icon={User} label="Full Name" value={patient.name} />
-            <DetailItem icon={Mail} label="Email Address" value={mockPatientData.email} />
-            <DetailItem icon={Briefcase} label="Health Issue" value={mockPatientData.healthIssue} />
+            <DetailItem icon={Mail} label="Email Address" value={patient.email} />
+            <DetailItem
+              icon={Briefcase}
+              label="Health Issues"
+              value={patient.healthIssues.join(", ")}
+            />
+            <DetailItem icon={Briefcase} label="Condition" value={patient.condition} />
+            <DetailItem icon={Briefcase} label="Status" value={patient.status} />
           </div>
           <div className="space-y-3">
-            <DetailItem icon={Calendar} label="Age" value={`${mockPatientData.age} years old`} />
-            <DetailItem icon={BookOpen} label="Phone" value={mockPatientData.phone} />
-            <DetailItem icon={BookOpen} label="Emergency Contact" value={`${mockPatientData.emergencyContactName}, ${mockPatientData.emergencyContactPhone}`} />
+            <DetailItem icon={Calendar} label="Total Sessions" value={patient.totalSessions} />
+            <DetailItem icon={BookOpen} label="Phone" value={patient.phone} />
+            <DetailItem
+              icon={BookOpen}
+              label="Therapist"
+              value={patient.therapist?.fullName || "-"}
+            />
+            <DetailItem icon={BookOpen} label="Treatment Goals" value={patient.treatmentGoals} />
           </div>
         </div>
       </div>
@@ -246,13 +256,13 @@ const PatientDetail: React.FC<PatientDetailProps> = ({
         <div className="flex justify-between items-center mb-4">
           <h3 className="text-xl font-bold text-gray-900">Overall Treatment Progress</h3>
           <span className="text-2xl font-extrabold text-teal-600">
-            {mockPatientData.overallProgress}%
+            {patient.overallProgress ?? 0}%
           </span>
         </div>
         <div className="relative h-3 rounded-full bg-gray-200">
           <div
             className="absolute h-3 rounded-full bg-teal-500 shadow-md transition-all duration-1000"
-            style={{ width: `${mockPatientData.overallProgress}%` }}
+            style={{ width: `${patient.overallProgress ?? 0}%` }}
           ></div>
         </div>
       </div>
@@ -261,9 +271,13 @@ const PatientDetail: React.FC<PatientDetailProps> = ({
       <div className="bg-white p-6 rounded-xl shadow-lg">
         <h3 className="text-xl font-bold text-gray-900 mb-5">Treatment Goals</h3>
         <div className="space-y-5">
-          {mockPatientData.treatmentGoals.map((goal, idx) => (
-            <TreatmentGoal key={idx} title={goal.title} progress={goal.progress} />
-          ))}
+          {patient.treatmentGoals
+            ? [{ title: patient.treatmentGoals, progress: patient.overallProgress ?? 0 }].map(
+                (goal, idx) => (
+                  <TreatmentGoal key={idx} title={goal.title} progress={goal.progress} />
+                )
+              )
+            : <span className="text-gray-500">No treatment goals available.</span>}
         </div>
       </div>
 
@@ -271,9 +285,13 @@ const PatientDetail: React.FC<PatientDetailProps> = ({
       <div className="bg-white p-6 rounded-xl shadow-lg">
         <h3 className="text-xl font-bold text-gray-900 mb-5">Session History</h3>
         <div className="space-y-4">
-          {mockPatientData.sessionHistory.map((session, idx) => (
-            <SessionHistoryCard key={idx} {...session} onViewNote={handleViewNote} />
-          ))}
+          {patient.sessionHistory.length > 0 ? (
+            patient.sessionHistory.map((session, idx) => (
+              <SessionHistoryCard key={idx} {...session} onViewNote={handleViewNote} />
+            ))
+          ) : (
+            <span className="text-gray-500">No session history available.</span>
+          )}
         </div>
       </div>
 

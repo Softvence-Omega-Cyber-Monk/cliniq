@@ -4,17 +4,27 @@ import { Search, ChevronDown, Plus } from "lucide-react";
 import AddTherapistModal from "./AddTherapistModal";
 import { useGetTherapistByClinicQuery } from "@/store/api/UsersApi";
 import { useUserId } from "@/hooks/useUserId";
-import { Therapist } from "./TherapistType";
-import { MOCK_PATIENTS } from "./MockTherapist";
+import { Patient, Therapist } from "./TherapistType";
 import TherapistCard from "./TherapistCard";
 import PatientDetail from "./PatientDetail";
 import TherapistDetail from "./TherapistDetail";
+import { useGetTherapistClientDetailsQuery, useGetTherapistClientTableQuery } from "@/store/api/TherapistApi";
+import { Spinner } from "@/components/ui/spinner";
 
 // --- Main Component ---
 
 const App: React.FC = () => {
   const userId = useUserId();
+  const [selectedTherapistId, setSelectedTherapistId] = useState<string | null>(
+    null
+  );
+  const [selectedPatientId, setSelectedPatientId] = useState<string | null>(
+    null
+  );
   const { data, isLoading } = useGetTherapistByClinicQuery(userId);
+  const {data : patientData} = useGetTherapistClientTableQuery(selectedTherapistId, {skip: !selectedTherapistId});
+  const {data:patientDetails,isLoading:patientDetailsLoading} = useGetTherapistClientDetailsQuery({therapistId:selectedTherapistId,clientId:selectedPatientId}, {skip: !selectedTherapistId || !selectedPatientId});
+
   const therapistData = data?.data || [];
   const [therapists, setTherapist] = useState<Therapist[]>(therapistData);
   useEffect(() => {
@@ -24,33 +34,27 @@ const App: React.FC = () => {
   }, [data]);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState<
-    "All" | "Active" | "Inactive"
+  "All" | "Active" | "Inactive"
   >("All");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
-  const [selectedTherapistId, setSelectedTherapistId] = useState<string | null>(
-    null
-  );
-  const [selectedPatientId, setSelectedPatientId] = useState<number | null>(
-    null
-  );
-
+  
   const filteredTherapists = useMemo(() => {
     return therapists.filter((therapist) => {
       const matchesSearch =
-        searchTerm.trim() === "" ||
-        therapist.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        therapist.specialty.toLowerCase().includes(searchTerm.toLowerCase());
-
+      searchTerm.trim() === "" ||
+      therapist.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      therapist.specialty.toLowerCase().includes(searchTerm.toLowerCase());
+      
       const matchesStatus =
-        filterStatus === "All" || therapist.status === filterStatus;
-
+      filterStatus === "All" || therapist.status === filterStatus;
+      
       return matchesSearch && matchesStatus;
     });
   }, [searchTerm, filterStatus, therapists]);
-
   if (isLoading) return <div>Loading...</div>;
-
+  if(patientDetailsLoading) return <div><Spinner /></div>
+  
   const openAddModal = () => {
     setIsEditMode(false);
     setIsModalOpen(true);
@@ -63,7 +67,7 @@ const App: React.FC = () => {
 
 
 
-  const handleViewPatientDetails = (patientId: number) => {
+  const handleViewPatientDetails = (patientId: string) => {
     setSelectedPatientId(patientId);
   };
 
@@ -80,7 +84,7 @@ const App: React.FC = () => {
   const selectedTherapist = therapists.find(
     (t) => t.id === selectedTherapistId
   );
-  const selectedPatient = MOCK_PATIENTS.find((p) => p.id === selectedPatientId);
+  const selectedPatient = patientData?.data?.find((p:Patient) => p.id === selectedPatientId!);
   const isListView = selectedTherapistId === null || !selectedTherapist;
   const isTherapistDetailView = !isListView && selectedPatientId === null;
   const isPatientDetailView =
@@ -157,7 +161,7 @@ const App: React.FC = () => {
       {/* Conditional Rendering */}
       {isPatientDetailView && selectedPatient && selectedTherapist ? (
         <PatientDetail
-          patient={selectedPatient}
+          patient={patientDetails}
           therapist={selectedTherapist}
           onBackToTherapist={handleBackToTherapist}
         />
@@ -193,6 +197,7 @@ const App: React.FC = () => {
         onClose={() => setIsModalOpen(false)}
         // onSave={handleAddTherapist}
         isEditMode={isEditMode}
+        therapistData={selectedTherapist}
       />
     </div>
   );

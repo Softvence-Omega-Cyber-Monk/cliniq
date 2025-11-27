@@ -11,17 +11,48 @@ export interface Therapist {
     clients: number;
     appointments: number;
   }
+  email: string;
+  phone: string;
+  availabilityStartTime: string;
+  availabilityEndTime: string;
   isCurrentUser?: boolean;
+  qualifications: string;
+  availability: string;
+  speciality: string;
 }
 
 export interface Patient {
   id: string;
   name: string;
-  sessionCount: number;
-  progressPercent: number;
-  status: "Active" | "Inactive";
-  therapistId: number;
+  email: string;
+  phone: string;
+  overallProgress: number | null; // can be null
+  treatmentGoals: string; // currently a string
+  status: "active" | "inactive"; // match your backend
+  condition: string;
+  healthIssues: string[];
+  crisisHistories: any[]; // optional if you want
+  treatmentProgress: Record<string, any>; // keep flexible
+  sessionHistory: SessionHistory[]; // assuming SessionHistory type exists
+  totalSessions: number;
+  therapist: {
+    id: string;
+    fullName: string;
+    email: string;
+    speciality: string;
+  };
+  createdAt: string;
+  updatedAt: string;
 }
+
+// Example SessionHistory type
+export interface SessionHistory {
+  date: string;
+  summary: string;
+  duration: number;
+  fullNote: string;
+}
+
 
 // New interface for detailed session history
 export interface SessionHistory {

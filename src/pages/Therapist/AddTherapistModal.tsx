@@ -1,14 +1,16 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useUserId } from "@/hooks/useUserId";
 import { useRegisterTherapistMutation } from "@/store/api/AuthApi";
-import { useRef, useState } from "react";
+import { useUpdateTherapistProfileMutation } from "@/store/api/UsersApi";
+import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
 interface AddTherapistModalProps {
   isOpen: boolean;
   onClose: () => void;
-  //   onSave: (formData: FormData) => void;
   isEditMode?: boolean;
+  therapistData?: any; // data passed from parent for editing
 }
 
 type Day = "Sat" | "Sun" | "Mon" | "Tue" | "Wed" | "Thu" | "Fri";
@@ -19,7 +21,7 @@ interface TherapistForm {
   email: string;
   phoneNumber: string;
   speciality: string;
-  qualifications: string;
+  qualification: string;
   startTime: string;
   endTime: string;
   licenseNumber: string;
@@ -31,13 +33,12 @@ interface TherapistForm {
 const AddTherapistModal: React.FC<AddTherapistModalProps> = ({
   isOpen,
   onClose,
-  //   onSave,
   isEditMode = false,
+  therapistData,
 }) => {
   const {
     register,
     handleSubmit,
-
     watch,
     setValue,
     reset,
@@ -48,7 +49,7 @@ const AddTherapistModal: React.FC<AddTherapistModalProps> = ({
       email: "",
       phoneNumber: "",
       speciality: "",
-      qualifications: "",
+      qualification: "",
       startTime: "",
       endTime: "",
       licenseNumber: "",
@@ -57,24 +58,58 @@ const AddTherapistModal: React.FC<AddTherapistModalProps> = ({
       daysAvailable: [],
     },
   });
+  console.log(therapistData)
   const [registerTherapist] = useRegisterTherapistMutation();
+  const [updateTherapistProfile] = useUpdateTherapistProfileMutation();
+
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [previewImage, setPreviewImage] = useState<string>("");
 
   const daysAvailable = watch("daysAvailable");
-  const profileName = watch("name");
+  const name = watch("name");
   const speciality = watch("speciality");
+  const clinicId = useUserId();
 
+  /* --------------------------------------
+      LOAD DEFAULT VALUES IN EDIT MODE
+  ---------------------------------------*/
+  useEffect(() => {
+    if (isOpen && isEditMode && therapistData) {
+      reset({
+        name: therapistData.fullName || "",
+        email: therapistData.email || "",
+        phoneNumber: therapistData.phone || "",
+        speciality: therapistData.speciality || "",
+        qualification: therapistData.qualification || "",
+        startTime: therapistData.startTime || "",
+        endTime: therapistData.endTime || "",
+        licenseNumber: therapistData.licenseNumber || "",
+        password: "",
+        profileImage: null,
+        daysAvailable: therapistData.daysAvailable || [],
+      });
+
+      if (therapistData.profileImageUrl) {
+        setPreviewImage(therapistData.profileImageUrl);
+      }
+    }
+  }, [isOpen, isEditMode, therapistData, reset]);
+
+  /* --------------------------------------
+            DAY CHIP HANDLER
+  ---------------------------------------*/
   const handleDayToggle = (day: Day) => {
-    const currentDays = watch("daysAvailable") || [];
-    const updatedDays = currentDays.includes(day)
-      ? currentDays.filter((d) => d !== day)
-      : [...currentDays, day].sort(
-          (a, b) => ALL_DAYS.indexOf(a) - ALL_DAYS.indexOf(b)
-        );
-    setValue("daysAvailable", updatedDays);
+    const current = watch("daysAvailable") || [];
+    const updated = current.includes(day)
+      ? current.filter((d) => d !== day)
+      : [...current, day];
+
+    setValue("daysAvailable", updated);
   };
 
+  /* --------------------------------------
+            IMAGE HANDLER
+  ---------------------------------------*/
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -84,294 +119,215 @@ const AddTherapistModal: React.FC<AddTherapistModalProps> = ({
   };
 
   const handleEditPictureClick = () => fileInputRef.current?.click();
-  const clinicId = useUserId();
-  const onSubmit = async (data: TherapistForm) => {
-    // const formData = new FormData();
-    // formData.append("fullName", data.name);
-    // formData.append("email", data.email);
-    // formData.append("phone", data.phoneNumber);
-    // formData.append("speciality", data.speciality);
-    // formData.append("qualifications", data.qualifications);
-    // formData.append("startTime", data.startTime);
-    // formData.append("endTime", data.endTime);
-    // formData.append("licenseNumber", data.licenseNumber);
-    // formData.append("password", data.password);
-    // formData.append("clinicId", clinicId!);
-    // formData.append("daysAvailable", JSON.stringify(data.daysAvailable));
-    // if (data.profileImage && data.profileImage.length > 0) {
-    //   formData.append("profileImage", data.profileImage[0]);
-    // }
 
-    const therapistData = {
+  /* --------------------------------------
+            FORM SUBMIT HANDLER
+  ---------------------------------------*/
+  const onSubmit = async (data: TherapistForm) => {
+    const payload: any = {
       fullName: data.name,
       email: data.email,
       phone: data.phoneNumber,
       speciality: data.speciality,
-      qualifications: data.qualifications,
+      qualifications: data.qualification,
       startTime: data.startTime,
       endTime: data.endTime,
       licenseNumber: data.licenseNumber,
-      password: data.password,
       clinicId: clinicId!,
       daysAvailable: data.daysAvailable,
-    //   profileImage:
-    //     data.profileImage && data.profileImage.length > 0
-    //       ? data.profileImage[0]
-    //       : null,
     };
 
-    try {
-      const res = await registerTherapist(therapistData).unwrap();
-      console.log(res);
-      toast.success("Therapist added successfully!");
-    } catch {
-      toast.error("Failed to add therapist. Please try again.");
+    if (!isEditMode) {
+      payload.password = data.password;
     }
 
-    if (!isEditMode) {
-      reset();
-      setPreviewImage("");
+    if (data.profileImage && data.profileImage.length > 0) {
+      payload.profileImage = data.profileImage[0];
     }
+
+    try {
+      let res;
+
+      if (isEditMode) {
+        res = await updateTherapistProfile({
+          id: therapistData.id,
+          data: payload,
+        }).unwrap();
+
+        toast.success("Profile updated successfully.");
+      } else {
+        res = await registerTherapist(payload).unwrap();
+        toast.success("Therapist added successfully.");
+      }
+
+      console.log("Response:", res);
+    } catch (err) {
+      console.log(err);
+      toast.error("Operation failed. Please try again.");
+    }
+
+    reset();
+    setPreviewImage("");
+    onClose();
   };
 
   if (!isOpen) return null;
 
-  const DayChip: React.FC<{ day: Day }> = ({ day }) => {
-    const isSelected = daysAvailable.includes(day);
-    return (
-      <button
-        type="button"
-        onClick={() => handleDayToggle(day)}
-        className={`flex items-center space-x-2 px-4 py-2 font-medium rounded-full transition-all duration-200 transform hover:scale-105 active:scale-95 text-sm border ${
-          isSelected
-            ? "bg-teal-500 text-white border-teal-500 shadow-md"
-            : "bg-white text-gray-600 border-gray-300 hover:bg-gray-50"
-        }`}
-        aria-label={isSelected ? `Remove ${day}` : `Add ${day}`}
-      >
-        <span>{day}</span>
-        {isSelected && (
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-4 w-4"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            strokeWidth={2}
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M6 18L18 6M6 6l12 12"
-            />
-          </svg>
-        )}
-      </button>
-    );
-  };
-
-  const handleBackdropClick = (e: React.MouseEvent) => {
-    if (e.target === e.currentTarget) onClose();
-  };
-
+  /* --------------------------------------
+              COMPONENT UI
+  ---------------------------------------*/
   return (
     <div
-      className="fixed inset-0 flex items-center justify-center p-4 z-50 bg-black/10 backdrop-blur-sm transition-opacity duration-300"
-      onClick={handleBackdropClick}
-      aria-modal="true"
-      role="dialog"
+      className="fixed inset-0 flex items-center justify-center p-4 bg-black/10 backdrop-blur-sm z-50"
+      onClick={(e) => e.target === e.currentTarget && onClose()}
     >
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto transform transition-transform duration-300 scale-100">
-        <div className="sticky top-0 bg-white border-b border-gray-200 rounded-t-2xl p-6 pb-4 z-10">
-          <div className="flex justify-between items-center mb-2">
-            <h1 className="text-2xl font-bold text-gray-900">
-              {isEditMode ? "Edit Personal Info" : "Add New Therapist"}
-            </h1>
-            <button
-              onClick={onClose}
-              className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-full transition-colors duration-200"
-              aria-label="Close"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-6 w-6"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
-            </button>
-          </div>
-          <p className="text-gray-500 text-sm">
-            {isEditMode
-              ? "Update your professional information and availability"
-              : "Enter the professional information and availability for the new therapist."}
-          </p>
+      <div className="bg-white rounded-2xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+        <div className="p-6 border-b flex justify-between items-center">
+          <h1 className="text-2xl font-bold">
+            {isEditMode ? "Edit Therapist Profile" : "Add New Therapist"}
+          </h1>
+          <button onClick={onClose}>✕</button>
         </div>
 
-        <form className="p-6 space-y-6" onSubmit={handleSubmit(onSubmit)}>
-          {/* Profile Picture */}
-          <div className="flex items-center space-x-4">
+        <form onSubmit={handleSubmit(onSubmit)} className="p-6 space-y-6">
+          {/* Profile */}
+          <div className="flex items-center gap-4">
             <div className="relative">
               <input
                 type="file"
                 {...register("profileImage")}
                 ref={(e) => {
-                  register("profileImage").ref(e); // RHF's ref
-                  fileInputRef.current = e; // your local ref
+                  register("profileImage").ref(e);
+                  fileInputRef.current = e;
                 }}
                 onChange={handleImageChange}
                 className="hidden"
                 accept="image/*"
               />
-              <div className="w-16 h-16 rounded-full overflow-hidden bg-gradient-to-br from-teal-400 to-teal-600 shadow-md flex items-center justify-center text-xl font-bold text-white">
+
+              <div className="w-20 h-20 rounded-full bg-gray-200 overflow-hidden flex items-center justify-center shadow-md">
                 {previewImage ? (
                   <img
                     src={previewImage}
-                    alt="Profile"
                     className="object-cover w-full h-full"
                   />
-                ) : profileName ? (
-                  profileName
-                    .split(" ")
-                    .map((n) => n[0])
-                    .join("")
                 ) : (
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-8 w-8 text-white opacity-80"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={1}
-                      d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                    />
-                  </svg>
+                  <span className="text-xl font-bold">
+                    {name ? name[0] : "T"}
+                  </span>
                 )}
               </div>
+
               <button
                 type="button"
                 onClick={handleEditPictureClick}
-                className="absolute -bottom-1 -right-1 p-1.5 bg-white border border-gray-300 rounded-full shadow-lg text-teal-600 hover:text-teal-700 transition-colors duration-200"
-                aria-label="Upload profile picture"
+                className="absolute -bottom-1 -right-1 bg-white border rounded-full p-1 shadow"
               >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-3.5 w-3.5"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                >
-                  <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zm-1.88 1.88l-6.107 6.107v3.182h3.182l6.107-6.107-3.182-3.182z" />
-                </svg>
+                Edit
               </button>
             </div>
+
             <div>
-              <h3 className="font-semibold text-gray-900">
-                {profileName || "Therapist Name"}
-              </h3>
-              <p className="text-sm text-gray-500">
-                {speciality || "Speciality"}
-              </p>
+              <h3 className="font-semibold">{name || "Therapist Name"}</h3>
+              <p className="text-gray-500">{speciality || "Speciality"}</p>
             </div>
           </div>
 
+          {/* Inputs */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <input
-              {...register("name", { required: true })}
+              {...register("name")}
               placeholder="Full Name"
-              className="p-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:border-teal-500"
+              className="border p-3 rounded-lg"
             />
             <input
-              {...register("email", { required: true })}
-              type="email"
-              placeholder="Email Address"
-              className="p-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:border-teal-500"
+              {...register("email")}
+              placeholder="Email"
+              className="border p-3 rounded-lg"
             />
             <input
               {...register("phoneNumber")}
-              type="tel"
-              placeholder="Phone Number"
-              className="p-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:border-teal-500"
+              placeholder="Phone"
+              className="border p-3 rounded-lg"
             />
             <input
-              {...register("speciality", { required: true })}
+              {...register("speciality")}
               placeholder="Speciality"
-              className="p-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:border-teal-500"
+              className="border p-3 rounded-lg"
             />
             <input
               {...register("licenseNumber")}
               placeholder="License Number"
-              className="p-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:border-teal-500"
+              className="border p-3 rounded-lg"
             />
-            <input
-              {...register("password")}
-              type="password"
-              placeholder="Password"
-              className="p-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:border-teal-500"
-            />
+            {!isEditMode && (
+              <input
+                {...register("password")}
+                placeholder="Password"
+                className="border p-3 rounded-lg"
+                type="password"
+              />
+            )}
           </div>
 
           <textarea
-            {...register("qualifications")}
-            placeholder="Qualifications & Certifications"
-            className="p-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:border-teal-500 w-full resize-none"
+            {...register("qualification")}
+            placeholder="Qualifications"
+            className="border p-3 rounded-lg w-full"
             rows={3}
           />
 
+          {/* Days */}
           <div>
-            <p className="text-sm font-medium text-gray-700 mb-3">
-              Available Days
-            </p>
+            <p className="font-medium mb-2">Available Days</p>
             <div className="flex flex-wrap gap-2">
               {ALL_DAYS.map((day) => (
-                <DayChip key={day} day={day} />
+                <button
+                  key={day}
+                  type="button"
+                  onClick={() => handleDayToggle(day)}
+                  className={`px-4 py-2 rounded-full border ${
+                    daysAvailable.includes(day)
+                      ? "bg-teal-500 text-white"
+                      : "bg-white"
+                  }`}
+                >
+                  {day}
+                </button>
               ))}
             </div>
           </div>
 
+          {/* Time */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <input
               {...register("startTime")}
               type="time"
-              className="p-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:border-teal-500"
+              className="border p-3 rounded-lg"
             />
             <input
               {...register("endTime")}
               type="time"
-              className="p-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:border-teal-500"
+              className="border p-3 rounded-lg"
             />
           </div>
 
-          <div className="flex justify-end space-x-3 mt-4">
+          {/* Footer */}
+          <div className="flex justify-end gap-3 pt-4">
             <button
               type="button"
               onClick={onClose}
-              disabled={isSubmitting}
-              className="px-6 py-2.5 text-gray-700 font-medium border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors duration-200"
+              className="px-6 py-2 border rounded-lg"
             >
               Cancel
             </button>
             <button
               type="submit"
+              className="px-6 py-2 bg-teal-600 text-white rounded-lg"
               disabled={isSubmitting}
-              className={`px-6 py-2.5 text-white font-medium rounded-lg transition-all duration-200 flex items-center justify-center space-x-2 ${
-                isSubmitting
-                  ? "bg-teal-400 cursor-not-allowed"
-                  : "bg-teal-500 hover:bg-teal-600 shadow-md hover:shadow-lg"
-              }`}
             >
               {isSubmitting
-                ? "Saving..."
+                ? "Saving…"
                 : isEditMode
                 ? "Save Changes"
                 : "Save Therapist"}

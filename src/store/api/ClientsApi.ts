@@ -3,11 +3,13 @@ import baseApi from "./BaseApi/BaseApi";
 const clientsApi = baseApi.injectEndpoints({
     endpoints: (builder) => ({
         createNewClient: builder.mutation({
-            query: ({ therapistId, credentials }) => ({
+            query: ({ therapistId, credentials }) => {
+                return ({
                 url: `/therapists/${therapistId}/clients`,
                 method: "POST",
                 body: credentials,
-            }),
+            })
+            },
         }),
         addCrisisHistory: builder.mutation({
             query: (credentials) => ({
