@@ -13,7 +13,7 @@ const baseApi = createApi({
       return headers;
     }
   }),
-  tagTypes: ["APPOINTMENT", "ClINIC"],
+  tagTypes: ["APPOINTMENT", "ClINICClIENT",],
 
   endpoints: () => ({}),
 });

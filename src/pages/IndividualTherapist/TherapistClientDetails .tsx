@@ -7,6 +7,9 @@ import {
 } from "@/components/ClientManagement/utilityComponents";
 import { useUserId } from "@/hooks/useUserId";
 import { useGetClientByIdQuery } from "@/store/api/ClientsApi";
+import { useAppSelector } from "@/hooks/useRedux";
+import { skipToken } from "@reduxjs/toolkit/query";
+import { useGetClinicClientByIdQuery } from "@/store/api/ClinicClientsApi";
 
 // Format seconds to HH:MM:SS
 const formatTime = (totalSeconds: number) => {
@@ -19,18 +22,38 @@ const formatTime = (totalSeconds: number) => {
 
 const TherapistClientDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
+  const userType = useAppSelector((state) => state.auth.userType);
   const userId = useUserId();
   const navigate = useNavigate();
 
-  const {
-    data: client,
-    isLoading,
-    error,
-  } = useGetClientByIdQuery({
-    therapistId: userId,
-    clientId: id!,
-  });
-  console.log(client);
+  // const {
+  //   data: client,
+  //   isLoading,
+  //   error,
+  // } = useGetClientByIdQuery({
+  //   therapistId: userId,
+  //   clientId: id!,
+  // });
+  const therapistQuery = useGetClientByIdQuery(
+    userType === "THERAPIST"
+      ? {
+          therapistId: userId,
+          clientId: id!,
+        }
+      : skipToken
+  );
+  const clinicQuery = useGetClinicClientByIdQuery(
+    userType === "CLINIC"
+      ? {
+          clinicId: userId,
+          clientId: id!,
+        }
+      : skipToken
+  );
+  const client =
+    userType === "THERAPIST" ? therapistQuery.data : clinicQuery.data;
+  const isLoading = therapistQuery.isLoading || clinicQuery.isLoading;
+  const error = therapistQuery.error || clinicQuery.error;
 
   const [isRecording, setIsRecording] = useState(false);
   const [elapsed, setElapsed] = useState(0);
@@ -125,7 +148,7 @@ const TherapistClientDetails: React.FC = () => {
     return <div className="p-6">Failed to load client.</div>;
 
   return (
-    <div className="p-6 md:p-10 bg-gray-50 min-h-screen">
+    <div className="p-6 md:p-10  min-h-screen">
       {/* Back Button */}
       <button
         onClick={handleGoBack}
