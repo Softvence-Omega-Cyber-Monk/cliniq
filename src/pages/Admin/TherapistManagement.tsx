@@ -2,24 +2,8 @@ import { useState } from "react"
 import { ChevronDown, Search, Loader2 } from "lucide-react"
 import { useNavigate } from "react-router-dom"
 import { useGetAllTherapistQuery } from "@/store/api/UsersApi"
+import type { Therapist } from "@/store/api/UsersApi"
 
-interface Therapist {
-    id: string
-    fullName: string
-    speciality: string | null
-    clinic: {
-        id: string
-        privatePracticeName: string
-    } | null
-    _count: {
-        clients: number
-        appointments: number
-    }
-    email: string
-    phone: string
-    licenseNumber: string | null
-    qualification: string | null
-}
 
 export default function TherapistManagement() {
     const [filterType, setFilterType] = useState("All Type")
@@ -28,7 +12,7 @@ export default function TherapistManagement() {
     const navigate = useNavigate()
     
     // Fetch therapists from API
-    const { data: apiResponse, isLoading, isError } = useGetAllTherapistQuery({})
+    const { data: apiResponse, isLoading, isError } = useGetAllTherapistQuery()
 
     const handleViewDetails = (id: string) => {
         navigate(`/admin-dashboard/admin-therapists/${id}`)
@@ -177,7 +161,7 @@ export default function TherapistManagement() {
                                     <div className="flex flex-col gap-1">
                                         <span className="text-sm text-[#7E8086]">Patients</span>
                                         <span className="text-2xl font-bold text-foreground">
-                                            {therapist._count.clients}
+                                            {therapist._count?.clients}
                                         </span>
                                     </div>
                                 </div>

@@ -18,13 +18,32 @@ export interface Therapist {
     fullName: string;
     email: string;
     phone?: string;
-    specialization?: string;
+    specialization?: string | null;
+    speciality?: string; // Some APIs return both
     clinicId?: string;
+
+    // Full clinic object (optional)
+    clinic?: {
+        id: string;
+        privatePracticeName?: string;
+    } | null;
+
+    qualification?: string;
+    licenseNumber?: string;
+    defaultSessionDuration?: number;
+    timeZone?: string;
+
     subscriptionId?: string;
     isActive: boolean;
     createdAt: string;
     updatedAt: string;
+
+    _count?: {
+        clients: number;
+        appointments: number;
+    };
 }
+
 
 export interface UpdateClinicDto {
     name?: string;
@@ -57,18 +76,16 @@ export interface AssignSubscriptionDto {
 const usersApi = baseApi.injectEndpoints({
     endpoints: (builder) => ({
         // Clinic endpoints
-        getAllClinics: builder.query<Clinic[], void>({
+        getAllClinics: builder.query<{ data: Clinic[] }, void>({
             query: () => '/users/clinics',
             providesTags: (result) => {
-                const list = Array.isArray(result) ? result : result?.data || [];
-
+                const list = result?.data ?? [];
                 return [
-                    ...list.map(({ id } : any) => ({ type: 'CLINIC' as const, id })),
+                    ...list.map(({ id }) => ({ type: 'CLINIC' as const, id })),
                     { type: 'CLINIC', id: 'LIST' },
                 ];
             },
         }),
-
 
         getClinicById: builder.query<Clinic, string>({
             query: (id) => `/users/clinics/${id}`,
@@ -88,7 +105,7 @@ const usersApi = baseApi.injectEndpoints({
                 method: "PUT",
                 body: data,
             }),
-            invalidatesTags: (result, error, { id }) => [
+            invalidatesTags: (_result, _error, { id }) => [
                 { type: 'CLINIC', id },
                 { type: 'CLINIC', id: 'LIST' },
             ],
@@ -138,24 +155,24 @@ const usersApi = baseApi.injectEndpoints({
                 method: "DELETE",
                 body: data,
             }),
-            invalidatesTags: (result, error, { id }) => [
+            invalidatesTags: (_result, _error, { id }) => [
                 { type: 'CLINIC', id },
                 { type: 'CLINIC', id: 'LIST' },
             ],
         }),
 
         // Therapist endpoints
-        getAllTherapist: builder.query<Therapist[], void>({
+        getAllTherapist: builder.query<{ data: Therapist[] }, void>({
             query: () => '/users/therapists',
             providesTags: (result) => {
-                const list = Array.isArray(result) ? result : result?.data || [];
-
+                const list = result?.data ?? [];
                 return [
                     ...list.map(({ id }) => ({ type: 'THERAPIST' as const, id })),
                     { type: 'THERAPIST', id: 'LIST' },
                 ];
             },
         }),
+
 
 
         updateTherapistProfile: builder.mutation<
@@ -227,5 +244,3 @@ export const {
     useLazyGetTherapistByClinicQuery,
     useLazyGetAllTherapistQuery,
 } = usersApi;
-
-export default usersApi;
