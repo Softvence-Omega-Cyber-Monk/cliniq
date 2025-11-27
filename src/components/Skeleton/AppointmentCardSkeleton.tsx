@@ -1,6 +1,6 @@
 const AppointmentCardSkeleton = () => {
   return (
-    <div className="bg-white p-5 rounded-xl shadow-lg border border-gray-100 animate-pulse">
+    <div className="bg-[#FAFAF7] p-5 rounded-xl  border border-gray-100 animate-pulse">
       <div className="flex justify-between items-start mb-3">
         <div className="flex items-center space-x-3">
           <div className="w-8 h-8 rounded-full bg-gray-200"></div>

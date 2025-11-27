@@ -1,27 +1,30 @@
 import React from "react";
 import { Client } from "./types";
-import { IconUser, StatusBadge } from "./utilityComponents";
+import { StatusBadge } from "./utilityComponents";
 import { Link } from "react-router-dom";
+import { User } from "lucide-react";
 
 const ClientListItem: React.FC<{
   client: Client;
   onClick: (client: Client) => void;
 }> = ({ client, onClick }) => (
   <div
-    className="bg-white p-5 rounded-xl shadow-lg hover:shadow-xl transition duration-300 cursor-pointer flex items-center justify-between space-x-4 mb-4"
+    className="bg-[#FAFAF7] p-5 rounded-xl  transition duration-300 cursor-pointer flex items-center justify-between space-x-4 mb-4"
     onClick={() => {
       console.log("Clicked client:", client);
       onClick(client);
     }}
   >
     <div className="flex items-center space-x-4 min-w-[40%]">
-      <div className="flex-shrink-0 w-10 h-10 bg-emerald-100 rounded-full flex  items-center justify-center">
-        <IconUser />
+      <div className="flex-shrink-0 w-10 h-10 bg-[#96C75E1A] rounded-full flex  items-center justify-center">
+        <User className="text-[#3FDCBF]" />
       </div>
 
       <div className="flex-grow">
         <div className="flex items-center space-x-2">
-          <h3 className="text-lg font-semibold text-gray-800">{client.name}</h3>
+          <h3 className="text-lg capitalize font-semibold text-gray-800">
+            {client.name}
+          </h3>
           <StatusBadge status={client.status} />
         </div>
 
