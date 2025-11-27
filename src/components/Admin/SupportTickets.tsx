@@ -10,7 +10,7 @@ import {
   useUpdateTicketStatusMutation,
   SupportTicket,
 } from "@/store/api/supportApi"
-import { toast } from "react-hot-toast"
+import { toast } from "sonner"
 
 export default function AdminSupportTickets() {
   const [showReplyModal, setShowReplyModal] = useState(false)
