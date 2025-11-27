@@ -34,7 +34,7 @@ const RoleSelector: React.FC<{
   const roleData = {
     [Role.PRIVATE_PRACTICE]: {
       icon: <UserIcon className="w-5 h-5" />,
-      label: "PRIVATE PRACTICE",
+      label: "CLINIC",
     },
     [Role.INDIVIDUAL]: {
       icon: <UsersIcon className="w-5 h-5" />,
