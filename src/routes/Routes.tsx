@@ -44,7 +44,7 @@ const routes = createBrowserRouter([
     element: <Layout />,
     children: [
       {
-        element: <ProtectedRoute allowedRoles={["THERAPIST"]} />,
+        element: <ProtectedRoute allowedRoles={"INDIVIDUAL_THERAPIST"} />,
         children: [
           {
             index: true,
@@ -81,17 +81,17 @@ const routes = createBrowserRouter([
       { index: true, element: <AdminOverview /> },
 
       { path: "admin-therapists", element: <TherapistManagement /> },
-      { path: "admin-therapists/:id", element: <TherapistDetails />},
+      { path: "admin-therapists/:id", element: <TherapistDetails /> },
       { path: "admin-sessions", element: <SessionsManagement /> },
       { path: "admin-content", element: <ContentManagement /> },
       { path: "admin-reports", element: <ReportsAnalytics /> },
       { path: "admin-settings", element: <Settings /> },
-      { path: "admin-support", element: <AdminSupportTickets /> }
+      { path: "admin-support", element: <AdminSupportTickets /> },
     ],
   },
   {
     path: "/private-practice-admin",
-    element: <ProtectedRoute allowedRoles={["CLINIC"]} />,
+    element: <ProtectedRoute allowedRoles={"CLINIC"} />,
     children: [
       {
         path: "",
@@ -122,7 +122,7 @@ const routes = createBrowserRouter([
   },
   {
     path: "/admin-login",
-    element: <AdminLoginForm />
+    element: <AdminLoginForm />,
   },
   {
     path: "/signup",

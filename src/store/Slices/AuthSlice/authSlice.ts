@@ -17,14 +17,14 @@ export interface User {
   clinic: string | null;
   subscriptionPlan: string | null;
   createdAt: string;
-  userType: "THERAPIST" | "ADMIN" | "PRIVATE_PRACTICE" | "CLINIC";
+  userType: "THERAPIST" | "ADMIN" | "INDIVIDUAL_THERAPIST" | "CLINIC";
   updatedAt: string;
 }
 interface AuthState {
   user: User | null;
   accessToken: string | null;
   refreshToken: string | null;
-  userType?: "THERAPIST" | "ADMIN" | "PRIVATE_PRACTICE" | "CLINIC" | null;
+  userType?: "THERAPIST" | "ADMIN" | "INDIVIDUAL_THERAPIST" | "CLINIC" | null;
 }
 
 const initialState: AuthState = {
@@ -44,7 +44,7 @@ const authSlice = createSlice({
         user: User;
         accessToken: string;
         refreshToken?: string;
-        userType: "THERAPIST" | "ADMIN" | "PRIVATE_PRACTICE" | "CLINIC";
+        userType: "THERAPIST" | "ADMIN" | "INDIVIDUAL_THERAPIST" | "CLINIC";
       }>
     ) => {
       state.user = action.payload.user;

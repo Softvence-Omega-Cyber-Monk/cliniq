@@ -2,7 +2,7 @@ import { useAppSelector } from "@/hooks/useRedux";
 import { Navigate, Outlet } from "react-router-dom";
 
 interface ProtectedRouteProps {
-  allowedRoles: string[];
+  allowedRoles: "ADMIN" | "THERAPIST" | "CLINIC" | "INDIVIDUAL_THERAPIST";
 }
 
 const ProtectedRoute = ({ allowedRoles }: ProtectedRouteProps) => {
@@ -26,7 +26,8 @@ const ProtectedRoute = ({ allowedRoles }: ProtectedRouteProps) => {
 
       case "CLINIC":
         return <Navigate to="/private-practice-admin" replace />;
-
+      case "INDIVIDUAL_THERAPIST" :
+        return <Navigate to="/individual-therapist-dashboard" replace />;
       default:
         return <Navigate to="/login" replace />;
     }
