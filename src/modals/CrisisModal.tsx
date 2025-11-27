@@ -1,3 +1,5 @@
+import { useAppSelector } from "@/hooks/useRedux";
+import { useAddCrisisHistoryMutation } from "@/store/api/ClientsApi";
 import { useAddClinicClientCrisisHistoryMutation } from "@/store/api/ClinicClientsApi";
 import React, { useState } from "react";
 
@@ -29,7 +31,10 @@ const CrisisModal: React.FC<CrisisModalProps> = ({
     intervention: "Emergency session scheduled, breathing exercises practiced",
     outcome: "Client stabilized after 30 minutes",
   });
-  const [addCrisis] = useAddClinicClientCrisisHistoryMutation();
+  const userType = useAppSelector((state) => state.auth.userType);
+  const [addCrisisByClinic] = useAddClinicClientCrisisHistoryMutation();
+  const [addCrisisByTherapist] = useAddCrisisHistoryMutation();
+
   if (!isOpen) return null;
   console.log("cline:", therapistId, "client:", clientId);
   const handleChange = (
@@ -41,20 +46,50 @@ const CrisisModal: React.FC<CrisisModalProps> = ({
   };
 
   const handleSubmit = async () => {
-    onSubmit(formData);
-    const res = await addCrisis({
-      clientId: clientId,
-      clinicId: therapistId,
-      crisisData: {
-        crisisDate: new Date().toISOString(),
-        description: formData.description,
-        severity: formData.severity,
-        intervention: formData.intervention,
-        outcome: formData.outcome,
-      },
-    });
-    console.log(res);
-    onClose();
+    try {
+      onSubmit(formData);
+
+      let res;
+      if (userType === "THERAPIST") {
+        res = await addCrisisByClinic({
+          clientId,
+          clinicId: therapistId,
+          crisisData: {
+            crisisDate: new Date().toISOString(),
+            description: formData.description,
+            severity: formData.severity,
+            intervention: formData.intervention,
+            outcome: formData.outcome,
+          },
+        });
+        console.log("Response from addCrisisByClinic:", res);
+      } else if (userType === "CLINIC") {
+        res = await addCrisisByTherapist({
+          clientId,
+          therapistId,
+          crisisData: {
+            crisisDate: new Date().toISOString(),
+            description: formData.description,
+            severity: formData.severity,
+            intervention: formData.intervention,
+            outcome: formData.outcome,
+          },
+        });
+        console.log("Response from addCrisisByTherapist:", res);
+      }
+
+      // Check if the response is successful (depends on your API)
+      if (res && "data" in res) {
+        // Only close modal if request was successful
+        onClose();
+      } else {
+        console.error("Failed to save crisis data:", res);
+        alert("Failed to save crisis. Please try again."); // optional
+      }
+    } catch (error) {
+      console.error("Error submitting crisis data:", error);
+      alert("An error occurred while saving the crisis."); // optional
+    }
   };
 
   return (
