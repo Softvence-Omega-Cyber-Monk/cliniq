@@ -15,8 +15,6 @@ import { useGetAllClinicClientsQuery } from "@/store/api/ClinicClientsApi";
 const ClientListDashboard: React.FC = () => {
   const userType = useAppSelector((state) => state.auth.userType);
   const userId = useUserId();
-  console.log(userId);
-
   const [searchTerm, setSearchTerm] = useState("");
   const [filter, setFilter] = useState<Status | "all">("all");
   const [page, setPage] = useState(1);
@@ -25,7 +23,6 @@ const ClientListDashboard: React.FC = () => {
   const [showAddNewClientModal, setShowAddNewClientModal] = useState(false);
 
   const scrollContainerRef = useRef<HTMLDivElement>(null);
-  console.log(userType);
   const therapistQuery = useGetAllClientQuery(
     userType === "THERAPIST"
       ? {
@@ -37,12 +34,10 @@ const ClientListDashboard: React.FC = () => {
         }
       : skipToken
   );
-
   const clinicQuery = useGetAllClinicClientsQuery(
     userType === "CLINIC"
       ? {
           clinicId: userId,
-          therapistId: userId,
           search: searchTerm,
           status: filter === "all" ? "" : filter,
           page,
@@ -54,6 +49,7 @@ const ClientListDashboard: React.FC = () => {
   // Select the active query
   const data =
     userType === "THERAPIST" ? therapistQuery.data : clinicQuery.data;
+  console.log(data);
   const isFetching =
     userType === "THERAPIST"
       ? therapistQuery.isFetching
@@ -197,6 +193,7 @@ const ClientListDashboard: React.FC = () => {
               key={client.id}
               client={client}
               onClick={() => {}}
+              userType={userType}
             />
           ))}
 

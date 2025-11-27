@@ -82,6 +82,10 @@ const routes = createBrowserRouter([
           { path: "therapists", element: <Therapists /> },
           { path: "sessions", element: <Sessions /> },
           { path: "clients", element: <Clients /> },
+          {
+            path: "clients/:id",
+            element: <TherapistClientDetails></TherapistClientDetails>,
+          },
           { path: "appointments", element: <Appointments /> },
           { path: "reports", element: <UserDashboardReportsPage /> },
           { path: "reportstwo", element: <ReportsTwo /> },
