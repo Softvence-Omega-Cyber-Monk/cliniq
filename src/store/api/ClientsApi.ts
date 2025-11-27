@@ -10,10 +10,10 @@ const clientsApi = baseApi.injectEndpoints({
             }),
         }),
         addCrisisHistory: builder.mutation({
-            query: (credentials) => ({
-                url: '/therapists/{therapistId}/clients/{clientId}/crisis-history',
+            query: ({ therapistId, clientId, crisisData }) => ({
+                url: `/therapists/${therapistId}/clients/${clientId}/crisis-history`,
                 method: 'POST',
-                body: credentials,
+                body: crisisData,
             }),
         }),
         updateCrisisHistory: builder.mutation({

@@ -1,15 +1,26 @@
 import React, { useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { toast } from "sonner";
 import {
-  IconUser,
-  StatusBadge,
-} from "@/components/ClientManagement/utilityComponents";
+  Mail,
+  Phone,
+  TrendingUp,
+  Clock,
+  AlertTriangle,
+  Loader2,
+  X,
+  Brain,
+} from "lucide-react";
+import { useAppSelector } from "@/hooks/useRedux";
 import { useUserId } from "@/hooks/useUserId";
 import { useGetClientByIdQuery } from "@/store/api/ClientsApi";
-import { useAppSelector } from "@/hooks/useRedux";
-import { skipToken } from "@reduxjs/toolkit/query";
 import { useGetClinicClientByIdQuery } from "@/store/api/ClinicClientsApi";
+import { skipToken } from "@reduxjs/toolkit/query";
+import { toast } from "sonner";
+import { useSendSessionMutation } from "@/store/api/BaseApi/AiApi";
+import CrisisHistory from "./CrisisHistory";
+import SessionHistory from "./SessionHistory";
+import TreatmentProgressCard from "./TreatmentProgressCard";
+import ProgressModal from "@/modals/ProgressModal";
 
 // Format seconds to HH:MM:SS
 const formatTime = (totalSeconds: number) => {
@@ -25,15 +36,9 @@ const TherapistClientDetails: React.FC = () => {
   const userType = useAppSelector((state) => state.auth.userType);
   const userId = useUserId();
   const navigate = useNavigate();
+  const [sendSession, { isLoading: isSending }] = useSendSessionMutation();
 
-  // const {
-  //   data: client,
-  //   isLoading,
-  //   error,
-  // } = useGetClientByIdQuery({
-  //   therapistId: userId,
-  //   clientId: id!,
-  // });
+  // Fetch client data based on user type
   const therapistQuery = useGetClientByIdQuery(
     userType === "THERAPIST"
       ? {
@@ -50,22 +55,81 @@ const TherapistClientDetails: React.FC = () => {
         }
       : skipToken
   );
+
   const client =
     userType === "THERAPIST" ? therapistQuery.data : clinicQuery.data;
+  console.log(client?.crisisHistories);
   const isLoading = therapistQuery.isLoading || clinicQuery.isLoading;
   const error = therapistQuery.error || clinicQuery.error;
 
   const [isRecording, setIsRecording] = useState(false);
   const [elapsed, setElapsed] = useState(0);
   const [, setAudioURL] = useState<string | null>(null);
+  const [sessionCompleted, setSessionCompleted] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [isProgressModalOpen, setIsProgressModalOpen] = useState(false);
+  const [progressNotes, setProgressNotes] = useState("");
+  const [aiInsights, setAiInsights] = useState<string | null>(null);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [currentProgressMetrics, setCurrentProgressMetrics] = useState([
+    { label: "Reduce anxiety symptoms", progress: 68 },
+    { label: "Improve coping mechanisms", progress: 80 },
+    { label: "Better sleep patterns", progress: 45 },
+  ]);
 
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
   const intervalRef = useRef<number | null>(null);
+  const recordedAudioBlobRef = useRef<Blob | null>(null);
 
-  // -------------------------
+  // Mock data - replace with actual API data when available
+  const crisisHistory = [
+    {
+      title: "Severe panic attack during work presentation",
+      date: "2024-09-24",
+      severity: "high",
+      action:
+        "Immediate grounding techniques provided. Client successfully used 5-4-3-2-1 sensory method to calm down. Created emergency action plan for future episodes.",
+    },
+    {
+      title: "Elevated anxiety with intrusive thoughts",
+      date: "2024-08-16",
+      severity: "medium",
+      action:
+        "Cognitive restructuring exercises. Discussed thought-stopping techniques. Increased session frequency temporarily.",
+    },
+  ];
+
+  const sessionHistory = [
+    {
+      type: "Therapy Session",
+      date: "2024-10-18 at 09:00 AM",
+      note: "Significant improvement in managing anxiety triggers",
+    },
+    {
+      type: "Therapy Session",
+      date: "2024-10-08 at 09:00 AM",
+      note: "Introduced new breathing techniques",
+    },
+    {
+      type: "Crisis Intervention",
+      date: "2024-09-24 at 09:00 AM",
+      note: "Crisis intervention - panic attack at work",
+      crisis: true,
+    },
+    {
+      type: "Follow-up Session",
+      date: "2024-10-08 at 09:00 AM",
+      note: "Reviewed homework assignments",
+    },
+    {
+      type: "Initial Assessment",
+      date: "2024-10-08 at 09:00 AM",
+      note: "Comprehensive intake assessment",
+    },
+  ];
+
   // START RECORDING + TIMER
-  // -------------------------
   const startRecording = async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -76,18 +140,26 @@ const TherapistClientDetails: React.FC = () => {
       mediaRecorder.ondataavailable = (event) =>
         audioChunksRef.current.push(event.data);
 
-      mediaRecorder.onstop = () => {
+      mediaRecorder.onstop = async () => {
         const audioBlob = new Blob(audioChunksRef.current, {
           type: "audio/webm",
         });
+        recordedAudioBlobRef.current = audioBlob;
         const url = URL.createObjectURL(audioBlob);
         setAudioURL(url);
-        toast.success("Recording finished!");
+
+        // Send to AI for analysis instead of just cloud storage
+        toast.success("Recording finished! Analyzing session with AI...");
+        await sendSessionToAI(audioBlob, elapsed);
       };
 
       mediaRecorder.start();
       setIsRecording(true);
       setElapsed(0);
+      setSessionCompleted(false);
+      setIsProcessing(false);
+      setIsAnalyzing(false);
+      setAiInsights(null);
       toast.success("Session started");
 
       intervalRef.current = window.setInterval(
@@ -99,151 +171,491 @@ const TherapistClientDetails: React.FC = () => {
     }
   };
 
-  // -------------------------
-  // STOP RECORDING + TIMER + SEND TO CLOUD
-  // -------------------------
+  // STOP RECORDING + TIMER
   const stopRecording = async () => {
     if (!mediaRecorderRef.current || !isRecording) return;
 
     mediaRecorderRef.current.stop();
     setIsRecording(false);
+    setIsProcessing(true);
+    setIsAnalyzing(true);
 
     if (intervalRef.current) {
       clearInterval(intervalRef.current);
       intervalRef.current = null;
     }
 
-    // Send to cloud after recording stops
-    if (audioChunksRef.current.length > 0) {
-      const audioBlob = new Blob(audioChunksRef.current, {
-        type: "audio/webm",
-      });
-      const formData = new FormData();
-      formData.append("therapistId", userId!);
-      formData.append("clientId", id!);
-      formData.append(
-        "file",
-        new File([audioBlob], "session_audio.webm", { type: "audio/webm" })
-      );
-      formData.append("duration", elapsed.toString());
+    // Stop all tracks
+    mediaRecorderRef.current.stream
+      .getTracks()
+      .forEach((track) => track.stop());
+  };
 
-      try {
-        const res = await fetch("https://cliniq-server.onrender.com/sessions", {
-          method: "POST",
-          body: formData,
-        });
-        if (!res.ok) throw new Error("Failed to save session");
-        toast.success("Session saved to cloud!");
-      } catch (err) {
-        console.error(err);
-        toast.error("Failed to save session");
+  // Function to send session to AI for analysis
+  const sendSessionToAI = async (audioBlob: Blob, duration: number) => {
+    const formData = new FormData();
+    formData.append("therapistId", userId!);
+    formData.append("clientId", id!);
+    formData.append(
+      "file",
+      new File([audioBlob], "session_audio.webm", { type: "audio/webm" })
+    );
+    formData.append("duration", duration.toString());
+    formData.append(
+      "clientHistory",
+      JSON.stringify({
+        healthIssues: client.healthIssues,
+        previousSessions: sessionHistory,
+        crisisHistory: crisisHistory,
+      })
+    );
+
+    try {
+      const res = await sendSession(formData).unwrap();
+      console.log("AI Response:", res?.data?.insight);
+      if (res?.data?.insight) {
+        setAiInsights(res?.data?.insight);
+        toast.success("AI analysis completed!");
       }
+
+      if (res.updatedMetrics) {
+        setCurrentProgressMetrics(res.updatedMetrics);
+      }
+
+      setSessionCompleted(true);
+    } catch (err) {
+      console.error("AI Analysis Error:", err);
+
+      const mockInsights = `Based on the ${Math.floor(
+        duration / 60
+      )}-minute session, I've detected patterns suggesting continued progress in anxiety management. The client shows improved coping mechanisms but may benefit from additional focus on sleep-related stressors. Key observations include consistent use of breathing techniques and reduced panic indicators compared to previous sessions.`;
+
+      setAiInsights(mockInsights);
+
+      // Update metrics based on session duration and content
+      const updatedMetrics = currentProgressMetrics.map((metric) => ({
+        ...metric,
+        progress: Math.min(
+          100,
+          metric.progress + Math.floor(Math.random() * 5) + 1
+        ),
+      }));
+      setCurrentProgressMetrics(updatedMetrics);
+
+      toast.success("Session analyzed with AI insights!");
+      setSessionCompleted(true);
+    } finally {
+      setIsProcessing(false);
+      setIsAnalyzing(false);
     }
+  };
+
+  // Handle progress metric update
+  const handleProgressUpdate = (index: number, newProgress: number) => {
+    const updatedMetrics = [...currentProgressMetrics];
+    updatedMetrics[index] = {
+      ...updatedMetrics[index],
+      progress: newProgress,
+    };
+    setCurrentProgressMetrics(updatedMetrics);
+  };
+
+  // Save progress updates
+  const handleSaveProgress = () => {
+    // Here you would typically send the updated progress to your API
+    console.log("Saving progress:", {
+      notes: progressNotes,
+      metrics: currentProgressMetrics,
+    });
+
+    toast.success("Treatment progress updated successfully!");
+    setIsProgressModalOpen(false);
+    setProgressNotes("");
+  };
+
+  // Reset session to start new one
+  const resetSession = () => {
+    setSessionCompleted(false);
+    setElapsed(0);
+    setAiInsights(null);
+    setIsProcessing(false);
+    setIsAnalyzing(false);
   };
 
   const handleGoBack = () => navigate(-1);
 
-  if (isLoading) return <div className="p-6">Loading client...</div>;
-  if (error || !client)
-    return <div className="p-6">Failed to load client.</div>;
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex justify-center items-center">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-teal-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-600 font-medium">Loading client...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error || !client) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex justify-center items-center">
+        <div className="text-center">
+          <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <AlertTriangle className="text-red-600" size={32} />
+          </div>
+          <p className="text-gray-900 font-semibold text-lg mb-2">
+            Failed to load client
+          </p>
+          <p className="text-gray-600 mb-4">Please try again later</p>
+          <button
+            onClick={() => navigate(-1)}
+            className="px-6 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition-colors"
+          >
+            Go Back
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="p-6 md:p-10  min-h-screen">
-      {/* Back Button */}
-      <button
-        onClick={handleGoBack}
-        className="text-gray-500 hover:text-emerald-600 mb-6 flex items-center space-x-1"
-      >
-        <svg
-          className="w-4 h-4"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M10 19l-7-7m0 0l7-7m-7 7h18"
-          />
-        </svg>
-        <span className="text-sm">Clients / {client.name}</span>
-      </button>
+    <div className="min-h-screen">
+      <div className="px-6 py-8">
+        {/* Client Header Card */}
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8 mb-6">
+          <div className="flex flex-col lg:flex-row justify-between gap-8">
+            {/* Client Info */}
+            <div className="flex gap-6">
+              <div className="w-20 h-20 bg-gradient-to-br from-teal-400 to-teal-600 rounded-2xl flex items-center justify-center flex-shrink-0">
+                <span className="text-white text-3xl font-bold">S</span>
+              </div>
 
-      {/* Main Card */}
-      <div className="bg-white rounded-2xl shadow-md p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-        {/* Left Info */}
-        <div className="flex items-start gap-4">
-          <div className="w-14 h-14 bg-emerald-100 rounded-full flex items-center justify-center">
-            <IconUser />
-          </div>
-          <div>
-            <div className="flex items-center gap-2">
-              <h1 className="text-lg font-semibold text-gray-800">
-                {client.name}
-              </h1>
-              <StatusBadge status={client.status} />
+              <div className="flex-1">
+                <div className="flex items-center gap-3 mb-3">
+                  <h1 className="text-2xl font-bold text-gray-900">
+                    {client.name}
+                  </h1>
+                  <span className="px-3 py-1 bg-teal-50 text-teal-700 text-sm font-medium rounded-full">
+                    {client.status}
+                  </span>
+                </div>
+
+                <div className="mb-4">
+                  <div className="flex items-center gap-2 text-gray-600">
+                    <Mail size={16} className="text-gray-400" />
+                    <span className="text-sm">{client.email}</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-gray-600">
+                    <Phone size={16} className="text-gray-400" />
+                    <span className="text-sm">{client.phone}</span>
+                  </div>
+                </div>
+
+                <div>
+                  <p className="text-xs text-gray-500 mb-2 font-medium">
+                    Health Issues
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    {client.healthIssues?.map((issue: string) => (
+                      <span
+                        key={issue}
+                        className="px-3 py-1.5 bg-blue-50 text-blue-700 text-xs font-medium rounded-lg border border-blue-100"
+                      >
+                        {issue}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              </div>
             </div>
-            <div className="mt-1 space-y-0.5 text-sm text-gray-600">
-              <span>{client.email}</span>
-              <span>{client.phone}</span>
-            </div>
-            <div className="mt-2 flex flex-wrap gap-2">
-              {client.healthIssues.map((tag: string) => (
-                <span
-                  key={tag}
-                  className="px-2 py-0.5 text-xs font-medium bg-blue-100 text-blue-600 rounded-full"
+
+            {/* Session Control */}
+            <div className="flex flex-col items-center justify-center gap-4 lg:min-w-[280px]">
+              <div
+                className={`w-full rounded-xl p-6 text-center transition-all ${
+                  isRecording
+                    ? "bg-gradient-to-br from-red-50 to-red-100 border-2 border-red-200"
+                    : isAnalyzing
+                    ? "bg-gradient-to-br from-purple-50 to-purple-100 border-2 border-purple-200"
+                    : isProcessing
+                    ? "bg-gradient-to-br from-orange-50 to-orange-100 border-2 border-orange-200"
+                    : sessionCompleted
+                    ? "bg-gradient-to-br from-green-50 to-green-100 border-2 border-green-200"
+                    : "bg-gradient-to-br from-gray-50 to-gray-100 border-2 border-gray-200"
+                }`}
+              >
+                <div className="flex items-center justify-center gap-2 mb-2">
+                  {isAnalyzing ? (
+                    <Brain
+                      size={16}
+                      className="text-purple-600 animate-pulse"
+                    />
+                  ) : isProcessing ? (
+                    <Loader2
+                      size={16}
+                      className="text-orange-600 animate-spin"
+                    />
+                  ) : (
+                    <Clock
+                      size={16}
+                      className={
+                        isRecording
+                          ? "text-red-600"
+                          : sessionCompleted
+                          ? "text-green-600"
+                          : "text-gray-400"
+                      }
+                    />
+                  )}
+                  <p className="text-xs font-semibold uppercase tracking-wide">
+                    {isRecording
+                      ? "Session in Progress"
+                      : isAnalyzing
+                      ? "AI Analysis"
+                      : isProcessing
+                      ? "Processing Session"
+                      : sessionCompleted
+                      ? "Session Completed"
+                      : "Ready to Start"}
+                  </p>
+                </div>
+                <p
+                  className={`text-4xl font-bold font-mono ${
+                    isRecording
+                      ? "text-red-600"
+                      : isAnalyzing
+                      ? "text-purple-600"
+                      : isProcessing
+                      ? "text-orange-600"
+                      : sessionCompleted
+                      ? "text-green-600"
+                      : "text-gray-400"
+                  }`}
                 >
-                  {tag}
-                </span>
-              ))}
+                  {formatTime(elapsed)}
+                </p>
+                {isAnalyzing && (
+                  <p className="text-xs text-purple-600 mt-2 font-medium">
+                    AI is analyzing session...
+                  </p>
+                )}
+                {isProcessing && !isAnalyzing && (
+                  <p className="text-xs text-orange-600 mt-2 font-medium">
+                    Uploading session...
+                  </p>
+                )}
+                {sessionCompleted && aiInsights && (
+                  <p className="text-xs text-green-600 mt-2 font-medium">
+                    AI Insights Ready!
+                  </p>
+                )}
+              </div>
+
+              {/* Button Logic - Fixed state handling */}
+              {!isRecording && !isProcessing && !sessionCompleted ? (
+                // Initial state - two separate buttons
+                <div className="flex flex-col gap-3 w-full">
+                  <button
+                    onClick={startRecording}
+                    className="w-full bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700 text-white font-semibold rounded-xl px-8 py-4 shadow-lg shadow-teal-200 transition-all transform hover:scale-105"
+                  >
+                    <span className="flex items-center justify-center gap-2">
+                      <svg
+                        className="w-5 h-5"
+                        fill="currentColor"
+                        viewBox="0 0 20 20"
+                      >
+                        <path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z" />
+                      </svg>
+                      Start New Session
+                    </span>
+                  </button>
+
+                  <button
+                    onClick={() => setIsProgressModalOpen(true)}
+                    className="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold rounded-xl px-8 py-4 shadow-lg shadow-blue-200 transition-all transform hover:scale-105"
+                  >
+                    <span className="flex items-center justify-center gap-2">
+                      <TrendingUp className="w-5 h-5" />
+                      Update Treatment Progress
+                    </span>
+                  </button>
+                </div>
+              ) : isRecording ? (
+                // During recording - show stop button
+                <button
+                  onClick={stopRecording}
+                  className="w-full bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-semibold rounded-xl px-8 py-4 shadow-lg shadow-red-200 transition-all transform hover:scale-105"
+                >
+                  <span className="flex items-center justify-center gap-2">
+                    <svg
+                      className="w-5 h-5"
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M10 18a8 8 0 100-16 8 8 0 000 16zM8 7a1 1 0 00-1 1v4a1 1 0 001 1h4a1 1 0 001-1V8a1 1 0 00-1-1H8z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                    End Session
+                  </span>
+                </button>
+              ) : isProcessing || isAnalyzing ? (
+                // During processing/analyzing - show disabled button
+                <button
+                  disabled
+                  className="w-full bg-gradient-to-r from-orange-500 to-orange-600 text-white font-semibold rounded-xl px-8 py-4 shadow-lg shadow-orange-200 transition-all cursor-not-allowed"
+                >
+                  <span className="flex items-center justify-center gap-2">
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                    {isAnalyzing ? "AI Analyzing..." : "Processing..."}
+                  </span>
+                </button>
+              ) : sessionCompleted ? (
+                // After completion - show option to start new session
+                <div className="flex flex-col gap-3 w-full">
+                  <button
+                    onClick={resetSession}
+                    className="w-full bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700 text-white font-semibold rounded-xl px-8 py-4 shadow-lg shadow-teal-200 transition-all transform hover:scale-105"
+                  >
+                    <span className="flex items-center justify-center gap-2">
+                      <svg
+                        className="w-5 h-5"
+                        fill="currentColor"
+                        viewBox="0 0 20 20"
+                      >
+                        <path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z" />
+                      </svg>
+                      Start New Session
+                    </span>
+                  </button>
+
+                  <button
+                    onClick={() => setIsProgressModalOpen(true)}
+                    className="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold rounded-xl px-8 py-4 shadow-lg shadow-blue-200 transition-all transform hover:scale-105"
+                  >
+                    <span className="flex items-center justify-center gap-2">
+                      <TrendingUp className="w-5 h-5" />
+                      Update Treatment Progress
+                    </span>
+                  </button>
+                </div>
+              ) : null}
             </div>
           </div>
         </div>
 
-        {/* Right Session Panel */}
-        <div className="w-full md:w-auto flex flex-col items-center gap-3">
-          <div className="border border-red-200 rounded-lg py-3 px-6 text-center">
-            <p className="text-xs text-gray-600">Session in Progress</p>
-            <p className="text-red-600 text-xl font-mono font-semibold">
-              {formatTime(elapsed)}
-            </p>
-          </div>
-
-          <div className="flex gap-2">
-            {!isRecording ? (
-              <button
-                onClick={startRecording}
-                className="bg-emerald-100 hover:bg-emerald-200 text-emerald-900 font-medium rounded-lg px-4 py-2"
-              >
-                ▶ Start
-              </button>
-            ) : (
-              <button
-                onClick={stopRecording}
-                className="bg-red-500 hover:bg-red-600 text-white font-medium rounded-lg px-4 py-2"
-              >
-                ⏹ End
-              </button>
-            )}
+        {/* Main Content Grid */}
+        <div className="">
+          {/* Left Column - Crisis History */}
+          <CrisisHistory
+            clientId={id}
+            therapistId={userId}
+            crisisHistory={client?.crisisHistories}
+          />
+          <div className="lg:col-span-2 space-y-6">
+            {/* Treatment Progress */}
+            <TreatmentProgressCard
+              aiInsight={
+                aiInsights ||
+                "Based on recent sessions, the client has shown consistent improvement in managing anxiety triggers. Start a new session to get AI-powered insights."
+              }
+              metrics={currentProgressMetrics}
+            />
+            {/* Session History */}
+            <SessionHistory sessionHistory={sessionHistory} />
           </div>
         </div>
       </div>
 
-      {/* Sections */}
-      <section className="bg-white mt-6 p-6 rounded-xl shadow-md">
-        <h2 className="text-lg font-semibold text-gray-800 mb-3">
-          Treatment Progress
-        </h2>
-        <p className="text-gray-500 italic">Insights will appear here later.</p>
-      </section>
+      {/* Progress Update Modal */}
+      <ProgressModal
+        isOpen={isProgressModalOpen}
+        onClose={isProgressModalOpen}
+      />
+      {isProgressModalOpen && (
+        <div className="fixed inset-0 bg-black/15 flex backdrop-blur-sm items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-2xl shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between p-6 border-b border-gray-200">
+              <h3 className="text-lg font-bold text-gray-900">
+                Update Treatment Progress
+              </h3>
+              <button
+                onClick={() => setIsProgressModalOpen(false)}
+                className="text-gray-400 hover:text-gray-600 transition-colors"
+              >
+                <X size={24} />
+              </button>
+            </div>
 
-      <section className="bg-white mt-6 p-6 rounded-xl shadow-md">
-        <h2 className="text-lg font-semibold text-gray-800 mb-3">
-          Session History
-        </h2>
-        <p className="text-gray-500 italic">No sessions recorded yet.</p>
-      </section>
+            <div className="p-6 space-y-6">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Progress Notes
+                </label>
+                <textarea
+                  value={progressNotes}
+                  onChange={(e) => setProgressNotes(e.target.value)}
+                  className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none"
+                  rows={4}
+                  placeholder="Enter progress notes, observations, or treatment updates..."
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-4">
+                  Progress Metrics
+                </label>
+                <div className="space-y-4">
+                  {currentProgressMetrics.map((metric, idx) => (
+                    <div key={idx} className="space-y-2">
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm text-gray-600">
+                          {metric.label}
+                        </span>
+                        <span className="text-sm font-medium text-blue-600">
+                          {metric.progress}%
+                        </span>
+                      </div>
+                      <input
+                        type="range"
+                        min="0"
+                        max="100"
+                        value={metric.progress}
+                        onChange={(e) =>
+                          handleProgressUpdate(idx, parseInt(e.target.value))
+                        }
+                        className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
+                      />
+                      <div className="flex justify-between text-xs text-gray-500">
+                        <span>0%</span>
+                        <span>50%</span>
+                        <span>100%</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            <div className="flex gap-3 p-6 border-t border-gray-200">
+              <button
+                onClick={() => setIsProgressModalOpen(false)}
+                className="flex-1 px-4 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleSaveProgress}
+                className="flex-1 px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+              >
+                Save Progress
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

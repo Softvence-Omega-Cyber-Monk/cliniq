@@ -27,10 +27,17 @@ const clientsApi = baseApi.injectEndpoints({
         getClinicClientById: builder.query({
             query: ({ clinicId, clientId }) =>
                 `/clinics/${clinicId}/clients/${clientId}`,
-        })
+        }),
+        addClinicClientCrisisHistory: builder.mutation({
+            query: ({ clinicId, clientId, crisisData }) => ({
+                url: `/clinics/${clinicId}/clients/${clientId}/crisis-history`,
+                method: 'POST',
+                body: crisisData,
+            }),
+        }),
 
     }),
 })
 
-export const { useAddClinicClientMutation, useGetAllClinicClientsQuery, useGetClinicClientByIdQuery } = clientsApi
+export const { useAddClinicClientMutation, useGetAllClinicClientsQuery, useGetClinicClientByIdQuery, useAddClinicClientCrisisHistoryMutation } = clientsApi
 export default clientsApi
