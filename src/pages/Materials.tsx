@@ -401,7 +401,7 @@ export default function App() {
   // Conditional Rendering: Detail View vs. List View
   if (selectedMaterialId !== null && currentMaterial) {
     return (
-      <div className="min-h-screen bg-gray-50 p-4 sm:p-8 ">
+      <div className="min-h-screen  p-4 sm:p-8 ">
         <div className="max-w-5xl mx-auto">
           <MaterialDetailView
             material={currentMaterial}
@@ -414,8 +414,8 @@ export default function App() {
 
   // List View
   return (
-    <div className="min-h-screen bg-gray-50 p-4 sm:p-8 ">
-      <div className="max-w-7xl mx-auto">
+    <div className="min-h-screen  p-4 sm:p-8 ">
+      <div className="">
         {/* Header - Line under MATERIALS removed */}
         <header className="mb-8">
           <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight">
