@@ -28,6 +28,7 @@ interface Therapist {
 }
 
 const ScheduleModal: React.FC<ScheduleModalProps> = ({ onClose }) => {
+  const userType = useAppSelector((state) => state.auth.userType);
   const userId = useUserId();
   const [createAppointment, { isLoading }] = useCreateAppointmentMutation();
 
@@ -137,7 +138,7 @@ const ScheduleModal: React.FC<ScheduleModalProps> = ({ onClose }) => {
               <option value="">Select Client</option>
               {clientsData?.data?.map((c: Client) => (
                 <option key={c.id} value={c.id}>
-                  {c.name} ({c.email})
+                  {c.name}
                 </option>
               ))}
             </select>
@@ -186,7 +187,7 @@ const ScheduleModal: React.FC<ScheduleModalProps> = ({ onClose }) => {
               className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-mint-500 focus:border-mint-500 transition duration-150 text-gray-800 bg-white shadow-inner"
             >
               <option value="virtual">Virtual</option>
-              <option value="in-person">In-Person</option>
+              <option value="onsite">Onsite</option>
             </select>
           </div>
 
@@ -237,7 +238,7 @@ const ScheduleModal: React.FC<ScheduleModalProps> = ({ onClose }) => {
               type="submit"
               className="px-6 py-3 font-semibold rounded-full bg-mint-500 text-black hover:bg-mint-600 transition-colors shadow-lg shadow-mint-500/30"
             >
-              {isLoading ? "Scheduling..." : "Schedule Appointment"}
+              {isCreating ? "Scheduling..." : "Schedule Appointment"}
             </button>
           </div>
         </form>
