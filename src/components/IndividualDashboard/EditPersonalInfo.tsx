@@ -1,10 +1,11 @@
+import { useUserId } from "@/hooks/useUserId";
 import {
-  useGetProfileQuery,
+  // useGetProfileQuery,
   useRegisterTherapistMutation,
 } from "@/store/api/AuthApi";
 import React, { useState, useCallback, useMemo, useRef } from "react";
 import { toast } from "sonner";
-import { Spinner } from "../ui/spinner";
+// import { Spinner } from "../ui/spinner";
 
 type Day = "Sat" | "Sun" | "Mon" | "Tue" | "Wed" | "Thu" | "Fri";
 
@@ -16,6 +17,7 @@ interface UserProfile {
   qualifications: string;
   startTime: string;
   endTime: string;
+  password: string; // Added password field
 }
 
 // Initial Data
@@ -29,6 +31,7 @@ const INITIAL_PROFILE_DATA: UserProfile = {
   qualifications: "",
   startTime: "",
   endTime: "",
+  password: "", // Added password field
 };
 
 // Reusable Components
@@ -39,7 +42,7 @@ interface FormInputProps {
   onChange: (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => void;
-  inputType?: "text" | "email" | "tel" | "time";
+  inputType?: "text" | "email" | "tel" | "time" | "password";
   isTextarea?: boolean;
 }
 
@@ -94,7 +97,8 @@ const EditPersonalInfo: React.FC<EditPersonalInfoProps> = ({
   onClose,
   onSave,
 }) => {
-  const { data, isLoading } = useGetProfileQuery({});
+  // const { data, isLoading } = useGetProfileQuery({});
+  const userId = useUserId()
   const [profile, setProfile] = useState<UserProfile>(INITIAL_PROFILE_DATA);
   const [daysAvailable, setDaysAvailable] = useState<Day[]>([]);
   const [isSaving, setIsSaving] = useState(false);
@@ -105,6 +109,7 @@ const EditPersonalInfo: React.FC<EditPersonalInfoProps> = ({
   const [profileImage, setProfileImage] = useState<string>("");
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [registerTherapist] = useRegisterTherapistMutation();
+  
   // General handler for all text/input changes
   const handleChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -135,36 +140,51 @@ const EditPersonalInfo: React.FC<EditPersonalInfoProps> = ({
     setIsSaving(true);
     setSaveMessage(null);
 
-    // Simulate API call
+    // Validate password if it's being updated
+    if (profile.password && profile.password.length < 8) {
+      toast.error("Password must be at least 8 characters long");
+      setIsSaving(false);
+      return;
+    }
+
     try {
       const res = await registerTherapist({
-        name: profile.name,
+        fullName: profile.name,
         email: profile.email,
         phone: profile.phoneNumber,
         speciality: profile.speciality,
         qualifications: profile.qualifications,
         startTime: profile.startTime,
         endTime: profile.endTime,
+        clinicId: userId,
+        password: profile.password || undefined, // Only include if provided
       }).unwrap();
+      
       console.log(res);
       toast.success("Profile updated successfully!");
+      
+      // Call the onSave prop if provided
+      if (onSave) {
+        onSave(profile, daysAvailable, profileImage);
+      }
+      
+      setSaveMessage({
+        type: "success",
+        message: "Profile updated successfully!",
+      });
+
+      // Clear message after 3 seconds
+      setTimeout(() => setSaveMessage(null), 3000);
     } catch (error) {
-      toast.error("Failed to update profile. Please try again." + error);
+      console.error(error);
+      toast.error("Failed to update profile. Please try again.");
+      setSaveMessage({
+        type: "error",
+        message: "Failed to update profile. Please try again.",
+      });
+    } finally {
+      setIsSaving(false);
     }
-
-    // Call the onSave prop if provided
-    if (onSave) {
-      onSave(profile, daysAvailable, profileImage);
-    }
-
-    setIsSaving(false);
-    setSaveMessage({
-      type: "success",
-      message: "Profile updated successfully!",
-    });
-
-    // Clear message after 3 seconds
-    setTimeout(() => setSaveMessage(null), 3000);
   };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -229,14 +249,13 @@ const EditPersonalInfo: React.FC<EditPersonalInfoProps> = ({
 
   if (!isOpen) return null;
 
-  if (isLoading) {
-    return (
-      <div>
-        <Spinner />
-      </div>
-    );
-  }
-  console.log(data);
+  // if (isLoading) {
+  //   return (
+  //     <div>
+  //       <Spinner />
+  //     </div>
+  //   );
+  // }
 
   return (
     <div
@@ -349,6 +368,13 @@ const EditPersonalInfo: React.FC<EditPersonalInfoProps> = ({
               value={profile.email}
               onChange={handleChange}
               inputType="email"
+            />
+            <FormInput
+              label="Password"
+              name="password"
+              value={profile.password}
+              onChange={handleChange}
+              inputType="password"
             />
             <FormInput
               label="Phone Number"

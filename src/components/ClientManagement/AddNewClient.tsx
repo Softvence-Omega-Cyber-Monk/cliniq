@@ -1,7 +1,10 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useUserId } from "@/hooks/useUserId";
 import { useCreateNewClientMutation } from "@/store/api/ClientsApi";
+import { useGetTherapistByClinicQuery } from "@/store/api/UsersApi";
 import React, { useState } from "react";
 import { toast } from "sonner";
+import { Spinner } from "../ui/spinner";
 
 // Define the type for the client form data
 export interface ClientForm {
@@ -53,6 +56,55 @@ const FormInput: React.FC<FormInputProps> = ({
     />
   </div>
 );
+
+// Dropdown component for therapist selection
+interface TherapistDropdownProps {
+  therapists: any[];
+  selectedTherapistId: string;
+  onChange: (id: string) => void;
+}
+
+const TherapistDropdown: React.FC<TherapistDropdownProps> = ({
+  therapists,
+  selectedTherapistId,
+  onChange,
+}) => {
+  const [error, setError] = useState("");
+
+  const handleSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const value = e.target.value;
+    onChange(value);
+    if (value) {
+      setError("");
+    } else {
+      setError("Please select a therapist");
+    }
+  };
+
+  return (
+    <div className="flex flex-col space-y-2">
+      <label htmlFor="therapist" className="text-sm font-semibold text-gray-700">
+        Assign Therapist
+      </label>
+      <select
+        id="therapist"
+        value={selectedTherapistId}
+        onChange={handleSelect}
+        className={`p-3 border rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition duration-150 ease-in-out text-base shadow-sm outline-none ${
+          error ? "border-red-500" : "border-gray-300"
+        }`}
+      >
+        <option value="">Select a therapist</option>
+        {therapists.map((therapist) => (
+          <option key={therapist._id} value={therapist.user._id}>
+            {therapist.user.firstName} {therapist.user.lastName}
+          </option>
+        ))}
+      </select>
+      {error && <p className="text-xs text-red-500">{error}</p>}
+    </div>
+  );
+};
 
 // Tag-style input for healthIssues
 const HealthIssuesInput: React.FC<{
@@ -120,8 +172,21 @@ export const AddNewClient: React.FC<{
 }> = ({ onClose, onClientAdded }) => {
   const [formData, setFormData] = useState<ClientForm>(initialFormState);
   const userId = useUserId();
-  console.log(userId);
+  const [selectedTherapist, setSelectedTherapist] = useState("");
   const [createNewClient, { isLoading }] = useCreateNewClientMutation();
+  const { data: therapists, isLoading: therapistLoading } = useGetTherapistByClinicQuery(
+    { id: userId! },
+    { skip: !userId }
+  );
+
+
+  if (therapistLoading) {
+    return (
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#fff]/50 backdrop-blur-sm">
+        <Spinner />
+      </div>
+    );
+  }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -131,8 +196,18 @@ export const AddNewClient: React.FC<{
     }));
   };
 
+  const handleTherapistSelect = (id: string) => {
+    setSelectedTherapist(id);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Validate therapist selection
+    if (!selectedTherapist) {
+      toast.error("Please select a therapist");
+      return;
+    }
 
     const payload = {
       name: formData.name,
@@ -145,11 +220,12 @@ export const AddNewClient: React.FC<{
 
     try {
       await createNewClient({
-        therapistId: userId!,
+        therapistId: selectedTherapist,
         credentials: payload,
       }).unwrap();
       toast.success("New client added successfully!");
       setFormData(initialFormState); // reset form
+      setSelectedTherapist(""); // reset therapist selection
       if (onClientAdded) onClientAdded();
       onClose(); // close modal
     } catch (err) {
@@ -206,14 +282,34 @@ export const AddNewClient: React.FC<{
               value={formData.phoneNumber}
               onChange={handleChange}
             />
+            {/* Therapist Dropdown - only show if therapists are available */}
+            <div className="">
+              {therapists && therapists.length > 0 ? (
+                <TherapistDropdown
+                  therapists={therapists}
+                  selectedTherapistId={selectedTherapist}
+                  onChange={handleTherapistSelect}
+                />
+              ) : (
+                <div className="flex flex-col space-y-2">
+                  <label className="text-sm font-semibold text-gray-700">
+                    Assign Therapist
+                  </label>
+                  <div className="p-3 border border-gray-300 rounded-lg bg-gray-50 text-gray-500">
+                    No therapists available
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6 mb-6">
             <HealthIssuesInput
               value={formData.healthIssues}
               onChange={(arr) =>
                 setFormData((prev) => ({ ...prev, healthIssues: arr }))
               }
             />
-          </div>
-          <div className="mb-8">
             <FormInput
               id="condition"
               label="Condition"
