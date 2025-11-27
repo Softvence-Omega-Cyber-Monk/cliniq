@@ -8,6 +8,7 @@ import { setCredentials } from "../../store/Slices/AuthSlice/authSlice";
 import { Role } from "./types";
 import { UserIcon, UsersIcon, ChevronDownIcon } from "./Icons";
 import { useLoginMutation } from "@/store/api/AuthApi";
+import { toast } from "sonner";
 
 const loginSchema = z.object({
   email: z.string().email("Invalid email format"),
@@ -34,7 +35,7 @@ const RoleSelector: React.FC<{
   const roleData = {
     [Role.PRIVATE_PRACTICE]: {
       icon: <UserIcon className="w-5 h-5" />,
-      label: "PRIVATE PRACTICE",
+      label: "CLINIC",
     },
     [Role.INDIVIDUAL]: {
       icon: <UsersIcon className="w-5 h-5" />,
@@ -120,24 +121,22 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSwitchToSignUp }) => {
     defaultValues: {
       email: state?.email || "",
       password: state?.password || "",
-      role:
-        state?.userType === "CLINIC" ? Role.PRIVATE_PRACTICE : Role.INDIVIDUAL,
+      role: state?.userType || Role.PRIVATE_PRACTICE,
     },
   });
 
+  const currentRole = watch("role");
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const currentRole = watch("role");
 
   const onSubmit: SubmitHandler<LoginFormInputs> = async (data) => {
     try {
       const response = await login({
-        email: data.email,
-        password: data.password,
-        userType: data.role === Role.PRIVATE_PRACTICE ? "CLINIC" : "THERAPIST",
+        email: data?.email,
+        password: data?.password,
+        userType: state?.userType || data.role,
       }).unwrap();
 
-      console.log(response);
       localStorage.setItem("token", response.accessToken);
       dispatch(
         setCredentials({
@@ -153,9 +152,14 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSwitchToSignUp }) => {
       } else if (response.userType === "CLINIC") {
         navigate("/private-practice-admin");
       }
-    } catch (error) {
-      console.error("Login error:", error);
-      alert("Login failed. Please check your credentials and try again.");
+      toast.success("Login successful!");
+    } catch (err: unknown) {
+      if (typeof err === "object" && err !== null && "data" in err) {
+        const data = (err as any).data; // or define a proper type
+        toast.error(data?.message || "Something went wrong");
+      } else {
+        toast.error("Something went wrong");
+      }
     }
   };
 

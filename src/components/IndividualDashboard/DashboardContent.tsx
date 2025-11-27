@@ -16,27 +16,29 @@ import EditPersonalInfo from "./EditPersonalInfo";
 import { useGetDashboardStatsQuery } from "@/store/api/ReportsApi";
 import StatCardSkeleton from "@/common/StatCardSkeleton";
 
-import { useSelector } from "react-redux";
-import { RootState } from "@/store/store";
+// import { useSelector } from "react-redux";
+// import { RootState } from "@/store/store";
+import AddClientModal from "./AddClientModal";
 
 const DashboardContent: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const user = useSelector((state: RootState) => state.auth.user);
-  console.log(user);
+  // const user = useSelector((state: RootState) => state.auth.user);
+  
+  const [addClientModal,setAddClientModal] = useState(false);
   const { data: stats, isLoading } = useGetDashboardStatsQuery({
     dateRange: "last_30_days",
-    startDate: "2024-01-01",  
+    startDate: "2024-01-01",
     endDate: "2024-01-31",
     therapistId: "123e4567-e89b-12d3-a456-426614174000",
     status: "completed",
     reportType: "performance_overview",
   });
-
+  console.log(stats);
   const statCards: StatCardType[] = stats
     ? [
         {
           title: "Total Therapists",
-          value: stats?.activeTherapists.toString(),
+          value: stats?.totalTherapists,
           icon: StatUserIcon,
           percentage: stats.therapistsGrowth,
           trend: "up",
@@ -44,22 +46,22 @@ const DashboardContent: React.FC = () => {
         },
         {
           title: "Upcoming Sessions",
-          value: stats?.totalSessions.toString(),
+          value: stats?.upcomingSessions,
           icon: StatCalendarIcon,
-          percentage: stats.sessionsGrowth,
+          percentage: stats.upcomingGrowth,
           trend: "up",
           iconBgColor: "bg-blue-100 text-blue-600",
         },
         {
           title: "Crisis Alerts",
-          value: stats?.crisisAlerts.toString(),
+          value: stats?.crisisAlerts,
           icon: StatAlertIcon,
           iconBgColor: "bg-red-100 text-red-600",
           trend: "up",
         },
         {
           title: "Completed Sessions",
-          value: stats?.totalSessions.toString(),
+          value: stats?.totalSessions,
           icon: StatCheckIcon,
           iconBgColor: "bg-cyan-100 text-cyan-600",
           trend: "up",
@@ -69,6 +71,7 @@ const DashboardContent: React.FC = () => {
 
   const handleOpenModal = () => setIsModalOpen(true);
   const handleCloseModal = () => setIsModalOpen(false);
+  
 
   return (
     <div className="p-4 sm:p-6 lg:p-8 flex-1">
@@ -80,7 +83,7 @@ const DashboardContent: React.FC = () => {
           >
             <FaPlus /> Add New Therapist
           </button>
-          <button className="py-[10px] px-[11px] bg-[#3FDCBF] text-[#fff] flex items-center gap-2 rounded-[12px]">
+          <button onClick={() => setAddClientModal(!addClientModal)} className="py-[10px] px-[11px] bg-[#3FDCBF] text-[#fff] flex items-center gap-2 rounded-[12px]">
             <FaPlus /> Add New Client
           </button>
         </div>
@@ -105,6 +108,10 @@ const DashboardContent: React.FC = () => {
       </div>
 
       <EditPersonalInfo isOpen={isModalOpen} onClose={handleCloseModal} />
+      {
+        addClientModal &&
+        <AddClientModal onClose={() => setAddClientModal(false)}/>
+      }
     </div>
   );
 };

@@ -48,7 +48,7 @@ export default function AdminSupportTickets() {
       {/* Stats Cards */}
       <div className="grid grid-cols-3 gap-4">
         {stats.map((stat) => (
-          <div key={stat.label} className="rounded-lg border border-border bg-card p-6 bg-white border border-gray-200">
+          <div key={stat.label} className="rounded-lg border-border bg-card p-6 bg-white border border-gray-200">
             <div className="text-2xl mb-2">{stat.icon}</div>
             <p className="text-sm text-muted-foreground">{stat.label}</p>
             <p className="text-2xl font-bold text-foreground">{stat.value}</p>

@@ -5,7 +5,6 @@ import About from "../pages/About";
 import Contact from "../pages/Contact";
 import NotFound from "../pages/NotFound";
 import ProtectedRoute from "./ProtectedRoute";
-import AdminDashboard from "@/pages/Admin/AdminDashboard";
 import Login from "@/pages/Login";
 import Signup from "@/pages/Signup";
 import Form from "@/pages/Form";
@@ -29,7 +28,6 @@ import IndividualTherapistOldreport from "../pages/IndividualTherapist/Individua
 import IndividualTherapistSettings from "../pages/IndividualTherapist/IndividualTherapistSettings";
 import IndividualTherapistSupport from "../pages/IndividualTherapist/IndividualTherapistSupport";
 import AdminLoginForm from "@/pages/Admin/AdminLogin";
-import AdminTherapists from "@/pages/Admin/AdminTherapists";
 import AdminLayout from "@/pages/Admin/AdminDashboard";
 import AdminOverview from "@/pages/Admin/AdminOverview";
 import SessionsManagement from "@/pages/Admin/SessionManagement";
@@ -38,6 +36,7 @@ import TherapistManagement from "@/pages/Admin/TherapistManagement";
 import TherapistDetails from "@/pages/Admin/TherapistDetails";
 import ReportsAnalytics from "@/components/Admin/ReportAnalytics";
 import Settings from "@/components/Admin/Settings";
+import TherapistClientDetails from "@/pages/IndividualTherapist/TherapistClientDetails ";
 
 const routes = createBrowserRouter([
   {
@@ -56,6 +55,10 @@ const routes = createBrowserRouter([
             element: <IndividualTherapistDashboard />,
           },
           { path: "clients", element: <IndividualTherapistClients /> },
+          {
+            path: "clients/:id",
+            element: <TherapistClientDetails></TherapistClientDetails>,
+          },
           {
             path: "appointments",
             element: <IndividualTherapistAppointments />,

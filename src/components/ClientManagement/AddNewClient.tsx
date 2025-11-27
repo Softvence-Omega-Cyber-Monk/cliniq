@@ -1,18 +1,19 @@
+import React, { useState } from "react";
+import { useAppSelector } from "@/hooks/useRedux";
 import { useUserId } from "@/hooks/useUserId";
 import { useCreateNewClientMutation } from "@/store/api/ClientsApi";
-import React, { useState } from "react";
+import { useAddClinicClientMutation } from "@/store/api/ClinicClientsApi";
 import { toast } from "sonner";
+import { Spinner } from "../ui/spinner";
 
-// Define the type for the client form data
 export interface ClientForm {
   name: string;
   email: string;
-  phoneNumber: string; // for input
+  phoneNumber: string;
   healthIssues: string[];
   condition: string;
 }
 
-// Initial state with empty values
 const initialFormState: ClientForm = {
   name: "",
   email: "",
@@ -21,7 +22,6 @@ const initialFormState: ClientForm = {
   condition: "",
 };
 
-// Input component for shared styling
 interface FormInputProps {
   id: keyof ClientForm;
   label: string;
@@ -48,19 +48,16 @@ const FormInput: React.FC<FormInputProps> = ({
       value={value}
       onChange={onChange}
       placeholder={placeholder}
-      className="p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition duration-150 ease-in-out text-base shadow-sm outline-none"
-      aria-label={label}
+      className="p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition duration-150 text-base shadow-sm"
     />
   </div>
 );
 
-// Tag-style input for healthIssues
 const HealthIssuesInput: React.FC<{
   value: string[];
   onChange: (val: string[]) => void;
 }> = ({ value, onChange }) => {
   const [input, setInput] = useState("");
-
   const handleAdd = () => {
     const trimmed = input.trim();
     if (trimmed && !value.includes(trimmed)) {
@@ -68,11 +65,8 @@ const HealthIssuesInput: React.FC<{
       setInput("");
     }
   };
-
-  const handleRemove = (issue: string) => {
+  const handleRemove = (issue: string) =>
     onChange(value.filter((v) => v !== issue));
-  };
-
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
       e.preventDefault();
@@ -118,22 +112,31 @@ export const AddNewClient: React.FC<{
   onClose: () => void;
   onClientAdded?: () => void;
 }> = ({ onClose, onClientAdded }) => {
-  const [formData, setFormData] = useState<ClientForm>(initialFormState);
+  const userType = useAppSelector((state) => state.auth.userType);
   const userId = useUserId();
-  console.log(userId);
-  const [createNewClient, { isLoading }] = useCreateNewClientMutation();
+
+  const [formData, setFormData] = useState<ClientForm>(initialFormState);
+
+  // Call both mutations unconditionally (Hooks rule)
+  const [createTherapistClient, { isLoading: isLoadingTherapist }] =
+    useCreateNewClientMutation();
+  const [createClinicClient, { isLoading: isLoadingClinic }] =
+    useAddClinicClientMutation();
+
+  const isLoading =
+    userType === "THERAPIST" ? isLoadingTherapist : isLoadingClinic;
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleTherapistSelect = (id: string) => {
+    setSelectedTherapist(id);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
     const payload = {
       name: formData.name,
       email: formData.email,
@@ -144,14 +147,23 @@ export const AddNewClient: React.FC<{
     };
 
     try {
-      await createNewClient({
-        therapistId: userId!,
-        credentials: payload,
-      }).unwrap();
+      if (userType === "THERAPIST") {
+        await createTherapistClient({
+          therapistId: userId!,
+          credentials: payload,
+        }).unwrap();
+      } else if (userType === "CLINIC") {
+        console.log(payload);
+        await createClinicClient({
+          clinicId: userId!,
+          newClient: payload,
+        }).unwrap();
+      }
+
       toast.success("New client added successfully!");
-      setFormData(initialFormState); // reset form
+      setFormData(initialFormState);
       if (onClientAdded) onClientAdded();
-      onClose(); // close modal
+      onClose();
     } catch (err) {
       console.error(err);
       toast.error("Failed to add new client.");
@@ -159,15 +171,13 @@ export const AddNewClient: React.FC<{
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#fff]/50 backdrop-blur-sm p-4 font-sans">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#fff]/50 backdrop-blur-sm p-4">
       <div className="bg-white w-full max-w-4xl rounded-xl shadow-2xl p-6 md:p-10">
-        {/* Header */}
         <div className="flex justify-between items-center mb-8">
           <h2 className="text-2xl font-bold text-gray-800">Add New Client</h2>
           <button
             onClick={onClose}
             className="text-gray-400 hover:text-gray-600 transition duration-150 p-1 rounded-full hover:bg-gray-100"
-            aria-label="Close Modal"
           >
             <svg
               className="w-6 h-6"
@@ -185,7 +195,6 @@ export const AddNewClient: React.FC<{
           </button>
         </div>
 
-        {/* Form */}
         <form onSubmit={handleSubmit}>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6 mb-6">
             <FormInput
@@ -206,14 +215,34 @@ export const AddNewClient: React.FC<{
               value={formData.phoneNumber}
               onChange={handleChange}
             />
+            {/* Therapist Dropdown - only show if therapists are available */}
+            <div className="">
+              {therapists && therapists.length > 0 ? (
+                <TherapistDropdown
+                  therapists={therapists}
+                  selectedTherapistId={selectedTherapist}
+                  onChange={handleTherapistSelect}
+                />
+              ) : (
+                <div className="flex flex-col space-y-2">
+                  <label className="text-sm font-semibold text-gray-700">
+                    Assign Therapist
+                  </label>
+                  <div className="p-3 border border-gray-300 rounded-lg bg-gray-50 text-gray-500">
+                    No therapists available
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6 mb-6">
             <HealthIssuesInput
               value={formData.healthIssues}
               onChange={(arr) =>
                 setFormData((prev) => ({ ...prev, healthIssues: arr }))
               }
             />
-          </div>
-          <div className="mb-8">
             <FormInput
               id="condition"
               label="Condition"
@@ -222,7 +251,6 @@ export const AddNewClient: React.FC<{
             />
           </div>
 
-          {/* Action Button */}
           <div className="flex justify-end pt-4 border-t border-gray-100">
             <button
               type="submit"

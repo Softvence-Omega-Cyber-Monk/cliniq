@@ -1,9 +1,9 @@
-import { FC } from 'react';
-import StatCard from '@/components/oldreposty/StatCard';
-import ReportCard from '@/components/oldreposty/ReportCard';
-import LineChartMock from '@/components/oldreposty/LineChartMock';
-import BarChartMock from '@/components/oldreposty/BarChartMock';
-import { statsData, reportsData } from '@/components/oldreposty/mockData';
+import { FC } from "react";
+import StatCard from "@/components/oldreposty/StatCard";
+import ReportCard from "@/components/oldreposty/ReportCard";
+import LineChartMock from "@/components/oldreposty/LineChartMock";
+import BarChartMock from "@/components/oldreposty/BarChartMock";
+import { statsData, reportsData } from "@/components/oldreposty/mockData";
 
 interface File {
   name: string;
@@ -15,13 +15,15 @@ interface IndividualTherapistOldreportProps {
   file?: File;
 }
 
-const IndividualTherapistOldreport: FC<IndividualTherapistOldreportProps> = () => {
+const IndividualTherapistOldreport: FC<
+  IndividualTherapistOldreportProps
+> = () => {
   return (
-    <div className="min-h-screen bg-gray-50 p-4 sm:p-8 font-sans">
-      <header className="mb-8">
+    <div className="min-h-screen  p-4 sm:p-8 ">
+      {/* <header className="mb-8">
         <h1 className="text-3xl font-extrabold text-gray-900">Individual Therapist Reports</h1>
         <p className="text-gray-500">Welcome back, here is an overview of your practice.</p>
-      </header>
+      </header> */}
 
       {/* 1. Stats Cards Grid */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
@@ -44,7 +46,9 @@ const IndividualTherapistOldreport: FC<IndividualTherapistOldreportProps> = () =
       </div>
 
       {/* 3. Available Reports Section */}
-      <h2 className="text-2xl font-semibold text-gray-800 mb-4 pt-4 border-t border-gray-200">Available Reports</h2>
+      <h2 className="text-2xl font-semibold text-gray-800 mb-4 pt-4 border-t border-gray-200">
+        Available Reports
+      </h2>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {reportsData.map((report, index) => (
           <ReportCard key={index} {...report} />
