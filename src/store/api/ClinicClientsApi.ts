@@ -35,9 +35,17 @@ const clientsApi = baseApi.injectEndpoints({
                 body: crisisData,
             }),
         }),
+        addClinicClientSessionHistory: builder.mutation({
+            query: ({ clinicId, clientId, sessionData }) => ({
+                url: `/clinics/${clinicId}/clients/${clientId}/session-history`,
+                method: 'POST',
+                body: sessionData,
+            }),
+        }),
+
 
     }),
 })
 
-export const { useAddClinicClientMutation, useGetAllClinicClientsQuery, useGetClinicClientByIdQuery, useAddClinicClientCrisisHistoryMutation } = clientsApi
+export const { useAddClinicClientMutation, useGetAllClinicClientsQuery, useGetClinicClientByIdQuery, useAddClinicClientCrisisHistoryMutation, useAddClinicClientSessionHistoryMutation } = clientsApi
 export default clientsApi

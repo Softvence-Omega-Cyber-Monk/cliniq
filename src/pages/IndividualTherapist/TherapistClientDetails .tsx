@@ -13,7 +13,10 @@ import {
 import { useAppSelector } from "@/hooks/useRedux";
 import { useUserId } from "@/hooks/useUserId";
 import { useGetClientByIdQuery } from "@/store/api/ClientsApi";
-import { useGetClinicClientByIdQuery } from "@/store/api/ClinicClientsApi";
+import {
+  useAddClinicClientSessionHistoryMutation,
+  useGetClinicClientByIdQuery,
+} from "@/store/api/ClinicClientsApi";
 import { skipToken } from "@reduxjs/toolkit/query";
 import { toast } from "sonner";
 import { useSendSessionMutation } from "@/store/api/BaseApi/AiApi";
@@ -37,7 +40,8 @@ const TherapistClientDetails: React.FC = () => {
   const userId = useUserId();
   const navigate = useNavigate();
   const [sendSession, { isLoading: isSending }] = useSendSessionMutation();
-
+  const [addClinicClientSessionHistory, { isLoading: isAdding }] =
+    useAddClinicClientSessionHistoryMutation();
   // Fetch client data based on user type
   const therapistQuery = useGetClientByIdQuery(
     userType === "THERAPIST"
@@ -58,7 +62,7 @@ const TherapistClientDetails: React.FC = () => {
 
   const client =
     userType === "THERAPIST" ? therapistQuery.data : clinicQuery.data;
-  console.log(client?.crisisHistories);
+  console.log(client?.sessionHistory);
   const isLoading = therapistQuery.isLoading || clinicQuery.isLoading;
   const error = therapistQuery.error || clinicQuery.error;
 
@@ -82,7 +86,6 @@ const TherapistClientDetails: React.FC = () => {
   const intervalRef = useRef<number | null>(null);
   const recordedAudioBlobRef = useRef<Blob | null>(null);
 
-  // Mock data - replace with actual API data when available
   const crisisHistory = [
     {
       title: "Severe panic attack during work presentation",
@@ -193,6 +196,9 @@ const TherapistClientDetails: React.FC = () => {
 
   // Function to send session to AI for analysis
   const sendSessionToAI = async (audioBlob: Blob, duration: number) => {
+    setIsProcessing(true);
+    setIsAnalyzing(true);
+
     const formData = new FormData();
     formData.append("therapistId", userId!);
     formData.append("clientId", id!);
@@ -212,10 +218,24 @@ const TherapistClientDetails: React.FC = () => {
 
     try {
       const res = await sendSession(formData).unwrap();
-      console.log("AI Response:", res?.data?.insight);
-      if (res?.data?.insight) {
-        setAiInsights(res?.data?.insight);
+      const aiInsight = res?.data?.insight;
+
+      console.log("AI Response:", aiInsight);
+
+      if (aiInsight && id && userId) {
+        setAiInsights(aiInsight);
         toast.success("AI analysis completed!");
+
+        await addClinicClientSessionHistory({
+          clientId: id,
+          clinicId: userId,
+          sessionData: {
+            sessionDate: new Date().toISOString(),
+            sessionType: "Individual Therapy",
+            duration,
+            notes: aiInsight,
+          },
+        }).unwrap();
       }
 
       if (res.updatedMetrics) {
@@ -228,11 +248,10 @@ const TherapistClientDetails: React.FC = () => {
 
       const mockInsights = `Based on the ${Math.floor(
         duration / 60
-      )}-minute session, I've detected patterns suggesting continued progress in anxiety management. The client shows improved coping mechanisms but may benefit from additional focus on sleep-related stressors. Key observations include consistent use of breathing techniques and reduced panic indicators compared to previous sessions.`;
+      )}-minute session, I've detected patterns suggesting continued progress.`;
 
       setAiInsights(mockInsights);
 
-      // Update metrics based on session duration and content
       const updatedMetrics = currentProgressMetrics.map((metric) => ({
         ...metric,
         progress: Math.min(
@@ -242,7 +261,7 @@ const TherapistClientDetails: React.FC = () => {
       }));
       setCurrentProgressMetrics(updatedMetrics);
 
-      toast.success("Session analyzed with AI insights!");
+      toast.success("Session analyzed with fallback AI insights!");
       setSessionCompleted(true);
     } finally {
       setIsProcessing(false);
@@ -547,7 +566,7 @@ const TherapistClientDetails: React.FC = () => {
         </div>
 
         {/* Main Content Grid */}
-        <div className="">
+        <div className="space-y-6">
           {/* Left Column - Crisis History */}
           <CrisisHistory
             clientId={id}
@@ -564,7 +583,7 @@ const TherapistClientDetails: React.FC = () => {
               metrics={currentProgressMetrics}
             />
             {/* Session History */}
-            <SessionHistory sessionHistory={sessionHistory} />
+            <SessionHistory sessionHistory={client?.sessionHistory} />
           </div>
         </div>
       </div>

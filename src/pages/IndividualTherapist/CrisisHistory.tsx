@@ -22,9 +22,9 @@ const CrisisHistory: React.FC<CrisisHistoryProps> = ({
   const [crisisHistory, setCrisisHistory] = useState(
     initialCrisisHistory || []
   );
-  console.log(initialCrisisHistory);
+
   const [isModalOpen, setIsModalOpen] = useState(false);
-  console.log(therapistId, clientId);
+
   // Handler when a new crisis is submitted
   const handleAddCrisis = (newCrisis) => {
     setCrisisHistory([newCrisis, ...crisisHistory]);
@@ -47,7 +47,7 @@ const CrisisHistory: React.FC<CrisisHistoryProps> = ({
         </button>
       </div>
 
-      <div className="space-y-4">
+      <div className="space-y-4 mx-4">
         {crisisHistory.length === 0 && (
           <p className="text-gray-500 text-sm">No crisis events recorded.</p>
         )}
@@ -81,7 +81,7 @@ const CrisisHistory: React.FC<CrisisHistoryProps> = ({
             <p className="text-xs text-gray-500 mt-1">
               {formatToYMD(crisis.crisisDate)}
             </p>
-            <div className="h-[1px] w-full bg-[#7E8086] mt-3"></div>
+            <div className="h-[1px] w-full bg-[#7e808673] mt-3"></div>
             {/* Intervention */}
             <p className="text-sm mt-3">{crisis.intervention}</p>
 
