@@ -1,5 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useState, useCallback, useMemo, useRef, useEffect } from "react";
+import React, {
+  useState,
+  useCallback,
+  useMemo,
+  useRef,
+  useEffect,
+} from "react";
 import { Camera, Save } from "lucide-react";
 import { useGetProfileQuery } from "@/store/api/AuthApi";
 import {
@@ -33,7 +39,9 @@ const InputField: React.FC<InputFieldProps> = ({
   type = "text",
 }) => (
   <div className="flex flex-col space-y-2">
-    <label className="text-xs font-semibold uppercase text-gray-500">{label}</label>
+    <label className="text-xs font-semibold uppercase text-gray-500">
+      {label}
+    </label>
     <input
       type={type}
       value={value}
@@ -59,7 +67,9 @@ const ToggleItem: React.FC<ToggleItemProps> = ({
     <button
       onClick={onToggle}
       className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 ${
-        isEnabled ? "bg-indigo-600 focus:ring-indigo-500" : "bg-gray-200 focus:ring-gray-400"
+        isEnabled
+          ? "bg-indigo-600 focus:ring-indigo-500"
+          : "bg-gray-200 focus:ring-gray-400"
       }`}
       role="switch"
       aria-checked={isEnabled}
@@ -242,16 +252,16 @@ const App: React.FC = () => {
   const handleSecurityToggle = useCallback(
     async (key: keyof typeof securitySettings) => {
       const newValue = !securitySettings[key];
-      setSecuritySettings(prev => ({ ...prev, [key]: newValue }));
+      setSecuritySettings((prev) => ({ ...prev, [key]: newValue }));
 
       try {
         if (user?.id) {
           // await updateSecurity({ id: user.id, key, value: newValue }).unwrap();
           toast.success(`${key} updated successfully`);
         }
-      } catch  {
+      } catch {
         toast.error(`Failed to update ${key}`);
-        setSecuritySettings(prev => ({ ...prev, [key]: !newValue })); // rollback
+        setSecuritySettings((prev) => ({ ...prev, [key]: !newValue })); // rollback
       }
     },
     [securitySettings, user?.id]
@@ -261,15 +271,19 @@ const App: React.FC = () => {
   const handleNotificationToggle = useCallback(
     async (key: keyof typeof notificationSettings) => {
       const newValue = !notificationSettings[key];
-      setNotificationSettings(prev => ({ ...prev, [key]: newValue }));
+      setNotificationSettings((prev) => ({ ...prev, [key]: newValue }));
       try {
         if (user?.id) {
-          await updateClinicNotification({ id: user.id, key, value: newValue }).unwrap();
+          await updateClinicNotification({
+            id: user.id,
+            key,
+            value: newValue,
+          }).unwrap();
           toast.success(`${key} updated successfully`);
         }
       } catch {
         toast.error(`Failed to update ${key}`);
-        setNotificationSettings(prev => ({ ...prev, [key]: !newValue })); // rollback
+        setNotificationSettings((prev) => ({ ...prev, [key]: !newValue })); // rollback
       }
     },
     [notificationSettings, updateClinicNotification, user?.id]
@@ -318,8 +332,8 @@ const App: React.FC = () => {
   );
 
   return (
-    <div className="min-h-screen bg-neutral-50 p-4 sm:p-8">
-      <div className="max-w-6xl mx-auto">
+    <div className="min-h-screen  p-4 sm:p-8">
+      <div className="">
         <header className="flex justify-between items-center mb-8 pt-4">
           <div>
             <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight">
@@ -338,17 +352,20 @@ const App: React.FC = () => {
           </button>
         </header>
 
-        <ProfileSection profileData={profileData} setProfileData={setProfileData} />
+        <ProfileSection
+          profileData={profileData}
+          setProfileData={setProfileData}
+        />
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8 mt-8">
           <ToggleCard title="Security & Privacy">
-            {securityToggleItems.map(item => (
+            {securityToggleItems.map((item) => (
               <ToggleItem key={item.label} {...item} />
             ))}
           </ToggleCard>
 
           <ToggleCard title="Notifications & Alerts">
-            {notificationToggleItems.map(item => (
+            {notificationToggleItems.map((item) => (
               <ToggleItem key={item.label} {...item} />
             ))}
           </ToggleCard>
