@@ -1,6 +1,6 @@
 
 export enum Role {
-  INDIVIDUAL = 'INDIVIDUAL',
+  INDIVIDUAL = 'INDIVIDUAL_THERAPIST',
   PRIVATE_PRACTICE = 'CLINIC',
   THERAPIST = 'THERAPIST',
 }
@@ -12,7 +12,7 @@ export interface User {
   stripeCustomerId: string | null;
 }
 
-export type UserType = "THERAPIST" | "PATIENT" | string;
+export type UserType = "THERAPIST" | "CLINIC" | "INDIVIDUAL_THERAPIST" | string;
 
 export interface LoginRequest {
   email: string;

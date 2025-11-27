@@ -6,7 +6,7 @@ const usersApi = baseApi.injectEndpoints({
             query: () => '/users/clinics',
         }),
         getTherapistByClinic: builder.query({
-            query: (id) => `/users/therapists/${id}`,
+            query: (id) => `/users/clinics/${id}/therapists`,
         }),
         getClinicById: builder.query({
             query: (id) => `/users/clinics/${id}`,
@@ -74,14 +74,16 @@ const usersApi = baseApi.injectEndpoints({
                 method: "DELETE",
                
             }),
-        })
-
+        }),
+        getTherapistById: builder.query({
+            query: (id) => `/users/therapists/${id}`,
+        }),
     }),
 })
 
 export const { useGetAllClinicsQuery, useGetTherapistByClinicQuery, useGetAllTherapistQuery, useGetClinicByIdQuery, 
     useUpdateClinicProfileMutation, useDeleteClinicMutation, useUpdateClinicNotificationMutation, useAssignSubscriptionToClinicMutation, 
     useRemoveSubscriptionFromClinicMutation, useUpdateTherapistProfileMutation, useDeleteTherapistMutation, useAssignSubscriptionToTherapistMutation,
-    useRemoveTherapistFromSubscriptionMutation
+    useRemoveTherapistFromSubscriptionMutation, useGetTherapistByIdQuery
  } = usersApi
 export default usersApi
