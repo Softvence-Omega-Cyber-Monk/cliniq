@@ -9,8 +9,8 @@ import {
   useGetTicketMessagesQuery,
   useUpdateTicketStatusMutation,
   SupportTicket,
-} from "@/store/api/supportApi";
-import { toast } from "sonner";
+} from "@/store/api/supportApi"
+import { toast } from "sonner"
 
 export default function AdminSupportTickets() {
   const [showReplyModal, setShowReplyModal] = useState(false);

@@ -40,7 +40,7 @@ const ScheduleModal: React.FC<ScheduleModalProps> = ({ onClose }) => {
     status: "",
   });
 
-  const { data: therapistsData } = useGetTherapistByClinicQuery(userId);
+  const { data: therapistsData } = useGetTherapistByClinicQuery(userId!);
 
   const [selectedClientId, setSelectedClientId] = useState("");
   const [selectedTherapistId, setSelectedTherapistId] = useState("");
