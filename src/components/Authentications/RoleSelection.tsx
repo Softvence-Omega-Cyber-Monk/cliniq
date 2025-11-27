@@ -1,6 +1,5 @@
 import React from "react";
 import { Role } from "./types";
-import { UsersIcon } from "./Icons";
 import drIcon from "../../assets/Icons/Dr.svg";
 import drsIcon from "../../assets/Icons/drs.svg";
 
