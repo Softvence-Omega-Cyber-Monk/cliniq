@@ -2,6 +2,7 @@ import { useAppSelector } from "@/hooks/useRedux";
 import { useAddCrisisHistoryMutation } from "@/store/api/ClientsApi";
 import { useAddClinicClientCrisisHistoryMutation } from "@/store/api/ClinicClientsApi";
 import React, { useState } from "react";
+import { toast } from "sonner";
 
 interface CrisisModalProps {
   isOpen: boolean;
@@ -48,12 +49,13 @@ const CrisisModal: React.FC<CrisisModalProps> = ({
   const handleSubmit = async () => {
     try {
       onSubmit(formData);
+      console.log(userType);
 
       let res;
       if (userType === "THERAPIST") {
-        res = await addCrisisByClinic({
+        res = await addCrisisByTherapist({
           clientId,
-          clinicId: therapistId,
+          therapistId,
           crisisData: {
             crisisDate: new Date().toISOString(),
             description: formData.description,
@@ -64,9 +66,9 @@ const CrisisModal: React.FC<CrisisModalProps> = ({
         });
         console.log("Response from addCrisisByClinic:", res);
       } else if (userType === "CLINIC") {
-        res = await addCrisisByTherapist({
+        res = await addCrisisByClinic({
           clientId,
-          therapistId,
+          clinicId: therapistId,
           crisisData: {
             crisisDate: new Date().toISOString(),
             description: formData.description,
@@ -84,11 +86,11 @@ const CrisisModal: React.FC<CrisisModalProps> = ({
         onClose();
       } else {
         console.error("Failed to save crisis data:", res);
-        alert("Failed to save crisis. Please try again."); // optional
+        toast.error("Failed to save crisis data");
       }
     } catch (error) {
-      console.error("Error submitting crisis data:", error);
-      alert("An error occurred while saving the crisis."); // optional
+      toast.error("Failed to save crisis data");
+      console.log(error);
     }
   };
 
