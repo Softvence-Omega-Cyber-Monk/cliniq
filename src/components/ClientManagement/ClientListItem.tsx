@@ -6,12 +6,13 @@ import { User } from "lucide-react";
 
 const ClientListItem: React.FC<{
   client: Client;
+  userType: string | null;
   onClick: (client: Client) => void;
-}> = ({ client, onClick }) => (
+}> = ({ client, onClick, userType }) => (
   <div
     className="bg-[#FAFAF7] p-5 rounded-xl  transition duration-300 cursor-pointer flex items-center justify-between space-x-4 mb-4"
     onClick={() => {
-      console.log("Clicked client:", client);
+      console.log("Clicked client:", userType);
       onClick(client);
     }}
   >
@@ -73,7 +74,11 @@ const ClientListItem: React.FC<{
     </div>
     <Link
       className="hidden md:inline-flex items-center justify-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition duration-150"
-      to={`/clients/${client.id}`}
+      to={
+        userType === "THERAPIST"
+          ? `/clients/${client.id}`
+          : `/private-practice-admin/clients/${client.id}`
+      }
     >
       View Details
     </Link>

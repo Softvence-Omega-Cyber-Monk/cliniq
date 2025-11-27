@@ -1,4 +1,5 @@
-// import { logout, setToken } from "@/store/Slices/AuthSlice/authSlice";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { logout, setToken } from "@/store/Slices/AuthSlice/authSlice";
 import {
   // BaseQueryFn,
   // FetchArgs,
@@ -12,26 +13,31 @@ import { createApi } from "@reduxjs/toolkit/query/react";
 //   refreshToken: string;
 // }
 
-// const baseQuery = fetchBaseQuery({
-//   baseUrl: import.meta.env.VITE_API_BASE_URL,
-//   prepareHeaders: (headers) => {
-//     const token = localStorage.getItem("token");
-//     if (token) {
-//       headers.set("Authorization", `Bearer ${token}`);
-//     }
-//     return headers;
-//   },
-// });
+const baseQuery = fetchBaseQuery({
+  baseUrl: import.meta.env.VITE_API_BASE_URL,
+  prepareHeaders: (headers) => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      headers.set("Authorization", `Bearer ${token}`);
+    }
+    return headers;
+  },
+  // credentials: "include",
+});
 
-// const baseQueryWithReauth: BaseQueryFn<
-//   string | FetchArgs,
-//   unknown,
-//   FetchBaseQueryError
-// > = async (args, api, extraOptions) => {
-//   let result = await baseQuery(args, api, extraOptions);
-
-//   if (result.error && result.error.status === 401) {
-//     const refreshResult = await baseQuery("/auth/refresh", api, extraOptions);
+const baseQueryWithReauth: BaseQueryFn<
+  string | FetchArgs,
+  unknown,
+  FetchBaseQueryError
+> = async (args, api, extraOptions) => {
+  let result = await baseQuery(args, api, extraOptions);
+  const refreshToken = (api.getState() as any).auth.refreshToken
+  if (result.error && result.error.status === 401) {
+    const refreshResult = await baseQuery({
+      url: "/auth/refresh",
+      method: "POST",
+      body: {refreshToken} ,
+    }, api, extraOptions);
 
 //     if (
 //       refreshResult.data &&
@@ -67,7 +73,7 @@ const baseApi = createApi({
       return headers;
     }
   }),
-  tagTypes: ["APPOINTMENT", "ClINIC", "RESOURCE", "SUBSCRIPTION_PLAN", "THERAPIST", "CLINIC", "SUPPORT_TICKET", "SUPPORT_MESSAGE"],
+  tagTypes: ["APPOINTMENT", "ClINIC", "RESOURCE", "SUBSCRIPTION_PLAN", "THERAPIST", "CLINIC", "SUPPORT_TICKET", "SUPPORT_MESSAGE", "ClINICClIENT"],
 
   endpoints: () => ({}),
 });
