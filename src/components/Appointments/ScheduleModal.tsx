@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { X } from "lucide-react";
-import { useGetAllClientQuery } from "@/store/api/ClientsApi";
 import { useUserId } from "@/hooks/useUserId";
 import { useCreateAppointmentMutation } from "@/store/api/AppoinmentsApi";
 import { toast } from "sonner";
+import { useGetAllClinicClientsQuery } from "@/store/api/ClinicClientsApi";
+import { useGetTherapistByClinicQuery } from "@/store/api/UsersApi";
 
 interface ScheduleModalProps {
   onClose: () => void;
@@ -12,23 +13,34 @@ interface ScheduleModalProps {
 interface Client {
   id: string;
   name: string;
-  email: string;
+  email?: string;
   phone?: string;
   sessionCount: number;
   overallProgress: number;
   status: string;
 }
 
+interface Therapist {
+  id: string;
+  fullName: string;
+  email: string;
+  speciality?: string;
+}
+
 const ScheduleModal: React.FC<ScheduleModalProps> = ({ onClose }) => {
   const userId = useUserId();
   const [createAppointment, { isLoading }] = useCreateAppointmentMutation();
-  const { data } = useGetAllClientQuery({
-    therapistId: userId,
+
+  const { data: clientsData } = useGetAllClinicClientsQuery({
+    clinicId: userId,
     search: "",
     status: "",
   });
 
-  const [clientId, setClientId] = useState("");
+  const { data: therapistsData } = useGetTherapistByClinicQuery(userId);
+
+  const [selectedClientId, setSelectedClientId] = useState("");
+  const [selectedTherapistId, setSelectedTherapistId] = useState("");
   const [scheduledDate, setScheduledDate] = useState("");
   const [scheduledTime, setScheduledTime] = useState("");
   const [duration, setDuration] = useState(60);
@@ -37,26 +49,30 @@ const ScheduleModal: React.FC<ScheduleModalProps> = ({ onClose }) => {
   const [email, setEmail] = useState("");
   const [notes, setNotes] = useState("");
 
+  // Update phone/email whenever selected client changes
   useEffect(() => {
-    if (!clientId || !data?.data) return;
+    if (!selectedClientId || !clientsData?.data) return;
 
-    const selectedClient = data.data.find((c: Client) => c.id === clientId);
-    if (selectedClient) {
-      setEmail(selectedClient.email || "");
-      setPhone(selectedClient.phone || "");
+    const client = clientsData.data.find((c: Client) => c.id === selectedClientId);
+    if (client) {
+      setEmail(client.email || "");
+      setPhone(client.phone || "");
+    } else {
+      setEmail("");
+      setPhone("");
     }
-  }, [clientId, data]);
+  }, [selectedClientId, clientsData]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!clientId || !scheduledDate || !scheduledTime) {
+    if (!selectedClientId || !selectedTherapistId || !scheduledDate || !scheduledTime) {
       toast.error("Please fill all required fields");
       return;
     }
 
     const payload = {
-      clientId,
-      therapistId: userId,
+      clientId: selectedClientId,
+      therapistId: selectedTherapistId,
       scheduledDate,
       scheduledTime,
       duration,
@@ -86,30 +102,40 @@ const ScheduleModal: React.FC<ScheduleModalProps> = ({ onClose }) => {
         onClick={(e) => e.stopPropagation()}
       >
         <div className="p-6 border-b border-gray-100 flex justify-between items-center">
-          <h2 className="text-xl font-bold text-gray-800">
-            Schedule New Appointment
-          </h2>
-          <button
-            onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 transition"
-          >
+          <h2 className="text-xl font-bold text-gray-800">Schedule New Appointment</h2>
+          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 transition">
             <X size={24} />
           </button>
         </div>
 
         <form className="p-6 space-y-4" onSubmit={handleSubmit}>
+          {/* Therapist Select */}
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700 mb-1">Therapist</label>
+            <select
+              value={selectedTherapistId}
+              onChange={(e) => setSelectedTherapistId(e.target.value)}
+              className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-mint-500 focus:border-mint-500 transition duration-150 text-gray-800 bg-white shadow-inner"
+            >
+              <option value="">Select Therapist</option>
+              {therapistsData?.data?.map((t: Therapist) => (
+                <option key={t.id} value={t.id}>
+                  {t.fullName} ({t.email})
+                </option>
+              ))}
+            </select>
+          </div>
+
           {/* Client Select */}
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Client
-            </label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Client</label>
             <select
-              value={clientId}
-              onChange={(e) => setClientId(e.target.value)}
+              value={selectedClientId}
+              onChange={(e) => setSelectedClientId(e.target.value)}
               className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-mint-500 focus:border-mint-500 transition duration-150 text-gray-800 bg-white shadow-inner"
             >
               <option value="">Select Client</option>
-              {data?.data?.map((c: Client) => (
+              {clientsData?.data?.map((c: Client) => (
                 <option key={c.id} value={c.id}>
                   {c.name} ({c.email})
                 </option>
@@ -120,9 +146,7 @@ const ScheduleModal: React.FC<ScheduleModalProps> = ({ onClose }) => {
           {/* Date & Time */}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Date
-              </label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Date</label>
               <input
                 type="date"
                 value={scheduledDate}
@@ -131,9 +155,7 @@ const ScheduleModal: React.FC<ScheduleModalProps> = ({ onClose }) => {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Time
-              </label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Time</label>
               <input
                 type="time"
                 value={scheduledTime}
@@ -145,9 +167,7 @@ const ScheduleModal: React.FC<ScheduleModalProps> = ({ onClose }) => {
 
           {/* Duration */}
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Duration (minutes)
-            </label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Duration (minutes)</label>
             <input
               type="number"
               min={15}
@@ -159,9 +179,7 @@ const ScheduleModal: React.FC<ScheduleModalProps> = ({ onClose }) => {
 
           {/* Session Type */}
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Session Type
-            </label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Session Type</label>
             <select
               value={sessionType}
               onChange={(e) => setSessionType(e.target.value)}
@@ -174,9 +192,7 @@ const ScheduleModal: React.FC<ScheduleModalProps> = ({ onClose }) => {
 
           {/* Phone */}
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Phone
-            </label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Phone</label>
             <input
               type="tel"
               value={phone}
@@ -188,9 +204,7 @@ const ScheduleModal: React.FC<ScheduleModalProps> = ({ onClose }) => {
 
           {/* Email */}
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Email
-            </label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
             <input
               type="email"
               value={email}
@@ -202,9 +216,7 @@ const ScheduleModal: React.FC<ScheduleModalProps> = ({ onClose }) => {
 
           {/* Notes */}
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Notes
-            </label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Notes</label>
             <textarea
               value={notes}
               onChange={(e) => setNotes(e.target.value)}

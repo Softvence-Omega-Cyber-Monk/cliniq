@@ -4,7 +4,6 @@ import { useUserId } from "@/hooks/useUserId";
 import { useCreateNewClientMutation } from "@/store/api/ClientsApi";
 import { useAddClinicClientMutation } from "@/store/api/ClinicClientsApi";
 import { toast } from "sonner";
-import { Spinner } from "../ui/spinner";
 
 export interface ClientForm {
   name: string;
@@ -131,10 +130,6 @@ export const AddNewClient: React.FC<{
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleTherapistSelect = (id: string) => {
-    setSelectedTherapist(id);
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const payload = {
@@ -145,8 +140,7 @@ export const AddNewClient: React.FC<{
       condition: formData.condition,
       status: "active",
     };
-
-    try {
+try {
       if (userType === "THERAPIST") {
         await createTherapistClient({
           therapistId: userId!,
@@ -215,34 +209,14 @@ export const AddNewClient: React.FC<{
               value={formData.phoneNumber}
               onChange={handleChange}
             />
-            {/* Therapist Dropdown - only show if therapists are available */}
-            <div className="">
-              {therapists && therapists.length > 0 ? (
-                <TherapistDropdown
-                  therapists={therapists}
-                  selectedTherapistId={selectedTherapist}
-                  onChange={handleTherapistSelect}
-                />
-              ) : (
-                <div className="flex flex-col space-y-2">
-                  <label className="text-sm font-semibold text-gray-700">
-                    Assign Therapist
-                  </label>
-                  <div className="p-3 border border-gray-300 rounded-lg bg-gray-50 text-gray-500">
-                    No therapists available
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6 mb-6">
             <HealthIssuesInput
               value={formData.healthIssues}
               onChange={(arr) =>
                 setFormData((prev) => ({ ...prev, healthIssues: arr }))
               }
             />
+          </div>
+          <div className="mb-8">
             <FormInput
               id="condition"
               label="Condition"

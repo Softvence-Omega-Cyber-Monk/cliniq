@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { logout, setToken } from "@/store/Slices/AuthSlice/authSlice";
+import { logOut, setToken } from "@/store/Slices/AuthSlice/authSlice";
 import {
   BaseQueryFn,
   FetchArgs,
@@ -54,7 +54,7 @@ const baseQueryWithReauth: BaseQueryFn<
 
       result = await baseQuery(args, api, extraOptions);
     } else {
-      api.dispatch(logout());
+      api.dispatch(logOut());
     }
   }
 
@@ -63,16 +63,7 @@ const baseQueryWithReauth: BaseQueryFn<
 
 const baseApi = createApi({
   reducerPath: "baseApi",
-  baseQuery: fetchBaseQuery({
-    baseUrl: import.meta.env.VITE_API_BASE_URL,
-    prepareHeaders: (headers) => {
-      const token = localStorage.getItem("token");
-      if (token) {
-        headers.set("Authorization", `Bearer ${token}`);
-      }
-      return headers;
-    }
-  }),
+  baseQuery: baseQueryWithReauth,
   tagTypes: ["APPOINTMENT", "ClINICClIENT",],
 
   endpoints: () => ({}),
