@@ -1,17 +1,17 @@
-import { useAddCrisisHistoryMutation } from "@/store/api/ClientsApi";
 import { useAddClinicClientCrisisHistoryMutation } from "@/store/api/ClinicClientsApi";
 import React, { useState } from "react";
 
 interface CrisisModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (data: {
-    crisisDate?: string;
-    description: string;
-    severity: string;
-    intervention: string;
-    outcome: string;
-  }) => void;
+  // onSubmit: (data: {
+  //   crisisDate?: string | undefined;
+  //   description: string;
+  //   severity: string;
+  //   intervention: string;
+  //   outcome: string;
+  // }) => void;
+  onSubmit: (data: any) => void;
   clientId: string | undefined;
   therapistId: string | undefined;
 }
@@ -29,7 +29,7 @@ const CrisisModal: React.FC<CrisisModalProps> = ({
     intervention: "Emergency session scheduled, breathing exercises practiced",
     outcome: "Client stabilized after 30 minutes",
   });
-  const [addCrisis, { isLoading }] = useAddClinicClientCrisisHistoryMutation();
+  const [addCrisis] = useAddClinicClientCrisisHistoryMutation();
   if (!isOpen) return null;
   console.log("cline:", therapistId, "client:", clientId);
   const handleChange = (

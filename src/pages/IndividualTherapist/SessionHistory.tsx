@@ -23,7 +23,7 @@ const SessionHistory: React.FC<SessionHistoryProps> = ({ sessionHistory }) => {
   return (
     <div className="bg-[#FAFAF7] rounded-[12px] p-6">
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-lg font-bold">Session History</h2>
+        <h2 className="text-lg text-[#32363F] font-bold">Session History</h2>
         <span className="text-sm text-gray-500">
           {sessionHistory.length} sessions
         </span>
@@ -50,7 +50,9 @@ const SessionHistory: React.FC<SessionHistoryProps> = ({ sessionHistory }) => {
                     <Clock3 size={18} />
                   </div>
                   <div className="text-left">
-                    <h3 className="font-semibold">{s.sessionType}</h3>
+                    <h3 className="font-semibold capitalize text-[#32363F]">
+                      {s.sessionType}
+                    </h3>
                     <p className="text-xs text-gray-500">
                       {formatToYMDWithTime(s.sessionDate)}
                     </p>

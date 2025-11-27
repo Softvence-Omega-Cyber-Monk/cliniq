@@ -26,7 +26,7 @@ const CrisisHistory: React.FC<CrisisHistoryProps> = ({
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   // Handler when a new crisis is submitted
-  const handleAddCrisis = (newCrisis) => {
+  const handleAddCrisis = (newCrisis: Crisis) => {
     setCrisisHistory([newCrisis, ...crisisHistory]);
     setIsModalOpen(false);
   };

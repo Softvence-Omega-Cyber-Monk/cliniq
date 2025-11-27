@@ -7,7 +7,6 @@ import {
   Clock,
   AlertTriangle,
   Loader2,
-  X,
   Brain,
 } from "lucide-react";
 import { useAppSelector } from "@/hooks/useRedux";
@@ -23,7 +22,6 @@ import { useSendSessionMutation } from "@/store/api/BaseApi/AiApi";
 import CrisisHistory from "./CrisisHistory";
 import SessionHistory from "./SessionHistory";
 import TreatmentProgressCard from "./TreatmentProgressCard";
-import ProgressModal from "@/modals/ProgressModal";
 
 // Format seconds to HH:MM:SS
 const formatTime = (totalSeconds: number) => {
@@ -39,8 +37,8 @@ const TherapistClientDetails: React.FC = () => {
   const userType = useAppSelector((state) => state.auth.userType);
   const userId = useUserId();
   const navigate = useNavigate();
-  const [sendSession, { isLoading: isSending }] = useSendSessionMutation();
-  const [addClinicClientSessionHistory, { isLoading: isAdding }] =
+  const [sendSession] = useSendSessionMutation();
+  const [addClinicClientSessionHistory] =
     useAddClinicClientSessionHistoryMutation();
   // Fetch client data based on user type
   const therapistQuery = useGetClientByIdQuery(
@@ -71,8 +69,8 @@ const TherapistClientDetails: React.FC = () => {
   const [, setAudioURL] = useState<string | null>(null);
   const [sessionCompleted, setSessionCompleted] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
-  const [isProgressModalOpen, setIsProgressModalOpen] = useState(false);
-  const [progressNotes, setProgressNotes] = useState("");
+  const [, setIsProgressModalOpen] = useState(false);
+  // const [progressNotes, setProgressNotes] = useState("");
   const [aiInsights, setAiInsights] = useState<string | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [currentProgressMetrics, setCurrentProgressMetrics] = useState([
@@ -270,27 +268,27 @@ const TherapistClientDetails: React.FC = () => {
   };
 
   // Handle progress metric update
-  const handleProgressUpdate = (index: number, newProgress: number) => {
-    const updatedMetrics = [...currentProgressMetrics];
-    updatedMetrics[index] = {
-      ...updatedMetrics[index],
-      progress: newProgress,
-    };
-    setCurrentProgressMetrics(updatedMetrics);
-  };
+  // const handleProgressUpdate = (index: number, newProgress: number) => {
+  //   const updatedMetrics = [...currentProgressMetrics];
+  //   updatedMetrics[index] = {
+  //     ...updatedMetrics[index],
+  //     progress: newProgress,
+  //   };
+  //   setCurrentProgressMetrics(updatedMetrics);
+  // };
 
-  // Save progress updates
-  const handleSaveProgress = () => {
-    // Here you would typically send the updated progress to your API
-    console.log("Saving progress:", {
-      notes: progressNotes,
-      metrics: currentProgressMetrics,
-    });
+  // // Save progress updates
+  // const handleSaveProgress = () => {
+  //   // Here you would typically send the updated progress to your API
+  //   console.log("Saving progress:", {
+  //     notes: progressNotes,
+  //     metrics: currentProgressMetrics,
+  //   });
 
-    toast.success("Treatment progress updated successfully!");
-    setIsProgressModalOpen(false);
-    setProgressNotes("");
-  };
+  //   toast.success("Treatment progress updated successfully!");
+  //   setIsProgressModalOpen(false);
+  //   setProgressNotes("");
+  // };
 
   // Reset session to start new one
   const resetSession = () => {
@@ -301,7 +299,7 @@ const TherapistClientDetails: React.FC = () => {
     setIsAnalyzing(false);
   };
 
-  const handleGoBack = () => navigate(-1);
+  // const handleGoBack = () => navigate(-1);
 
   if (isLoading) {
     return (
@@ -589,7 +587,7 @@ const TherapistClientDetails: React.FC = () => {
       </div>
 
       {/* Progress Update Modal */}
-      <ProgressModal
+      {/* <ProgressModal
         isOpen={isProgressModalOpen}
         onClose={isProgressModalOpen}
       />
@@ -674,7 +672,7 @@ const TherapistClientDetails: React.FC = () => {
             </div>
           </div>
         </div>
-      )}
+      )} */}
     </div>
   );
 };
