@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { logout, setToken } from "@/store/Slices/AuthSlice/authSlice";
+import { logOut, setToken } from "@/store/Slices/AuthSlice/authSlice";
 import {
   // BaseQueryFn,
   // FetchArgs,
