@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Bell, Menu, LogOut, User } from "lucide-react";
 import { useAppDispatch, useAppSelector } from "@/hooks/useRedux";
-import { logout } from "@/store/Slices/AuthSlice/authSlice";
+import { logOut } from "@/store/Slices/AuthSlice/authSlice";
 
 interface NavbarProps {
   toggleSidebar: () => void;
@@ -36,7 +36,7 @@ const Navbar: React.FC<NavbarProps> = ({ toggleSidebar }) => {
   }, []);
 
   const handleLogout = () => {
-    dispatch(logout());
+    dispatch(logOut());
     // Implement your logout logic here
     console.log("Logout clicked");
   };

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { NavLink, Outlet, useLocation } from "react-router-dom";
 import {
   LayoutGrid,
@@ -13,6 +13,8 @@ import {
   CreditCard,
   Book,
 } from "lucide-react";
+import { useDispatch } from "react-redux";
+import { logOut } from "@/store/Slices/AuthSlice/authSlice";
 
 interface NavItem {
   id: number;
@@ -118,17 +120,31 @@ interface NavbarProps {
 
 const Navbar: React.FC<NavbarProps> = ({ toggleSidebar }) => {
   const avatarUrl = "https://placehold.co/40x40/fbcfe8/be185d?text=Dr";
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  const dispatch = useDispatch();
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
+        setIsDropdownOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const handleLogout = () => {
+    dispatch(logOut());
+    // optionally navigate to login page
+  };
 
   return (
-    <header
-      className="
-      sticky top-0 z-10
-      bg-white
-      border-b border-gray-200
-      p-4 md:py-6 md:px-8
-      shadow-sm
-    "
-    >
+    <header className="sticky top-0 z-10 bg-white border-b border-gray-200 p-4 md:py-6 md:px-8 shadow-sm">
       <div className="flex justify-between items-start">
         <div className="flex flex-col">
           <h1 className="text-2xl font-bold text-gray-900">Welcome</h1>
@@ -154,23 +170,51 @@ const Navbar: React.FC<NavbarProps> = ({ toggleSidebar }) => {
             <span className="absolute top-2 right-2 block h-2 w-2 rounded-full ring-2 ring-white bg-pink-400 dark:ring-gray-900"></span>
           </button>
 
-          <div className="relative w-10 h-10 rounded-full overflow-hidden border-2 border-pink-400">
-            <img
-              src={avatarUrl}
-              alt="User Avatar"
-              className="w-full h-full object-cover"
-              onError={(e: React.SyntheticEvent<HTMLImageElement, Event>) => {
-                const target = e.target as HTMLImageElement;
-                target.onerror = null;
-                target.style.display = "none";
-              }}
-            />
-            <div
-              className="absolute inset-0 flex items-center justify-center text-white font-bold text-xs bg-pink-400"
-              style={{ display: "none" }}
+          {/* Avatar Dropdown */}
+          <div className="relative" ref={dropdownRef}>
+            <button
+              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+              className="relative w-10 h-10 rounded-full overflow-hidden border-2 border-pink-400 focus:outline-none"
             >
-              DR
-            </div>
+              <img
+                src={avatarUrl}
+                alt="User Avatar"
+                className="w-full h-full object-cover"
+                onError={(e: React.SyntheticEvent<HTMLImageElement, Event>) => {
+                  const target = e.target as HTMLImageElement;
+                  target.onerror = null;
+                  target.style.display = "none";
+                }}
+              />
+              <div
+                className={`absolute inset-0 flex items-center justify-center text-white font-bold text-xs bg-pink-400 ${
+                  avatarUrl ? "hidden" : "flex"
+                }`}
+              >
+                DR
+              </div>
+            </button>
+
+            {/* Dropdown Menu */}
+            {isDropdownOpen && (
+              <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg z-50">
+                <button
+                  onClick={() => {
+                    console.log("Go to profile settings");
+                    setIsDropdownOpen(false);
+                  }}
+                  className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-t-lg"
+                >
+                  Profile Settings
+                </button>
+                <button
+                  onClick={handleLogout}
+                  className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-b-lg"
+                >
+                  Log Out
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </div>

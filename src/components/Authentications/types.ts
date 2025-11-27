@@ -1,7 +1,7 @@
 
 export enum Role {
   INDIVIDUAL = 'INDIVIDUAL',
-  PRIVATE_PRACTICE = 'PRIVATE PRACTICE',
+  PRIVATE_PRACTICE = 'CLINIC',
   THERAPIST = 'THERAPIST',
 }
 export interface User {
