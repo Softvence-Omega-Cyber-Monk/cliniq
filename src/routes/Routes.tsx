@@ -19,7 +19,8 @@ import PlatformSettings from "@/pages/PlatformSettings";
 import SupportTickets from "@/pages/SupportTickets";
 import AdminSupportTickets from "@/components/Admin/SupportTickets";
 import ReportsTwo from "../pages/ReportsTwo";
-
+import Billing from "../pages/Billing/Billing";
+import Materials from "../pages/Materials/Materials";
 import IndividualTherapistDashboard from "../pages/IndividualTherapist/IndividualTherapistDashboard";
 import IndividualTherapistClients from "../pages/IndividualTherapist/IndividualTherapistClients";
 import IndividualTherapistAppointments from "../pages/IndividualTherapist/IndividualTherapistAppointments";
