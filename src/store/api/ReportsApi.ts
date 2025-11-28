@@ -49,7 +49,7 @@ export const reportsApi = baseApi.injectEndpoints({
     }),
     getCrisisAlerts: builder.query({
       query: (params) => ({
-        url: "/reports/crisis-alerts",
+        url: "/reports/session-alerts",
         method: "GET",
         params: {
           limit: params.limit,
