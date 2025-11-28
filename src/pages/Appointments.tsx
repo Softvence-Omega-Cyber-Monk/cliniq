@@ -1,22 +1,19 @@
 import React, { useState, useCallback } from "react";
-import {
-  MOCK_APPOINTMENTS,
-  MOCK_STATS,
-} from "@/components/Appointments/mockData";
+import { MOCK_STATS } from "@/components/Appointments/mockData";
 import { Client } from "@/components/Appointments/types";
 import DashboardView from "@/components/Appointments/DashboardView";
 import SessionView from "@/components/Appointments/SessionView";
 import ScheduleModal from "@/components/Appointments/ScheduleModal";
 
-const Appointments: React.FC = () => {
+const  Appointments: React.FC = () => {
   const [view, setView] = useState<"dashboard" | "session">("dashboard");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [activeClient, setActiveClient] = useState<Client | null>(null);
 
-  const handleStartSession = useCallback((client: Client) => {
-    setActiveClient(client);
-    setView("session");
-  }, []);
+  // const handleStartSession = useCallback((client: Client) => {
+  //   setActiveClient(client);
+  //   setView("session");
+  // }, []);
 
   const handleEndSession = useCallback(() => {
     setActiveClient(null);
@@ -34,12 +31,7 @@ const Appointments: React.FC = () => {
   return (
     <div className=" min-h-screen">
       {view === "dashboard" && (
-        <DashboardView
-          stats={MOCK_STATS}
-          appointments={MOCK_APPOINTMENTS}
-          onStartSession={handleStartSession}
-          onOpenModal={handleOpenModal}
-        />
+        <DashboardView stats={MOCK_STATS} onOpenModal={handleOpenModal} />
       )}
 
       {view === "session" && activeClient && (

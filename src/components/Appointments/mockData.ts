@@ -1,4 +1,4 @@
-import { Client, Appointment, Stats } from './types';
+import { Client, Stats } from './types';
 
 export const MOCK_CLIENT: Client = {
   id: 'c1',
@@ -10,7 +10,7 @@ export const MOCK_CLIENT: Client = {
   healthIssues: ['Generalized Anxiety Disorder', 'Panic Attacks', 'Work-related Stress'],
 };
 
-export const MOCK_APPOINTMENTS: Appointment[] = [
+export const MOCK_APPOINTMENTS = [
   {
     id: 'a1',
     client: MOCK_CLIENT,
@@ -74,12 +74,12 @@ export const MOCK_APPOINTMENTS: Appointment[] = [
 ];
 
 export const MOCK_STATS: Stats = {
-    totalAppointments: MOCK_APPOINTMENTS.length,
-    todaySessions: 1,
-    virtualSessions: 3,
-    inPersonSessions: 3,
-    totalAppointmentsDelta: 12.3,
-    todaySessionsDelta: 12.3,
-    virtualSessionsDelta: 12.3,
-    inPersonSessionsDelta: 12.3,
+  totalAppointments: MOCK_APPOINTMENTS.length,
+  todaySessions: 1,
+  virtualSessions: 3,
+  inPersonSessions: 3,
+  totalAppointmentsDelta: 12.3,
+  todaySessionsDelta: 12.3,
+  virtualSessionsDelta: 12.3,
+  inPersonSessionsDelta: 12.3,
 };

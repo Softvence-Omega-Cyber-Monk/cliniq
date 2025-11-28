@@ -1,17 +1,19 @@
-import React from 'react';
-import ProfileInformation from '@/components/Settings/ProfileInformation';
-import Notifications from '@/components/Settings/Notifications';
-import Security from '@/components/Settings/Security';
-import Preferences from '@/components/Settings/Preferences';
-import BillingAndSubscription from '@/components/Settings/BillingAndSubscription';
+import React from "react";
+import ProfileInformation from "@/components/Settings/ProfileInformation";
+import Notifications from "@/components/Settings/Notifications";
+import Security from "@/components/Settings/Security";
+import Preferences from "@/components/Settings/Preferences";
+import BillingAndSubscription from "@/components/Settings/BillingAndSubscription";
 
 const Settings: React.FC = () => {
   return (
-    <div className="min-h-screen bg-gray-50 font-sans">
+    <div className="min-h-screen bg-gray-50 ">
       <header className="py-8 px-6 bg-white shadow-sm border-b border-gray-100">
         <div className="max-w-7xl mx-auto">
           <h1 className="text-2xl font-extrabold text-gray-800">SETTINGS</h1>
-          <p className="text-sm text-gray-500">Manage your account and preferences.</p>
+          <p className="text-sm text-gray-500">
+            Manage your account and preferences.
+          </p>
         </div>
       </header>
 

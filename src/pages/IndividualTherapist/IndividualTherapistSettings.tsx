@@ -1,9 +1,9 @@
-import React from 'react';
-import ProfileInformation from '@/components/Settings/ProfileInformation';
-import Notifications from '@/components/Settings/Notifications';
-import Security from '@/components/Settings/Security';
-import Preferences from '@/components/Settings/Preferences';
-import BillingAndSubscription from '@/components/Settings/BillingAndSubscription';
+import React from "react";
+import ProfileInformation from "@/components/Settings/ProfileInformation";
+import Notifications from "@/components/Settings/Notifications";
+import Security from "@/components/Settings/Security";
+import Preferences from "@/components/Settings/Preferences";
+import BillingAndSubscription from "@/components/Settings/BillingAndSubscription";
 
 interface File {
   name: string;
@@ -15,17 +15,18 @@ interface IndividualTherapistSettingsProps {
   file?: File;
 }
 
-const IndividualTherapistSettings: React.FC<IndividualTherapistSettingsProps> = () => {
+const IndividualTherapistSettings: React.FC<
+  IndividualTherapistSettingsProps
+> = () => {
   return (
-    <div className="min-h-screen bg-gray-50 font-sans">
-      <header className="py-8 px-6 bg-white shadow-sm border-b border-gray-100">
-        <div className="max-w-7xl mx-auto">
-          <h1 className="text-2xl font-extrabold text-gray-800">INDIVIDUAL THERAPIST SETTINGS</h1>
-          <p className="text-sm text-gray-500">Manage your account and preferences.</p>
+    <div className="min-h-screen">
+      <main className=" px-4 sm:px-6 lg:px-8 py-10">
+        <div className="mb-8">
+          <h1 className="text-3xl font-semibold text-gray-800">SETTINGS</h1>
+          <p className="text-basic text-[#7E8086]">
+            Manage your account and preferences.
+          </p>
         </div>
-      </header>
-
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
         <div className="space-y-8">
           <ProfileInformation />
           <Notifications />
@@ -35,7 +36,6 @@ const IndividualTherapistSettings: React.FC<IndividualTherapistSettingsProps> = 
         </div>
       </main>
 
-      {/* Tailwind classes that make the toggle switch work */}
       <style styled-tsx>{`
         .toggle-checkbox {
           top: 0;

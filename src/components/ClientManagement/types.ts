@@ -29,6 +29,7 @@ export interface Client {
   status: Status;
   condition: string;
   email: string;
+  sessionCount: number;
   phone: string;
   totalSessions: number;
   lastSession: string; // YYYY-MM-DD

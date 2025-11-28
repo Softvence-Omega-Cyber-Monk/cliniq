@@ -5,8 +5,8 @@ import { UserIcon, UsersIcon, ChevronDownIcon } from "./Icons";
 import { toast } from "sonner";
 import { Eye, EyeOff } from "lucide-react";
 import {
-  useRegistrationClinicMutation,
-  useRegistrationTherapistMutation,
+  useRegisterClinicMutation,
+  useRegisterIndividualTherapistMutation,
 } from "@/store/api/AuthApi";
 import { useNavigate } from "react-router-dom";
 
@@ -386,8 +386,8 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const navigate = useNavigate();
-  const [registrationClinic, { isLoading }] = useRegistrationClinicMutation();
-  const [registrationTherapist] = useRegistrationTherapistMutation();
+  const [registerClinic, { isLoading }] = useRegisterClinicMutation();
+  const [registerIndividualTherapist] = useRegisterIndividualTherapistMutation();
   const {
     register,
     handleSubmit,
@@ -420,10 +420,10 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
       };
       let result;
       if (currentRole === Role.PRIVATE_PRACTICE) {
-        result = await registrationClinic(payload).unwrap();
+        result = await registerClinic(payload).unwrap();
       
       } else {
-        result = await registrationTherapist(payload).unwrap();
+        result = await registerIndividualTherapist(payload).unwrap();
         console.log(result)
       }
 

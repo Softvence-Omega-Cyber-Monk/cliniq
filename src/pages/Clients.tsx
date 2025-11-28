@@ -1,9 +1,9 @@
-import React from 'react';
-import ClientManagementDashboard from '@/components/ClientManagement/ClientManagementDashboard';
+import React from "react";
+import ClientManagementDashboard from "@/components/ClientManagement/ClientManagementDashboard";
 
 const Clients: React.FC = () => {
   return (
-    <div>
+    <div className=" bg-[#f3f3ec] min-h-screen">
       <ClientManagementDashboard />
     </div>
   );

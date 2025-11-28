@@ -46,7 +46,7 @@ function Login() {
     }
   };
   return (
-    <main className=" font-sans">
+    <main className=" ">
       <div className="">
         <AuthLayout role={selectedRole}>{renderView()}</AuthLayout>
       </div>
