@@ -5,7 +5,6 @@ import {
   useGetSubscriptionStatusQuery,
   useGetSubscriptionPlansQuery,
   useGetPaymentMethodsQuery,
-  useGetPaymentHistoryQuery,
   useCancelSubscriptionMutation,
   useReactivateSubscriptionMutation,
   useDeletePaymentMethodMutation,
@@ -15,7 +14,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Loader2, CreditCard, AlertCircle, CheckCircle2, Eye, Plus } from "lucide-react";
+import { Loader2, CreditCard, AlertCircle, CheckCircle2, Plus } from "lucide-react";
 import AddPaymentMethodDialog from "@/components/Admin/Billing/AddPaymentMethodDialog";
 import UpgradePlanDialog from "@/components/Admin/Billing/UpgradePlanDialog";
 import CancelSubscriptionDialog from "@/components/Admin/Billing/CancelSubscriptionDialog";
@@ -37,16 +36,12 @@ const Billing = () => {
 
   const { data: plans = [], isLoading: plansLoading } = useGetSubscriptionPlansQuery();
   const { data: paymentMethods = [], isLoading: pmLoading } = useGetPaymentMethodsQuery();
-  const { data: paymentsResponse, isLoading: historyLoading } = useGetPaymentHistoryQuery({
-    page: 1,
-    limit: 10,
-  });
+
 
   const [cancelSubscription] = useCancelSubscriptionMutation();
   const [reactivateSubscription, { isLoading: reactivating }] = useReactivateSubscriptionMutation();
   const [deletePaymentMethod] = useDeletePaymentMethodMutation();
   const [setDefaultPaymentMethod] = useSetDefaultPaymentMethodMutation();
-  const payments = paymentsResponse?.data || [];
 
   // === NOTIFICATION HELPER ===
   const showNotification = (message: string, type: 'success' | 'error' = 'success') => {
