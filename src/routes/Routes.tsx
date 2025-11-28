@@ -110,6 +110,8 @@ const routes = createBrowserRouter([
           { path: "reportstwo", element: <ReportsTwo /> },
           { path: "settings", element: <PlatformSettings /> },
           { path: "support", element: <SupportTickets /> },
+          { path: "billing", element: <Billing /> },
+          { path: "materials", element: <Materials /> },
         ],
       },
     ],
