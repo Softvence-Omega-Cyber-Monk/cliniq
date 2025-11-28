@@ -50,7 +50,7 @@ const Billing = () => {
     isLoading: statusLoading,
     error: statusError,
   } = useGetSubscriptionStatusQuery();
-
+  
   const { data: plans = [], isLoading: plansLoading } =
     useGetSubscriptionPlansQuery();
   const { data: paymentMethods = [], isLoading: pmLoading } =

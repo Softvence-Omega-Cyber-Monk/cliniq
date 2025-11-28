@@ -17,6 +17,7 @@ const appointmentsApi = baseApi.injectEndpoints({
         method: "GET",
         params: { status, sessionType, page, limit },
       }),
+      providesTags: ["APPOINTMENT"],
     }),
 
     getAppointmentDetails: builder.query({

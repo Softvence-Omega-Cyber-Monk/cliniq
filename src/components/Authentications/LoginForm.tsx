@@ -210,7 +210,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSwitchToSignUp }) => {
       </div>
 
       <div className="flex flex-col justify-center mx-4">
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 mt-[150px]">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 mt-[150px] md:w-2/4 mx-auto">
           <div>
             <label className="text-sm font-bold text-gray-700 block mb-2">
               Email

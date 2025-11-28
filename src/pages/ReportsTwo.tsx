@@ -1,5 +1,5 @@
 import {
-  Download,
+ 
   ChevronDown,
   CalendarCheck,
   Users,
@@ -137,9 +137,9 @@ const FilterBar: React.FC = () => {
           <Dropdown key={d.label} label={d.label} options={d.options} />
         ))}
       </div>
-      <button className="flex items-center justify-center bg-emerald-500 hover:bg-emerald-600 text-white font-semibold py-2 px-4 rounded-lg shadow-md transition duration-200 text-sm h-10 w-full lg:w-auto min-w-[140px]">
+      {/* <button className="flex items-center justify-center bg-emerald-500 hover:bg-emerald-600 text-white font-semibold py-2 px-4 rounded-lg shadow-md transition duration-200 text-sm h-10 w-full lg:w-auto min-w-[140px]">
         Generate Report
-      </button>
+      </button> */}
     </div>
   );
 };
@@ -330,10 +330,10 @@ const SessionReportTable: React.FC<SessionReportTableProps> = ({
         <h3 className="text-lg font-semibold text-gray-800">
           Session Data Report
         </h3>
-        <button className="flex items-center text-sm font-medium text-gray-700 bg-white border border-gray-300 py-1.5 px-3 rounded-lg hover:bg-gray-50 transition duration-150">
+        {/* <button className="flex items-center text-sm font-medium text-gray-700 bg-white border border-gray-300 py-1.5 px-3 rounded-lg hover:bg-gray-50 transition duration-150">
           <Download className="w-4 h-4 mr-2" />
           Download Report
-        </button>
+        </button> */}
       </div>
 
       {/* Table Structure */}
@@ -549,10 +549,10 @@ const App: React.FC = () => {
             Generate and view detailed practice performance reports
           </p>
         </div>
-        <button className="flex items-center bg-gray-800 hover:bg-gray-700 text-white font-semibold py-2 px-4 rounded-xl shadow-md transition duration-200 mt-4 sm:mt-0 min-w-[170px] justify-center">
+        {/* <button className="flex items-center bg-gray-800 hover:bg-gray-700 text-white font-semibold py-2 px-4 rounded-xl shadow-md transition duration-200 mt-4 sm:mt-0 min-w-[170px] justify-center">
           <Download className="w-4 h-4 mr-2" />
           Download Report
-        </button>
+        </button> */}
       </header>
 
       {/* Stat Cards */}

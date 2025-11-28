@@ -2,7 +2,7 @@
 import { useUserId } from "@/hooks/useUserId";
 import { useRegisterTherapistMutation } from "@/store/api/AuthApi";
 import { useUpdateTherapistProfileMutation } from "@/store/api/UsersApi";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
@@ -54,15 +54,15 @@ const AddTherapistModal: React.FC<AddTherapistModalProps> = ({
       endTime: "",
       licenseNumber: "",
       password: "",
-      profileImage: null,
+      // profileImage: null,
       daysAvailable: [],
     },
   });
-  console.log(therapistData)
+
   const [registerTherapist] = useRegisterTherapistMutation();
   const [updateTherapistProfile] = useUpdateTherapistProfileMutation();
 
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  // const fileInputRef = useRef<HTMLInputElement>(null);
   const [previewImage, setPreviewImage] = useState<string>("");
 
   const daysAvailable = watch("daysAvailable");
@@ -85,7 +85,7 @@ const AddTherapistModal: React.FC<AddTherapistModalProps> = ({
         endTime: therapistData.endTime || "",
         licenseNumber: therapistData.licenseNumber || "",
         password: "",
-        profileImage: null,
+        // profileImage: null,
         daysAvailable: therapistData.daysAvailable || [],
       });
 
@@ -110,15 +110,15 @@ const AddTherapistModal: React.FC<AddTherapistModalProps> = ({
   /* --------------------------------------
             IMAGE HANDLER
   ---------------------------------------*/
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setPreviewImage(URL.createObjectURL(file));
-      setValue("profileImage", e.target.files);
-    }
-  };
+  // const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  //   const file = e.target.files?.[0];
+  //   if (file) {
+  //     setPreviewImage(URL.createObjectURL(file));
+  //     setValue("profileImage", e.target.files);
+  //   }
+  // };
 
-  const handleEditPictureClick = () => fileInputRef.current?.click();
+  // const handleEditPictureClick = () => fileInputRef.current?.click();
 
   /* --------------------------------------
             FORM SUBMIT HANDLER
@@ -141,9 +141,9 @@ const AddTherapistModal: React.FC<AddTherapistModalProps> = ({
       payload.password = data.password;
     }
 
-    if (data.profileImage && data.profileImage.length > 0) {
-      payload.profileImage = data.profileImage[0];
-    }
+    // if (data.profileImage && data.profileImage.length > 0) {
+    //   payload.profileImage = data.profileImage[0];
+    // }
 
     try {
       let res;
@@ -193,7 +193,7 @@ const AddTherapistModal: React.FC<AddTherapistModalProps> = ({
           {/* Profile */}
           <div className="flex items-center gap-4">
             <div className="relative">
-              <input
+              {/* <input
                 type="file"
                 {...register("profileImage")}
                 ref={(e) => {
@@ -203,7 +203,7 @@ const AddTherapistModal: React.FC<AddTherapistModalProps> = ({
                 onChange={handleImageChange}
                 className="hidden"
                 accept="image/*"
-              />
+              /> */}
 
               <div className="w-20 h-20 rounded-full bg-gray-200 overflow-hidden flex items-center justify-center shadow-md">
                 {previewImage ? (
@@ -218,13 +218,13 @@ const AddTherapistModal: React.FC<AddTherapistModalProps> = ({
                 )}
               </div>
 
-              <button
+              {/* <button
                 type="button"
                 onClick={handleEditPictureClick}
                 className="absolute -bottom-1 -right-1 bg-white border rounded-full p-1 shadow"
               >
                 Edit
-              </button>
+              </button> */}
             </div>
 
             <div>
