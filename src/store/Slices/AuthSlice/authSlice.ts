@@ -17,14 +17,14 @@ export interface User {
   clinic: string | null;
   subscriptionPlan: string | null;
   createdAt: string;
-  userType: "THERAPIST" | "ADMIN" | "PRIVATE_PRACTICE" | "CLINIC" | "INDIVIDUAL_THERAPIST";
+  userType?: "THERAPIST" | "ADMIN" | "PRIVATE_PRACTICE" | "CLINIC" | "INDIVIDUAL_THERAPIST";
   updatedAt: string;
 }
 interface AuthState {
   user: User | null;
   accessToken: string | null;
   refreshToken: string | null;
-  userType?: "THERAPIST" | "ADMIN" | "PRIVATE_PRACTICE" | "CLINIC" | null;
+  userType?: "THERAPIST" | "ADMIN" | "PRIVATE_PRACTICE" | "CLINIC" | "INDIVIDUAL_THERAPIST" | null;
 }
 
 const initialState: AuthState = {

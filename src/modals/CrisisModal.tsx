@@ -50,7 +50,7 @@ const CrisisModal: React.FC<CrisisModalProps> = ({
       onSubmit(formData);
 
       let res;
-      if (userType === "THERAPIST") {
+      if (userType === "THERAPIST" || userType === "INDIVIDUAL_THERAPIST") {
         res = await addCrisisByTherapist({
           clientId,
           therapistId,

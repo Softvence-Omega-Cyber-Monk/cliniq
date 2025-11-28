@@ -6,8 +6,14 @@ import { User } from "lucide-react";
 
 const ClientListItem: React.FC<{
   client: Client;
-  userType: "THERAPIST" | "ADMIN" | "PRIVATE_PRACTICE" | "CLINIC" | null | undefined
-;
+  userType:
+    | "THERAPIST"
+    | "ADMIN"
+    | "PRIVATE_PRACTICE"
+    | "CLINIC"
+    | "INDIVIDUAL_THERAPIST"
+    | null
+    | undefined;
   onClick: (client: Client) => void;
 }> = ({ client, onClick, userType }) => (
   <div
@@ -76,7 +82,9 @@ const ClientListItem: React.FC<{
     <Link
       className="hidden md:inline-flex items-center justify-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition duration-150"
       to={
-        userType === "THERAPIST"
+        userType === "THERAPIST" ||
+        userType === "INDIVIDUAL_THERAPIST" ||
+        (userType === null && client.id !== undefined)
           ? `/clients/${client.id}`
           : `/private-practice-admin/clients/${client.id}`
       }

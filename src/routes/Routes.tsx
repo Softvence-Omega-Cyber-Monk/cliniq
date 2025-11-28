@@ -19,8 +19,7 @@ import PlatformSettings from "@/pages/PlatformSettings";
 import SupportTickets from "@/pages/SupportTickets";
 import AdminSupportTickets from "@/components/Admin/SupportTickets";
 import ReportsTwo from "../pages/ReportsTwo";
-import Billing from "../pages/Billing";
-import Materials from "../pages/Materials";
+
 import IndividualTherapistDashboard from "../pages/IndividualTherapist/IndividualTherapistDashboard";
 import IndividualTherapistClients from "../pages/IndividualTherapist/IndividualTherapistClients";
 import IndividualTherapistAppointments from "../pages/IndividualTherapist/IndividualTherapistAppointments";
@@ -44,7 +43,7 @@ const routes = createBrowserRouter([
     element: <Layout />,
     children: [
       {
-        element: <ProtectedRoute allowedRoles={["THERAPIST"]} />,
+        element: <ProtectedRoute allowedRoles={"INDIVIDUAL_THERAPIST"} />,
         children: [
           {
             index: true,
@@ -91,7 +90,7 @@ const routes = createBrowserRouter([
   },
   {
     path: "/private-practice-admin",
-    element: <ProtectedRoute allowedRoles={["CLINIC"]} />,
+    element: <ProtectedRoute allowedRoles={"CLINIC"} />,
     children: [
       {
         path: "",
@@ -110,8 +109,6 @@ const routes = createBrowserRouter([
           { path: "reportstwo", element: <ReportsTwo /> },
           { path: "settings", element: <PlatformSettings /> },
           { path: "support", element: <SupportTickets /> },
-          { path: "billing", element: <Billing /> },
-          { path: "materials", element: <Materials /> },
         ],
       },
     ],

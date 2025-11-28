@@ -37,7 +37,7 @@ const ScheduleModal: React.FC<ScheduleModalProps> = ({ onClose }) => {
     useCreateAppointmentMutation();
 
   const therapistQuery = useGetAllClientQuery(
-    userType === "THERAPIST"
+    userType === "THERAPIST" || userType === "INDIVIDUAL_THERAPIST"
       ? {
           therapistId: userId,
           search: "",
@@ -57,7 +57,9 @@ const ScheduleModal: React.FC<ScheduleModalProps> = ({ onClose }) => {
 
   // Select the active query
   const clientsData =
-    userType === "THERAPIST" ? therapistQuery.data : clinicQuery.data;
+    userType === "THERAPIST" || userType === "INDIVIDUAL_THERAPIST"
+      ? therapistQuery.data
+      : clinicQuery.data;
 
   const { data: therapistsData } = useGetTherapistByClinicQuery(
     userType === "CLINIC" ? userId! : skipToken
@@ -65,7 +67,9 @@ const ScheduleModal: React.FC<ScheduleModalProps> = ({ onClose }) => {
 
   const [selectedClientId, setSelectedClientId] = useState("");
   const [selectedTherapistId, setSelectedTherapistId] = useState(
-    userType === "THERAPIST" ? userId : ""
+    userType === "THERAPIST" || userType === "INDIVIDUAL_THERAPIST"
+      ? userId
+      : ""
   );
   const [scheduledDate, setScheduledDate] = useState("");
   const [scheduledTime, setScheduledTime] = useState("");

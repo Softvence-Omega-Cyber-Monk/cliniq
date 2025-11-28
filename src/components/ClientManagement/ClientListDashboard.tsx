@@ -24,7 +24,7 @@ const ClientListDashboard: React.FC = () => {
 
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const therapistQuery = useGetAllClientQuery(
-    userType === "THERAPIST"
+    userType === "THERAPIST" || userType === "INDIVIDUAL_THERAPIST"
       ? {
           therapistId: userId,
           search: searchTerm,
@@ -48,18 +48,26 @@ const ClientListDashboard: React.FC = () => {
 
   // Select the active query
   const data =
-    userType === "THERAPIST" ? therapistQuery.data : clinicQuery.data;
+    userType === "THERAPIST" || userType === "INDIVIDUAL_THERAPIST"
+      ? therapistQuery.data
+      : clinicQuery.data;
   console.log(data);
   const isFetching =
-    userType === "THERAPIST"
+    userType === "THERAPIST" || userType === "INDIVIDUAL_THERAPIST"
       ? therapistQuery.isFetching
       : clinicQuery.isFetching;
   const isLoading =
-    userType === "THERAPIST" ? therapistQuery.isLoading : clinicQuery.isLoading;
+    userType === "THERAPIST" || userType === "INDIVIDUAL_THERAPIST"
+      ? therapistQuery.isLoading
+      : clinicQuery.isLoading;
   const error =
-    userType === "THERAPIST" ? therapistQuery.error : clinicQuery.error;
+    userType === "THERAPIST" || userType === "INDIVIDUAL_THERAPIST"
+      ? therapistQuery.error
+      : clinicQuery.error;
   const refetch =
-    userType === "THERAPIST" ? therapistQuery.refetch : clinicQuery.refetch;
+    userType === "THERAPIST" || userType === "INDIVIDUAL_THERAPIST"
+      ? therapistQuery.refetch
+      : clinicQuery.refetch;
 
   // Reset page on search/filter change
   useEffect(() => {

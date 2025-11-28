@@ -72,7 +72,7 @@ export const reportsApi = baseApi.injectEndpoints({
     }),
     getClinicRecentSessions: builder.query({
       query: (params) => ({
-        url: "/reports/recent-sessions",
+        url: "/recent-sessions",
         method: "GET",
         params: {
           limit: params.limit,

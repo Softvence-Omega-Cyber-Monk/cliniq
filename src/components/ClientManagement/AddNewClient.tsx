@@ -141,7 +141,7 @@ export const AddNewClient: React.FC<{
       status: "active",
     };
     try {
-      if (userType === "THERAPIST") {
+      if (userType === "THERAPIST" || userType === "INDIVIDUAL_THERAPIST") {
         await createTherapistClient({
           therapistId: userId!,
           credentials: payload,
