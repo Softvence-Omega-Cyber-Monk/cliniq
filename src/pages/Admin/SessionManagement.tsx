@@ -19,7 +19,7 @@ export default function SessionsManagement() {
 
   // Fetch stats data
   const { 
-    data: statsData, 
+    data: _statsData, 
     isLoading: statsLoading 
   } = useGetSessionCompletionDataQuery()
 

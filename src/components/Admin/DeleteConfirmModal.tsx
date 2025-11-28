@@ -2,8 +2,15 @@
 import { X } from "lucide-react"
 
 interface Material {
-  id: string
-  title: string
+  id: string;
+    title: string;
+    category: string;
+    categoryColor: string;
+    type: string;
+    description: string;
+    status: 'Active' | 'Inactive';
+    uploadDate: string;
+    size: string;
 }
 
 interface DeleteConfirmModalProps {
