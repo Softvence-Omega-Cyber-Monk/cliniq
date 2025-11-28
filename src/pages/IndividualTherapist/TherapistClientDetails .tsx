@@ -87,52 +87,6 @@ const TherapistClientDetails: React.FC = () => {
   const intervalRef = useRef<number | null>(null);
   const recordedAudioBlobRef = useRef<Blob | null>(null);
 
-  const crisisHistory = [
-    {
-      title: "Severe panic attack during work presentation",
-      date: "2024-09-24",
-      severity: "high",
-      action:
-        "Immediate grounding techniques provided. Client successfully used 5-4-3-2-1 sensory method to calm down. Created emergency action plan for future episodes.",
-    },
-    {
-      title: "Elevated anxiety with intrusive thoughts",
-      date: "2024-08-16",
-      severity: "medium",
-      action:
-        "Cognitive restructuring exercises. Discussed thought-stopping techniques. Increased session frequency temporarily.",
-    },
-  ];
-
-  const sessionHistory = [
-    {
-      type: "Therapy Session",
-      date: "2024-10-18 at 09:00 AM",
-      note: "Significant improvement in managing anxiety triggers",
-    },
-    {
-      type: "Therapy Session",
-      date: "2024-10-08 at 09:00 AM",
-      note: "Introduced new breathing techniques",
-    },
-    {
-      type: "Crisis Intervention",
-      date: "2024-09-24 at 09:00 AM",
-      note: "Crisis intervention - panic attack at work",
-      crisis: true,
-    },
-    {
-      type: "Follow-up Session",
-      date: "2024-10-08 at 09:00 AM",
-      note: "Reviewed homework assignments",
-    },
-    {
-      type: "Initial Assessment",
-      date: "2024-10-08 at 09:00 AM",
-      note: "Comprehensive intake assessment",
-    },
-  ];
-
   // START RECORDING + TIMER
   const startRecording = async () => {
     try {
@@ -201,21 +155,11 @@ const TherapistClientDetails: React.FC = () => {
     setIsAnalyzing(true);
 
     const formData = new FormData();
-    formData.append("therapistId", userId!);
-    formData.append("clientId", id!);
     formData.append(
       "file",
       new File([audioBlob], "session_audio.webm", { type: "audio/webm" })
     );
     formData.append("duration", duration.toString());
-    formData.append(
-      "clientHistory",
-      JSON.stringify({
-        healthIssues: client.healthIssues,
-        previousSessions: sessionHistory,
-        crisisHistory: crisisHistory,
-      })
-    );
 
     try {
       const res = await sendSession(formData).unwrap();
@@ -246,13 +190,6 @@ const TherapistClientDetails: React.FC = () => {
       setSessionCompleted(true);
     } catch (err) {
       console.error("AI Analysis Error:", err);
-
-      const mockInsights = `Based on the ${Math.floor(
-        duration / 60
-      )}-minute session, I've detected patterns suggesting continued progress.`;
-
-      setAiInsights(mockInsights);
-
       const updatedMetrics = currentProgressMetrics.map((metric) => ({
         ...metric,
         progress: Math.min(
@@ -262,7 +199,6 @@ const TherapistClientDetails: React.FC = () => {
       }));
       setCurrentProgressMetrics(updatedMetrics);
 
-      toast.success("Session analyzed with fallback AI insights!");
       setSessionCompleted(true);
     } finally {
       setIsProcessing(false);
@@ -568,24 +504,22 @@ const TherapistClientDetails: React.FC = () => {
 
         {/* Main Content Grid */}
         <div className="space-y-6">
+          {aiInsights && (
+            <div className="animate-in slide-in-from-bottom-3 duration-500 ease-out">
+              <TreatmentProgressCard
+                aiInsight={aiInsights}
+                metrics={currentProgressMetrics}
+              />
+            </div>
+          )}
+
           {/* Left Column - Crisis History */}
           <CrisisHistory
             clientId={id}
             therapistId={userId}
             crisisHistory={client?.crisisHistories}
           />
-          <div className="lg:col-span-2 space-y-6">
-            {/* Treatment Progress */}
-            <TreatmentProgressCard
-              aiInsight={
-                aiInsights ||
-                "Based on recent sessions, the client has shown consistent improvement in managing anxiety triggers. Start a new session to get AI-powered insights."
-              }
-              metrics={currentProgressMetrics}
-            />
-            {/* Session History */}
-            <SessionHistory sessionHistory={client?.sessionHistory} />
-          </div>
+          <SessionHistory sessionHistory={client?.sessionHistory} />
         </div>
       </div>
 
