@@ -7,6 +7,7 @@ import {
   Clock,
   AlertTriangle,
   Loader2,
+  X,
   Brain,
 } from "lucide-react";
 import { useAppSelector } from "@/hooks/useRedux";
@@ -69,8 +70,8 @@ const TherapistClientDetails: React.FC = () => {
   const [, setAudioURL] = useState<string | null>(null);
   const [sessionCompleted, setSessionCompleted] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
-  const [, setIsProgressModalOpen] = useState(false);
-  // const [progressNotes, setProgressNotes] = useState("");
+  const [isProgressModalOpen, setIsProgressModalOpen] = useState(false);
+  const [progressNotes, setProgressNotes] = useState("");
   const [aiInsights, setAiInsights] = useState<string | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [currentProgressMetrics, setCurrentProgressMetrics] = useState([
@@ -268,27 +269,27 @@ const TherapistClientDetails: React.FC = () => {
   };
 
   // Handle progress metric update
-  // const handleProgressUpdate = (index: number, newProgress: number) => {
-  //   const updatedMetrics = [...currentProgressMetrics];
-  //   updatedMetrics[index] = {
-  //     ...updatedMetrics[index],
-  //     progress: newProgress,
-  //   };
-  //   setCurrentProgressMetrics(updatedMetrics);
-  // };
+  const handleProgressUpdate = (index: number, newProgress: number) => {
+    const updatedMetrics = [...currentProgressMetrics];
+    updatedMetrics[index] = {
+      ...updatedMetrics[index],
+      progress: newProgress,
+    };
+    setCurrentProgressMetrics(updatedMetrics);
+  };
 
-  // // Save progress updates
-  // const handleSaveProgress = () => {
-  //   // Here you would typically send the updated progress to your API
-  //   console.log("Saving progress:", {
-  //     notes: progressNotes,
-  //     metrics: currentProgressMetrics,
-  //   });
+  // Save progress updates
+  const handleSaveProgress = () => {
+    // Here you would typically send the updated progress to your API
+    console.log("Saving progress:", {
+      notes: progressNotes,
+      metrics: currentProgressMetrics,
+    });
 
-  //   toast.success("Treatment progress updated successfully!");
-  //   setIsProgressModalOpen(false);
-  //   setProgressNotes("");
-  // };
+    toast.success("Treatment progress updated successfully!");
+    setIsProgressModalOpen(false);
+    setProgressNotes("");
+  };
 
   // Reset session to start new one
   const resetSession = () => {
@@ -590,9 +591,9 @@ const TherapistClientDetails: React.FC = () => {
       {/* <ProgressModal
         isOpen={isProgressModalOpen}
         onClose={isProgressModalOpen}
-      />
+      /> */}
       {isProgressModalOpen && (
-        <div className="fixed inset-0 bg-black/15 flex backdrop-blur-sm items-center justify-center p-4 z-50">
+        <div className="fixed inset-0 bg-black/10 flex  items-center justify-center p-4 z-50">
           <div className="bg-white rounded-2xl shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between p-6 border-b border-gray-200">
               <h3 className="text-lg font-bold text-gray-900">
@@ -672,7 +673,7 @@ const TherapistClientDetails: React.FC = () => {
             </div>
           </div>
         </div>
-      )} */}
+      )}
     </div>
   );
 };

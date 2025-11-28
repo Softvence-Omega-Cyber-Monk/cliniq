@@ -293,8 +293,8 @@ const ContactSupport: React.FC = () => {
 
 export default function App() {
   return (
-    <div className="min-h-screen bg-gray-50  p-4 sm:p-8 lg:p-12">
-      <div className="max-w-7xl mx-auto">
+    <div className="min-h-screen  p-4 sm:p-8 lg:p-12">
+      <div className="">
         {/* Header Section */}
         <header className="mb-10 pt-4">
           <h1 className="text-3xl font-bold text-gray-900 mb-1">

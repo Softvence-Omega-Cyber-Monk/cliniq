@@ -6,7 +6,7 @@ import { User } from "lucide-react";
 
 const ClientListItem: React.FC<{
   client: Client;
-  userType: "THERAPIST" | "ADMIN" | "PRIVATE_PRACTICE" | "CLINIC" | null | undefined
+  userType: "THERAPIST" | "ADMIN" | "INDIVIDUAL_THERAPIST" | "CLINIC" | null | undefined
 ;
   onClick: (client: Client) => void;
 }> = ({ client, onClick, userType }) => (
