@@ -80,7 +80,7 @@ const IndividualTherapistSupport: React.FC<
         </section>
 
         {/* Frequently Asked Questions Section */}
-        <section className="bg-white p-6 md:p-8 rounded-xl ">
+        <section className="bg-[#FAFAF7] p-6 md:p-8 rounded-xl ">
           <div className="flex items-center mb-6">
             <HelpCircle className="w-5 h-5 text-emerald-500 mr-2" />
             <h2 className="text-xl font-semibold text-gray-800">
@@ -101,14 +101,21 @@ const IndividualTherapistSupport: React.FC<
 
         {/* Resources Section */}
         <section>
-          <div className="flex items-center mb-6">
-            <BookOpen className="w-5 h-5 text-emerald-500 mr-2" />
-            <h2 className="text-xl font-semibold text-gray-800">Resources</h2>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {resourceData.map((resource, index) => (
-              <ResourceCard key={index} {...resource} />
-            ))}
+          <div
+            className="flex flex-col md:p-8 rounded-xl 
+            bg-[#FAFAF7] mb-6"
+          >
+            <div className="flex items-center  mb-6">
+              <BookOpen className="w-5 h-5 text-emerald-500 mr-2" />
+              <h2 className="text-xl font-semibold text-gray-800 ">
+                Resources
+              </h2>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {resourceData.map((resource, index) => (
+                <ResourceCard key={index} {...resource} />
+              ))}
+            </div>
           </div>
         </section>
 

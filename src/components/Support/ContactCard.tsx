@@ -17,7 +17,7 @@ const ContactCard: React.FC<ContactDetail> = ({
     : undefined;
 
   return (
-    <div className="bg-white p-6 md:p-8 rounded-xl transition-shadow hover:shadow h-full flex flex-col">
+    <div className="bg-[#FAFAF7] p-6 md:p-8 rounded-xl transition-shadow hover:shadow h-full flex flex-col">
       <div
         className={`p-3 w-fit rounded-full mb-4 ${
           title === "Live Chat"
