@@ -6,6 +6,7 @@ export interface InputFieldProps {
   value?: string;
   className?: string;
   readOnly?: boolean;
+  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 export interface ToggleSwitchProps {
