@@ -1,4 +1,3 @@
-import React from "react";
 import {
   Download,
   ChevronDown,
@@ -29,8 +28,7 @@ import {
   useGetTherapistActivityQuery,
 } from "@/store/api/ReportsApi";
 
-import { useSelector } from "react-redux";
-import { RootState } from "@/store/store";
+import { useUserId } from "@/hooks/useUserId";
 
 // --- Interfaces ---
 
@@ -429,8 +427,7 @@ const CrisisAlerts: React.FC<CrisisAlertsProps> = ({ alerts }) => {
 // --- Main App Component ---
 
 const App: React.FC = () => {
-  const user = useSelector((state: RootState) => state.auth.user);
-  const userId = user?.user.id;
+  const userId = useUserId();
 
   // Fetch data
   const { data: dashboardData, isLoading: loadingStats } =
@@ -505,7 +502,7 @@ const App: React.FC = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4 sm:p-6 lg:p-8 font-inter">
+    <div className="min-h-screen  p-4 sm:p-6 lg:p-8 font-inter">
       {/* Header */}
       <header className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6">
         <div>

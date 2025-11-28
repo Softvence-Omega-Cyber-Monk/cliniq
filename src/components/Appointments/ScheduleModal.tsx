@@ -1,57 +1,111 @@
-import React, { useState } from "react";
-import { ChevronDown, X } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { X } from "lucide-react";
+import { useUserId } from "@/hooks/useUserId";
+import { useCreateAppointmentMutation } from "@/store/api/AppoinmentsApi";
+import { toast } from "sonner";
+import { useGetAllClinicClientsQuery } from "@/store/api/ClinicClientsApi";
+import { useGetTherapistByClinicQuery } from "@/store/api/UsersApi";
+import { useAppSelector } from "@/hooks/useRedux";
 
 interface ScheduleModalProps {
   onClose: () => void;
 }
 
+interface Client {
+  id: string;
+  name: string;
+  email?: string;
+  phone?: string;
+  sessionCount: number;
+  overallProgress: number;
+  status: string;
+}
+
+interface Therapist {
+  id: string;
+  fullName: string;
+  email: string;
+  speciality?: string;
+}
+
 const ScheduleModal: React.FC<ScheduleModalProps> = ({ onClose }) => {
-  const [client, setClient] = useState("");
-  const [date, setDate] = useState("");
-  const [time, setTime] = useState("");
-  const [duration, setDuration] = useState("");
-  const [sessionType, setSessionType] = useState("");
-  const [appointmentType, setAppointmentType] = useState("");
+  const userType = useAppSelector((state) => state.auth.userType);
+  console.log(userType)
+  const userId = useUserId();
+  const [createAppointment, { isLoading: isCreating }] =
+    useCreateAppointmentMutation();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const { data: clientsData } = useGetAllClinicClientsQuery({
+    clinicId: userId,
+    search: "",
+    status: "",
+  });
+
+  const { data: therapistsData } = useGetTherapistByClinicQuery(userId!);
+
+  const [selectedClientId, setSelectedClientId] = useState("");
+  const [selectedTherapistId, setSelectedTherapistId] = useState("");
+  const [scheduledDate, setScheduledDate] = useState("");
+  const [scheduledTime, setScheduledTime] = useState("");
+  const [duration, setDuration] = useState(60);
+  const [sessionType, setSessionType] = useState("virtual");
+  const [phone, setPhone] = useState("");
+  const [email, setEmail] = useState("");
+  const [notes, setNotes] = useState("");
+
+  // Update phone/email whenever selected client changes
+  useEffect(() => {
+    if (!selectedClientId || !clientsData?.data) return;
+
+    const client = clientsData.data.find(
+      (c: Client) => c.id === selectedClientId
+    );
+    if (client) {
+      setEmail(client.email || "");
+      setPhone(client.phone || "");
+    } else {
+      setEmail("");
+      setPhone("");
+    }
+  }, [selectedClientId, clientsData]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Scheduling appointment...");
-    onClose();
-  };
+    if (
+      !selectedClientId ||
+      !selectedTherapistId ||
+      !scheduledDate ||
+      !scheduledTime
+    ) {
+      toast.error("Please fill all required fields");
+      return;
+    }
 
-  const InputField: React.FC<{
-    label: string;
-    placeholder: string;
-    value: string;
-    onChange: (v: string) => void;
-    isSelect?: boolean;
-  }> = ({ label, placeholder, value, onChange, isSelect = false }) => (
-    <div className="mb-4">
-      <label className="block text-sm font-medium text-gray-700 mb-1">
-        {label}
-      </label>
-      <div className={`relative ${isSelect ? "cursor-pointer" : ""}`}>
-        <input
-          type="text"
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          placeholder={placeholder}
-          className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-mint-500 focus:border-mint-500 transition duration-150 text-gray-800 bg-white shadow-inner"
-          readOnly={isSelect}
-        />
-        {isSelect && (
-          <ChevronDown
-            size={20}
-            className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none"
-          />
-        )}
-      </div>
-    </div>
-  );
+    const payload = {
+      clientId: selectedClientId,
+      therapistId: selectedTherapistId,
+      scheduledDate,
+      scheduledTime,
+      duration,
+      sessionType,
+      phone,
+      email,
+      notes,
+    };
+
+    try {
+      await createAppointment(payload).unwrap();
+      toast.success("Appointment created successfully!");
+      onClose();
+    } catch (err) {
+      console.error("Error creating appointment:", err);
+      toast.error("Failed to create appointment.");
+    }
+  };
 
   return (
     <div
-      className="fixed inset-0 bg-white/50  flex items-center justify-center backdrop-blur-[1px] z-50 p-4"
+      className="fixed inset-0 bg-white/50 flex items-center justify-center backdrop-blur-[1px] z-50 p-4"
       onClick={onClose}
     >
       <div
@@ -71,48 +125,139 @@ const ScheduleModal: React.FC<ScheduleModalProps> = ({ onClose }) => {
         </div>
 
         <form className="p-6 space-y-4" onSubmit={handleSubmit}>
-          <InputField
-            label="Client"
-            placeholder="Select Client"
-            value={client}
-            onChange={setClient}
-            isSelect={true}
-          />
+          {/* Therapist Select */}
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Therapist
+            </label>
+            <select
+              value={selectedTherapistId}
+              onChange={(e) => setSelectedTherapistId(e.target.value)}
+              className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-mint-500 focus:border-mint-500 transition duration-150 text-gray-800 bg-white shadow-inner"
+            >
+              <option value="">Select Therapist</option>
+              {therapistsData?.data?.map((t: Therapist) => (
+                <option key={t.id} value={t.id}>
+                  {t.fullName} ({t.email})
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Client Select */}
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Client
+            </label>
+            <select
+              value={selectedClientId}
+              onChange={(e) => setSelectedClientId(e.target.value)}
+              className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-mint-500 focus:border-mint-500 transition duration-150 text-gray-800 bg-white shadow-inner"
+            >
+              <option value="">Select Client</option>
+              {clientsData?.data?.map((c: Client) => (
+                <option key={c.id} value={c.id}>
+                  {c.name}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Date & Time */}
           <div className="grid grid-cols-2 gap-4">
-            <InputField
-              label="Date"
-              placeholder="DD/MM/YY"
-              value={date}
-              onChange={setDate}
-            />
-            <InputField
-              label="Time"
-              placeholder="--/--"
-              value={time}
-              onChange={setTime}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Date
+              </label>
+              <input
+                type="date"
+                value={scheduledDate}
+                onChange={(e) => setScheduledDate(e.target.value)}
+                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-mint-500 focus:border-mint-500 transition duration-150 text-gray-800 bg-white shadow-inner"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Time
+              </label>
+              <input
+                type="time"
+                value={scheduledTime}
+                onChange={(e) => setScheduledTime(e.target.value)}
+                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-mint-500 focus:border-mint-500 transition duration-150 text-gray-800 bg-white shadow-inner"
+              />
+            </div>
+          </div>
+
+          {/* Duration */}
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Duration (minutes)
+            </label>
+            <input
+              type="number"
+              min={15}
+              value={duration}
+              onChange={(e) => setDuration(Number(e.target.value))}
+              className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-mint-500 focus:border-mint-500 transition duration-150 text-gray-800 bg-white shadow-inner"
             />
           </div>
-          <InputField
-            label="Duration"
-            placeholder="Select Duration"
-            value={duration}
-            onChange={setDuration}
-            isSelect={true}
-          />
-          <InputField
-            label="Session Type"
-            placeholder="Select Session Type"
-            value={sessionType}
-            onChange={setSessionType}
-            isSelect={true}
-          />
-          <InputField
-            label="Appointment Type"
-            placeholder="Select Appointment Type"
-            value={appointmentType}
-            onChange={setAppointmentType}
-            isSelect={true}
-          />
+
+          {/* Session Type */}
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Session Type
+            </label>
+            <select
+              value={sessionType}
+              onChange={(e) => setSessionType(e.target.value)}
+              className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-mint-500 focus:border-mint-500 transition duration-150 text-gray-800 bg-white shadow-inner"
+            >
+              <option value="virtual">Virtual</option>
+              <option value="onsite">Onsite</option>
+            </select>
+          </div>
+
+          {/* Phone */}
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Phone
+            </label>
+            <input
+              type="tel"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              placeholder="+1234567890"
+              className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-mint-500 focus:border-mint-500 transition duration-150 text-gray-800 bg-white shadow-inner"
+            />
+          </div>
+
+          {/* Email */}
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Email
+            </label>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="client@example.com"
+              className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-mint-500 focus:border-mint-500 transition duration-150 text-gray-800 bg-white shadow-inner"
+            />
+          </div>
+
+          {/* Notes */}
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Notes
+            </label>
+            <textarea
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+              placeholder="Client requested early morning session"
+              className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-mint-500 focus:border-mint-500 transition duration-150 text-gray-800 bg-white shadow-inner"
+            />
+          </div>
 
           <div className="pt-6 flex justify-end space-x-3">
             <button
@@ -126,7 +271,7 @@ const ScheduleModal: React.FC<ScheduleModalProps> = ({ onClose }) => {
               type="submit"
               className="px-6 py-3 font-semibold rounded-full bg-mint-500 text-black hover:bg-mint-600 transition-colors shadow-lg shadow-mint-500/30"
             >
-              Schedule Appointment
+              {isCreating ? "Scheduling..." : "Schedule Appointment"}
             </button>
           </div>
         </form>

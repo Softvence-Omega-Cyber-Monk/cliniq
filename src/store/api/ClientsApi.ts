@@ -3,17 +3,19 @@ import baseApi from "./BaseApi/BaseApi";
 const clientsApi = baseApi.injectEndpoints({
     endpoints: (builder) => ({
         createNewClient: builder.mutation({
-            query: ({ therapistId, credentials }) => ({
+            query: ({ therapistId, credentials }) => {
+                return ({
                 url: `/therapists/${therapistId}/clients`,
                 method: "POST",
                 body: credentials,
-            }),
+            })
+            },
         }),
         addCrisisHistory: builder.mutation({
-            query: (credentials) => ({
-                url: '/therapists/{therapistId}/clients/{clientId}/crisis-history',
+            query: ({ therapistId, clientId, crisisData }) => ({
+                url: `/therapists/${therapistId}/clients/${clientId}/crisis-history`,
                 method: 'POST',
-                body: credentials,
+                body: crisisData,
             }),
         }),
         updateCrisisHistory: builder.mutation({
@@ -79,11 +81,17 @@ const clientsApi = baseApi.injectEndpoints({
                 };
             },
         }),
+        getClientById: builder.query({
+            query: ({ therapistId, clientId }) => ({
+                url: `/therapists/${therapistId}/clients/${clientId}`,
+                method: "GET",
+            }),
+        }),
 
 
 
     }),
 })
 
-export const { useCreateNewClientMutation, useAddCrisisHistoryMutation, useUpdateCrisisHistoryMutation, useUpdateOverallProgressMutation, useAddSessionHistoryMutation, useUpdateSessionHistoryMutation, useUpdateTreatmentGoalsMutation, useAddTreatmentProgressMutation, useUpdateTreatmentProgressMutation, useGetAllClientQuery } = clientsApi
+export const { useCreateNewClientMutation, useAddCrisisHistoryMutation, useUpdateCrisisHistoryMutation, useUpdateOverallProgressMutation, useAddSessionHistoryMutation, useUpdateSessionHistoryMutation, useUpdateTreatmentGoalsMutation, useAddTreatmentProgressMutation, useUpdateTreatmentProgressMutation, useGetAllClientQuery, useGetClientByIdQuery } = clientsApi
 export default clientsApi
