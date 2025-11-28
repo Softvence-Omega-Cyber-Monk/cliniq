@@ -6,6 +6,8 @@ import { toast } from "sonner";
 import { useGetAllClinicClientsQuery } from "@/store/api/ClinicClientsApi";
 import { useGetTherapistByClinicQuery } from "@/store/api/UsersApi";
 import { useAppSelector } from "@/hooks/useRedux";
+import { useGetAllClientQuery } from "@/store/api/ClientsApi";
+import { skipToken } from "@reduxjs/toolkit/query";
 
 interface ScheduleModalProps {
   onClose: () => void;
@@ -35,16 +37,41 @@ const ScheduleModal: React.FC<ScheduleModalProps> = ({ onClose }) => {
   const [createAppointment, { isLoading: isCreating }] =
     useCreateAppointmentMutation();
 
-  const { data: clientsData } = useGetAllClinicClientsQuery({
-    clinicId: userId,
-    search: "",
-    status: "",
-  });
+  const therapistQuery = useGetAllClientQuery(
+    userType === "THERAPIST" || userType === "INDIVIDUAL_THERAPIST"
+      ? {
+          therapistId: userId,
+          search: "",
+          status: "",
+        }
+      : skipToken
+  );
+  const clinicQuery = useGetAllClinicClientsQuery(
+    userType === "CLINIC"
+      ? {
+          clinicId: userId,
+          search: "",
+          status: "",
+        }
+      : skipToken
+  );
 
-  const { data: therapistsData } = useGetTherapistByClinicQuery(userId!);
+  // Select the active query
+  const clientsData =
+    userType === "THERAPIST" || userType === "INDIVIDUAL_THERAPIST"
+      ? therapistQuery.data
+      : clinicQuery.data;
+
+  const { data: therapistsData } = useGetTherapistByClinicQuery(
+    userType === "CLINIC" ? userId! : skipToken
+  );
 
   const [selectedClientId, setSelectedClientId] = useState("");
-  const [selectedTherapistId, setSelectedTherapistId] = useState("");
+  const [selectedTherapistId, setSelectedTherapistId] = useState(
+    userType === "THERAPIST" || userType === "INDIVIDUAL_THERAPIST"
+      ? userId
+      : ""
+  );
   const [scheduledDate, setScheduledDate] = useState("");
   const [scheduledTime, setScheduledTime] = useState("");
   const [duration, setDuration] = useState(60);
@@ -71,19 +98,17 @@ const ScheduleModal: React.FC<ScheduleModalProps> = ({ onClose }) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (
-      !selectedClientId ||
-      !selectedTherapistId ||
-      !scheduledDate ||
-      !scheduledTime
-    ) {
+
+    const therapistId = userType === "THERAPIST" ? userId : selectedTherapistId;
+
+    if (!selectedClientId || !therapistId || !scheduledDate || !scheduledTime) {
       toast.error("Please fill all required fields");
       return;
     }
 
     const payload = {
       clientId: selectedClientId,
-      therapistId: selectedTherapistId,
+      therapistId: therapistId,
       scheduledDate,
       scheduledTime,
       duration,
@@ -125,24 +150,26 @@ const ScheduleModal: React.FC<ScheduleModalProps> = ({ onClose }) => {
         </div>
 
         <form className="p-6 space-y-4" onSubmit={handleSubmit}>
-          {/* Therapist Select */}
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Therapist
-            </label>
-            <select
-              value={selectedTherapistId}
-              onChange={(e) => setSelectedTherapistId(e.target.value)}
-              className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-mint-500 focus:border-mint-500 transition duration-150 text-gray-800 bg-white shadow-inner"
-            >
-              <option value="">Select Therapist</option>
-              {therapistsData?.data?.map((t: Therapist) => (
-                <option key={t.id} value={t.id}>
-                  {t.fullName} ({t.email})
-                </option>
-              ))}
-            </select>
-          </div>
+          {/* Therapist Select - Only show for CLINIC users */}
+          {userType === "CLINIC" && (
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Therapist
+              </label>
+              <select
+                value={selectedTherapistId}
+                onChange={(e) => setSelectedTherapistId(e.target.value)}
+                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-mint-500 focus:border-mint-500 transition duration-150 text-gray-800 bg-white shadow-inner"
+              >
+                <option value="">Select Therapist</option>
+                {therapistsData?.data?.map((t: Therapist) => (
+                  <option key={t.id} value={t.id}>
+                    {t.fullName} ({t.email})
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
 
           {/* Client Select */}
           <div className="mb-4">

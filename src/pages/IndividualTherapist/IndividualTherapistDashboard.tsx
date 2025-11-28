@@ -34,7 +34,7 @@ const IndividualTherapistDashboard: React.FC<
     limit: 5,
   });
   const { data: alerts, isLoading: loadingAlerts } = useGetCrisisAlertsQuery({
-    limit: 10,
+    limit: 5,
   });
   console.log(alerts);
   return (

@@ -387,7 +387,8 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const navigate = useNavigate();
   const [registerClinic, { isLoading }] = useRegisterClinicMutation();
-  const [registerIndividualTherapist] = useRegisterIndividualTherapistMutation();
+  const [registerIndividualTherapist] =
+    useRegisterIndividualTherapistMutation();
   const {
     register,
     handleSubmit,
@@ -421,20 +422,29 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
       let result;
       if (currentRole === Role.PRIVATE_PRACTICE) {
         result = await registerClinic(payload).unwrap();
-      
       } else {
         result = await registerIndividualTherapist(payload).unwrap();
-        console.log(result)
+        console.log(result);
       }
 
       toast.success("Account created successfully!");
       navigate("/login", {
-        state: {email: data.email, password: data.password,userType:result.userType},
+        state: {
+          email: data.email,
+          password: data.password,
+          userType: result.userType,
+        },
       });
       onSwitchToLogin();
-    } catch (error) {
+    } catch (error: any) {
       console.error("Signup error:", error);
-      toast.error("Account creation failed. Please try again.");
+      const msg = error?.data?.message || "Account creation failed.";
+
+      if (msg.includes("Email already")) {
+        toast.error(msg);
+      } else {
+        toast.error(msg);
+      }
     }
   };
 

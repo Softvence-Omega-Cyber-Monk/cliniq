@@ -43,7 +43,7 @@ const TherapistClientDetails: React.FC = () => {
     useAddClinicClientSessionHistoryMutation();
   // Fetch client data based on user type
   const therapistQuery = useGetClientByIdQuery(
-    userType === "THERAPIST"
+    userType === "THERAPIST" || userType === "INDIVIDUAL_THERAPIST"
       ? {
           therapistId: userId,
           clientId: id!,
@@ -60,7 +60,9 @@ const TherapistClientDetails: React.FC = () => {
   );
 
   const client =
-    userType === "THERAPIST" ? therapistQuery.data : clinicQuery.data;
+    userType === "THERAPIST" || userType === "INDIVIDUAL_THERAPIST"
+      ? therapistQuery.data
+      : clinicQuery.data;
   console.log(client?.sessionHistory);
   const isLoading = therapistQuery.isLoading || clinicQuery.isLoading;
   const error = therapistQuery.error || clinicQuery.error;

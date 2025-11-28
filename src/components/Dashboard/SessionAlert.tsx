@@ -29,7 +29,7 @@ const SessionAlert: React.FC<SessionAlertProps> = ({ data }) => {
           </p>
           {crisisBadge}
         </div>
-        <p className="text-sm text-[#7E8086] mt-1">{data.title}</p>
+        <p className="text-sm text-[#7E8086] mt-1">{data.message}</p>
         <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
           {data.timeAgo}
         </p>
