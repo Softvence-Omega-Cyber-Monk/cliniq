@@ -7,7 +7,7 @@ import {
   Settings,
   HelpCircle,
   Zap,
-  Bell,
+  // Bell,
   Menu,
   Calendar,
   CreditCard,
@@ -182,13 +182,13 @@ const Navbar: React.FC<NavbarProps> = ({ toggleSidebar }) => {
             <Menu className="w-6 h-6" />
           </button>
 
-          <button
+          {/* <button
             className="relative p-2 text-gray-600 hover:bg-gray-100 rounded-full dark:text-gray-300 dark:hover:bg-gray-700 transition"
             aria-label="Notifications"
           >
             <Bell className="w-6 h-6" />
             <span className="absolute top-2 right-2 block h-2 w-2 rounded-full ring-2 ring-white bg-pink-400 dark:ring-gray-900"></span>
-          </button>
+          </button> */}
 
           {/* Avatar with Dropdown */}
           <div className="relative" ref={dropdownRef}>

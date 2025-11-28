@@ -3,12 +3,12 @@ import StatCard from "./StatCard";
 import SessionsCompletionChart from "./SessionsCompletionChart";
 import TherapistActivityChart from "./TherapistActivityChart";
 import RecentSessions from "./RecentSessions";
-import SystemAlerts from "./SystemAlerts";
+// import SystemAlerts from "./SystemAlerts";
 import type { StatCardType } from "../../types/dashboard";
 import {
   StatUserIcon,
   StatCalendarIcon,
-  StatAlertIcon,
+  // StatAlertIcon,
   StatCheckIcon,
 } from "../icons";
 import { FaPlus } from "react-icons/fa";
@@ -33,7 +33,6 @@ const DashboardContent: React.FC = () => {
     status: "completed",
     reportType: "performance_overview",
   });
-  console.log(stats);
   const statCards: StatCardType[] = stats
     ? [
         {
@@ -52,13 +51,13 @@ const DashboardContent: React.FC = () => {
           trend: "up",
           iconBgColor: "bg-blue-100 text-blue-600",
         },
-        {
-          title: "Crisis Alerts",
-          value: stats?.crisisAlerts,
-          icon: StatAlertIcon,
-          iconBgColor: "bg-red-100 text-red-600",
-          trend: "up",
-        },
+        // {
+        //   title: "Crisis Alerts",
+        //   value: stats?.crisisAlerts,
+        //   icon: StatAlertIcon,
+        //   iconBgColor: "bg-red-100 text-red-600",
+        //   trend: "up",
+        // },
         {
           title: "Completed Sessions",
           value: stats?.totalSessions,
@@ -89,7 +88,7 @@ const DashboardContent: React.FC = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mt-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mt-6">
         {isLoading
           ? Array.from({ length: 4 }).map((_, idx) => (
               <StatCardSkeleton key={idx} />
@@ -104,7 +103,7 @@ const DashboardContent: React.FC = () => {
 
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 mt-6">
         <RecentSessions />
-        <SystemAlerts />
+        {/* <SystemAlerts /> */}
       </div>
 
       <EditPersonalInfo isOpen={isModalOpen} onClose={handleCloseModal} />

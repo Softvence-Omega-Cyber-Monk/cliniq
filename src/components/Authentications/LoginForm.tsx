@@ -146,7 +146,6 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSwitchToSignUp }) => {
       }).unwrap();
 
       localStorage.setItem("token", response.accessToken);
-      console.log(response.accessToken, "Response AccessToken")
       dispatch(
         setCredentials({
           user: response.user,

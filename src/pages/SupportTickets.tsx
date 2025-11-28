@@ -11,6 +11,8 @@ import {
   Link,
   ChevronUp,
 } from "lucide-react"; // CheckCircle removed
+import { useCreateTicketMutation } from "@/store/api/supportApi";
+import { toast } from "sonner";
 
 // --- Data Structures ---
 
@@ -176,12 +178,21 @@ const TroubleshootingGuides: React.FC = () => {
 
 const TicketSubmission: React.FC = () => {
   const [subject, setSubject] = useState("");
-  const [therapist, setTherapist] = useState("");
+  // const [therapist, setTherapist] = useState("");
   const [description, setDescription] = useState("");
-
-  const handleSubmit = (e: React.FormEvent) => {
+  const [createTicket] = useCreateTicketMutation();
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log({ subject, therapist, description });
+    try {
+       await createTicket({
+        subject,
+        message:description,
+      })
+      toast.success("Ticket created successfully");
+    } catch {
+      toast.error("Failed to create ticket");
+    }
+
     // In a real app, you would send this to an API
   };
 
@@ -208,7 +219,7 @@ const TicketSubmission: React.FC = () => {
           />
         </div>
 
-        <div>
+        {/* <div>
           <label
             htmlFor="therapist"
             className="block text-sm font-medium text-gray-700"
@@ -231,7 +242,7 @@ const TicketSubmission: React.FC = () => {
             <option value="jane-doe">Jane Doe</option>
             <option value="john-smith">John Smith</option>
           </select>
-        </div>
+        </div> */}
 
         <div>
           <label
