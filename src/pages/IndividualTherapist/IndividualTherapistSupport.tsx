@@ -44,8 +44,9 @@ const IndividualTherapistSupport: React.FC<
       console.log(res);
       toast.success("Ticket created successfully!");
       setFormData({ subject: "", message: "" });
-    } catch (error) {
-      console.error(error);
+    } catch (error: any) {
+      if (error?.data?.message) toast.error(error.data.message);
+      else toast.error("Failed to create ticket");
     }
   };
   return (
