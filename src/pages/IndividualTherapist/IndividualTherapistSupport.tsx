@@ -8,6 +8,8 @@ import {
 import ContactCard from "@/components/Support/ContactCard";
 import FaqItemComponent from "@/components/Support/FaqItemComponent";
 import ResourceCard from "@/components/Support/ResourceCard";
+import { useCreateTicketMutation } from "@/store/api/supportApi";
+import { toast } from "sonner";
 
 interface File {
   name: string;
@@ -23,11 +25,29 @@ const IndividualTherapistSupport: React.FC<
   IndividualTherapistSupportProps
 > = () => {
   const [openFaqId, setOpenFaqId] = useState<number | null>(null);
-
+  const [createTicket, { isLoading }] = useCreateTicketMutation();
+  const [formData, setFormData] = useState({ subject: "", message: "" });
   const handleFaqToggle = useCallback((id: number) => {
     setOpenFaqId((prevId) => (prevId === id ? null : id));
   }, []);
-
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    console.log(formData);
+    try {
+      const res = await createTicket(formData).unwrap();
+      console.log(res);
+      toast.success("Ticket created successfully!");
+      setFormData({ subject: "", message: "" });
+    } catch (error) {
+      console.error(error);
+    }
+  };
   return (
     <div className="min-h-screen  p-4 sm:p-8 font-['Inter']">
       <div className=" space-y-12">
@@ -86,7 +106,7 @@ const IndividualTherapistSupport: React.FC<
             </h2>
           </div>
 
-          <form className="space-y-4">
+          <form className="space-y-4" onSubmit={handleSubmit}>
             {/* Subject Field */}
             <div>
               <label
@@ -98,6 +118,9 @@ const IndividualTherapistSupport: React.FC<
               <input
                 type="text"
                 id="subject"
+                name="subject"
+                value={formData.subject}
+                onChange={handleChange}
                 placeholder="How can we help you?"
                 className="w-full p-3 border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 transition duration-150 text-gray-700"
               />
@@ -113,7 +136,10 @@ const IndividualTherapistSupport: React.FC<
               </label>
               <textarea
                 id="message"
+                name="message"
                 rows={4}
+                value={formData.message}
+                onChange={handleChange}
                 placeholder="Describe your issue or question..."
                 className="w-full p-3 border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 transition duration-150 resize-none text-gray-700"
               ></textarea>
@@ -121,15 +147,10 @@ const IndividualTherapistSupport: React.FC<
 
             <button
               type="submit"
-              className="px-6 py-3 bg-emerald-500 text-white font-semibold rounded-lg shadow-md hover:bg-emerald-600 transition-colors duration-200"
-              onClick={(e) => {
-                e.preventDefault();
-                console.log(
-                  "Message Sent!"
-                ); /* Add form submission logic here */
-              }}
+              disabled={isLoading}
+              className="px-6 py-3 bg-emerald-500 text-white font-semibold rounded-lg shadow-md hover:bg-emerald-600 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Send Message
+              {isLoading ? "Sending..." : "Send Message"}
             </button>
           </form>
         </section>

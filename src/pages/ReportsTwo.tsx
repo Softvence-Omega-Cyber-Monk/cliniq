@@ -499,7 +499,7 @@ const App: React.FC = () => {
     });
 
   const { data: alerts, isLoading: loadingAlerts } = useGetCrisisAlertsQuery({
-    limit: 10,
+    limit: 5,
   });
 
   const statsData: Stat[] = [
