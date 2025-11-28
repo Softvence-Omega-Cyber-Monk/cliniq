@@ -80,7 +80,7 @@ const IndividualTherapistSupport: React.FC<
         </section>
 
         {/* Frequently Asked Questions Section */}
-        <section className="bg-white p-6 md:p-8 rounded-xl shadow-lg">
+        <section className="bg-white p-6 md:p-8 rounded-xl ">
           <div className="flex items-center mb-6">
             <HelpCircle className="w-5 h-5 text-emerald-500 mr-2" />
             <h2 className="text-xl font-semibold text-gray-800">
@@ -113,7 +113,7 @@ const IndividualTherapistSupport: React.FC<
         </section>
 
         {/* Send us a message Form Section */}
-        <section className="bg-white p-6 md:p-8 rounded-xl shadow-lg">
+        <section className="bg-[#FAFAF7] p-6 md:p-8 rounded-xl ">
           <div className="flex items-center mb-6">
             <Mail className="w-5 h-5 text-emerald-500 mr-2" />
             <h2 className="text-xl font-semibold text-gray-800">
@@ -137,7 +137,7 @@ const IndividualTherapistSupport: React.FC<
                 value={formData.subject}
                 onChange={handleChange}
                 placeholder="How can we help you?"
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 transition duration-150 text-gray-700"
+                className="w-full bg-[#F3F3EC] p-3 border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 transition duration-150 text-gray-700"
               />
             </div>
 
@@ -156,14 +156,14 @@ const IndividualTherapistSupport: React.FC<
                 value={formData.message}
                 onChange={handleChange}
                 placeholder="Describe your issue or question..."
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 transition duration-150 resize-none text-gray-700"
+                className="w-full p-3 border bg-[#F3F3EC] border-[#F3F3EC] rounded-lg focus:ring-emerald-500 focus:border-emerald-500 transition duration-150 resize-none text-gray-700"
               ></textarea>
             </div>
 
             <button
               type="submit"
               disabled={isLoading}
-              className="px-6 py-3 bg-emerald-500 text-white font-semibold rounded-lg shadow-md hover:bg-emerald-600 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-6 py-3 bg-[#3FDCBF] text-white font-semibold cursor-pointer rounded-lg hover:bg-[#36b8a0] transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isLoading ? "Sending..." : "Send Message"}
             </button>
