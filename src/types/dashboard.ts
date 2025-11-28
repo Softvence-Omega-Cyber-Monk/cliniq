@@ -25,9 +25,17 @@ export interface SystemAlertType {
 
 export interface RecentSessionType {
   clientName: string;
+  name: string;
   avatarUrl: string;
   id: string;
   description: string;
   patientId: string;
   therapistName: string;
+}
+export interface RecentSessionType2 {
+
+  name: string;
+  avatarUrl: string;
+  description: string;
+
 }

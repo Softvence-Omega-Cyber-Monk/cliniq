@@ -29,7 +29,7 @@ import {
 } from "@/store/api/ReportsApi";
 
 import { useUserId } from "@/hooks/useUserId";
-import { formatToYMD, formatToYMDWithTime } from "@/utils/formatDate";
+import { formatToYMDWithTime } from "@/utils/formatDate";
 
 // --- Interfaces ---
 
