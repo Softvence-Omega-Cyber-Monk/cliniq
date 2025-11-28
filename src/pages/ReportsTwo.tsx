@@ -29,6 +29,7 @@ import {
 } from "@/store/api/ReportsApi";
 
 import { useUserId } from "@/hooks/useUserId";
+import { formatToYMD, formatToYMDWithTime } from "@/utils/formatDate";
 
 // --- Interfaces ---
 
@@ -387,6 +388,7 @@ interface CrisisAlert {
   severity: "low" | "medium" | "high";
   timeAgo: string;
   createdAt: string;
+  message: string;
 }
 
 interface CrisisAlertsProps {
@@ -394,25 +396,54 @@ interface CrisisAlertsProps {
 }
 
 const CrisisAlerts: React.FC<CrisisAlertsProps> = ({ alerts }) => {
+  const getSeverityBg = (severity: CrisisAlert["severity"]) => {
+    switch (severity) {
+      case "high":
+        return "bg-red-50/50";
+      case "medium":
+        return "bg-yellow-50/50";
+      case "low":
+        return "bg-green-50/50";
+      default:
+        return "";
+    }
+  };
+
   return (
     <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mt-6">
       <h3 className="text-lg font-semibold text-gray-800 mb-4">
         Recent Crisis Alerts
       </h3>
-      <div className="divide-y divide-gray-100">
+      <div className="divide-y divide-gray-100 space-y-2.5">
         {alerts.map((alert) => (
           <div
             key={alert.id}
-            className="flex items-center justify-between py-3 hover:bg-red-50/50 transition duration-100 rounded-lg -mx-2 px-2"
+            className={`flex flex-col md:flex-row items-start md:items-center justify-between py-3 transition duration-100 rounded-lg -mx-2 px-2 ${getSeverityBg(
+              alert.severity
+            )}`}
           >
-            <div className="flex items-center space-x-3">
-              <AlertTriangle className="w-5 h-5 text-red-500" />
+            <div className="flex items-center space-x-3 mb-2 md:mb-0">
+              <AlertTriangle
+                className={`w-5 h-5 ${
+                  alert.severity === "high"
+                    ? "text-red-500"
+                    : alert.severity === "medium"
+                    ? "text-yellow-500"
+                    : "text-green-500"
+                }`}
+              />
               <div>
                 <p className="text-sm font-medium text-gray-800">
-                  {alert.title}
+                  {alert.message}
                 </p>
                 <p className="text-xs text-gray-500">
-                  Client ID: {alert.clientId}
+                  Client: {alert.clientName}
+                </p>
+                <p className="text-xs text-gray-500">
+                  Severity: {alert.severity}
+                </p>
+                <p className="text-xs text-gray-400">
+                  Created At: {formatToYMDWithTime(alert.createdAt)}{" "}
                 </p>
               </div>
             </div>
@@ -420,6 +451,11 @@ const CrisisAlerts: React.FC<CrisisAlertsProps> = ({ alerts }) => {
           </div>
         ))}
       </div>
+      {alerts.length === 0 && (
+        <p className="text-center text-gray-500 mt-4">
+          No crisis alerts available.
+        </p>
+      )}
     </div>
   );
 };
@@ -445,7 +481,7 @@ const App: React.FC = () => {
       status: "completed",
       reportType: "performance_overview",
     });
-
+  console.log("session", sessionData);
   const { data: sessionTrends, isLoading: loadingTrends } =
     useGetSessionTrendsQuery({
       dateRange: "last_30_days",
@@ -500,7 +536,7 @@ const App: React.FC = () => {
       color: "red",
     },
   ];
-
+  console.log(alerts);
   return (
     <div className="min-h-screen  p-4 sm:p-6 lg:p-8 font-inter">
       {/* Header */}

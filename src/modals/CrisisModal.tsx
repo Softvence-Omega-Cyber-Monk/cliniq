@@ -138,8 +138,9 @@ const CrisisModal: React.FC<CrisisModalProps> = ({
               className="w-full p-3 border border-gray-200 rounded-2xl"
             >
               <option value="low">Low</option>
-              <option value="medium">Medium</option>
+              <option value="moderate">Moderate</option>
               <option value="high">High</option>
+              <option value="critical">Critical</option>
             </select>
           </div>
 

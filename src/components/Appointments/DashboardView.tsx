@@ -24,14 +24,13 @@ const DashboardView: React.FC<DashboardViewProps> = ({
     limit: 10,
   });
 
-  console.log(appointments?.data);
   return (
     <div className="min-h-screen  p-4 sm:p-8">
       {/* Header */}
       <header className="flex justify-between items-center mb-6">
         <div className="flex flex-col gap-1">
           <h1 className="text-3xl font-semibold text-gray-800">APPOINTMENTS</h1>
-          <p className="text-lg text-[#7E8086] mb-8">
+          <p className=" text-[#7E8086] mb-8">
             Manage your schedule and upcoming sessions
           </p>
         </div>
