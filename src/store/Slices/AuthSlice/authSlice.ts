@@ -17,7 +17,7 @@ export interface User {
   clinic: string | null;
   subscriptionPlan: string | null;
   createdAt: string;
-  userType: "THERAPIST" | "ADMIN" | "PRIVATE_PRACTICE" | "CLINIC";
+  userType: "THERAPIST" | "ADMIN" | "PRIVATE_PRACTICE" | "CLINIC" | "INDIVIDUAL_THERAPIST";
   updatedAt: string;
 }
 interface AuthState {

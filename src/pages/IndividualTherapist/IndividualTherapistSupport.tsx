@@ -82,7 +82,7 @@ const IndividualTherapistSupport: React.FC<
         {/* Frequently Asked Questions Section */}
         <section className="bg-[#FAFAF7] p-6 md:p-8 rounded-xl ">
           <div className="flex items-center mb-6">
-            <HelpCircle className="w-5 h-5 text-emerald-500 mr-2" />
+            <HelpCircle className="w-5 h-5 text-[#298CDF] mr-2" />
             <h2 className="text-xl font-semibold text-gray-800">
               Frequently Asked Questions
             </h2>
@@ -106,7 +106,7 @@ const IndividualTherapistSupport: React.FC<
             bg-[#FAFAF7] mb-6"
           >
             <div className="flex items-center  mb-6">
-              <BookOpen className="w-5 h-5 text-emerald-500 mr-2" />
+              <BookOpen className="w-5 h-5 text-[#298CDF] mr-2" />
               <h2 className="text-xl font-semibold text-gray-800 ">
                 Resources
               </h2>
@@ -122,7 +122,7 @@ const IndividualTherapistSupport: React.FC<
         {/* Send us a message Form Section */}
         <section className="bg-[#FAFAF7] p-6 md:p-8 rounded-xl ">
           <div className="flex items-center mb-6">
-            <Mail className="w-5 h-5 text-emerald-500 mr-2" />
+            <Mail className="w-5 h-5 text-[#298CDF] mr-2" />
             <h2 className="text-xl font-semibold text-gray-800">
               Send us a message
             </h2>
