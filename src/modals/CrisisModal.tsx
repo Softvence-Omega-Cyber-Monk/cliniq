@@ -49,9 +49,8 @@ const CrisisModal: React.FC<CrisisModalProps> = ({
     try {
       onSubmit(formData);
 
-      let res;
       if (userType === "THERAPIST" || userType === "INDIVIDUAL_THERAPIST") {
-        res = await addCrisisByTherapist({
+        await addCrisisByTherapist({
           clientId,
           therapistId,
           crisisData: {
@@ -60,7 +59,7 @@ const CrisisModal: React.FC<CrisisModalProps> = ({
           },
         });
       } else if (userType === "CLINIC") {
-        res = await addCrisisByClinic({
+        await addCrisisByClinic({
           clientId,
           clinicId: therapistId,
           crisisData: {
@@ -70,11 +69,11 @@ const CrisisModal: React.FC<CrisisModalProps> = ({
         });
       }
 
-      if (res && "data" in res && isLoading) {
-        onClose();
-      } else {
-        toast.error("Failed to save crisis data");
-      }
+      // if (res && "data" in res && isLoading) {
+      //   onClose();
+      // } else {
+      //   toast.error("Failed to save crisis data");
+      // }
     } catch (error) {
       console.log(error);
       toast.error("Failed to save crisis data");

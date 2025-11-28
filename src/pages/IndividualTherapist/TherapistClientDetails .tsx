@@ -9,11 +9,11 @@ import {
   Loader2,
   X,
   Brain,
+  Plus,
 } from "lucide-react";
 import { useAppSelector } from "@/hooks/useRedux";
 import { useUserId } from "@/hooks/useUserId";
 import {
-  useAddCrisisHistoryMutation,
   useAddSessionHistoryMutation,
   useGetClientByIdQuery,
 } from "@/store/api/ClientsApi";
@@ -299,8 +299,10 @@ const TherapistClientDetails: React.FC = () => {
           <div className="flex flex-col lg:flex-row justify-between gap-8">
             {/* Client Info */}
             <div className="flex gap-6">
-              <div className="w-20 h-20 bg-gradient-to-br from-teal-400 to-teal-600 rounded-2xl flex items-center justify-center flex-shrink-0">
-                <span className="text-white text-3xl font-bold">S</span>
+              <div className="size-[64px] bg-[#96C75E1A] rounded-full text-[#3FDCBF] flex items-center justify-center flex-shrink-0">
+                <span className="text-[#3FDCBF] text-[28px] font-semibold">
+                  {client.name.charAt(0).toUpperCase()}
+                </span>
               </div>
 
               <div className="flex-1">
@@ -308,7 +310,7 @@ const TherapistClientDetails: React.FC = () => {
                   <h1 className="text-2xl font-bold text-gray-900">
                     {client.name}
                   </h1>
-                  <span className="px-3 py-1 bg-teal-50 text-teal-700 text-sm font-medium rounded-full">
+                  <span className="px-3 py-1 bg-[#3FDCBF] text-white text-sm font-medium rounded-[6px]">
                     {client.status}
                   </span>
                 </div>
@@ -430,23 +432,17 @@ const TherapistClientDetails: React.FC = () => {
                 <div className="flex flex-col gap-3 w-full">
                   <button
                     onClick={startRecording}
-                    className="w-full bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700 text-white font-semibold rounded-xl px-8 py-4 shadow-lg shadow-teal-200 transition-all transform hover:scale-105"
+                    className="w-full font-semibold rounded-xl px-8 py-2.5  transition-all transform  border border-[#3FDCBF] cursor-pointer text-white bg-[#3FDCBF]"
                   >
                     <span className="flex items-center justify-center gap-2">
-                      <svg
-                        className="w-5 h-5"
-                        fill="currentColor"
-                        viewBox="0 0 20 20"
-                      >
-                        <path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z" />
-                      </svg>
+                      <Plus className="w-5 h-5" />
                       Start New Session
                     </span>
                   </button>
 
                   <button
                     onClick={() => setIsProgressModalOpen(true)}
-                    className="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold rounded-xl px-8 py-4 shadow-lg shadow-blue-200 transition-all transform hover:scale-105"
+                    className="w-full  bg-[#3FDCBF1A]  text-[#3FDCBF] font-semibold rounded-xl px-8 py-2.5  transition-all transform  border border-[#3FDCBF] cursor-pointer"
                   >
                     <span className="flex items-center justify-center gap-2">
                       <TrendingUp className="w-5 h-5" />
@@ -458,7 +454,7 @@ const TherapistClientDetails: React.FC = () => {
                 // During recording - show stop button
                 <button
                   onClick={stopRecording}
-                  className="w-full bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-semibold rounded-xl px-8 py-4 shadow-lg shadow-red-200 transition-all transform hover:scale-105"
+                  className="w-full font-semibold rounded-xl px-8 py-2.5  transition-all transform  border border-[#D45B53] cursor-pointer text-white bg-[#D45B53]"
                 >
                   <span className="flex items-center justify-center gap-2">
                     <svg
@@ -479,7 +475,7 @@ const TherapistClientDetails: React.FC = () => {
                 // During processing/analyzing - show disabled button
                 <button
                   disabled
-                  className="w-full bg-gradient-to-r from-orange-500 to-orange-600 text-white font-semibold rounded-xl px-8 py-4 shadow-lg shadow-orange-200 transition-all cursor-not-allowed"
+                  className="w-full font-semibold rounded-xl px-8 py-2.5  transition-all transform  border border-[#D45B53] cursor-pointer text-white bg-[#D45B53]"
                 >
                   <span className="flex items-center justify-center gap-2">
                     <Loader2 className="w-5 h-5 animate-spin" />
@@ -491,7 +487,7 @@ const TherapistClientDetails: React.FC = () => {
                 <div className="flex flex-col gap-3 w-full">
                   <button
                     onClick={resetSession}
-                    className="w-full bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700 text-white font-semibold rounded-xl px-8 py-4 shadow-lg shadow-teal-200 transition-all transform hover:scale-105"
+                    className="w-full font-semibold rounded-xl px-8 py-2.5  transition-all transform  border border-[#3FDCBF] cursor-pointer text-white bg-[#3FDCBF]"
                   >
                     <span className="flex items-center justify-center gap-2">
                       <svg
@@ -507,7 +503,7 @@ const TherapistClientDetails: React.FC = () => {
 
                   <button
                     onClick={() => setIsProgressModalOpen(true)}
-                    className="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold rounded-xl px-8 py-4 shadow-lg shadow-blue-200 transition-all transform hover:scale-105"
+                    className="w-full  bg-[#3FDCBF1A]  text-[#3FDCBF] font-semibold rounded-xl px-8 py-2.5  transition-all transform  border border-[#3FDCBF] cursor-pointer"
                   >
                     <span className="flex items-center justify-center gap-2">
                       <TrendingUp className="w-5 h-5" />
