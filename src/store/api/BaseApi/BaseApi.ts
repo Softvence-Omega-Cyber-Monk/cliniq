@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { logOut, setToken } from "@/store/Slices/AuthSlice/authSlice";
+import { RootState } from "@/store/store";
 import {
   BaseQueryFn,
   FetchArgs,
@@ -15,8 +16,8 @@ interface RefreshResponse {
 
 const baseQuery = fetchBaseQuery({
   baseUrl: import.meta.env.VITE_API_BASE_URL,
-  prepareHeaders: (headers) => {
-    const token = localStorage.getItem("token");
+  prepareHeaders: (headers, { getState }) => {
+    const token = (getState() as RootState)?.auth?.accessToken;
     if (token) {
       headers.set("Authorization", `Bearer ${token}`);
     }
@@ -44,7 +45,6 @@ const baseQueryWithReauth: BaseQueryFn<
       typeof refreshResult.data === "object"
     ) {
       const data = refreshResult.data as RefreshResponse;
-
       api.dispatch(
         setToken({
           accessToken: data.accessToken,
