@@ -16,25 +16,25 @@ import {
 } from "recharts"
 
 const sessionTrendData = [
-  { month: "Jan", completed: 200, scheduled: 100, cancelled: 70 },
-  { month: "Feb", completed: 150, scheduled: 80, cancelled: 30 },
-  { month: "Mar", completed: 180, scheduled: 90, cancelled: 40 },
-  { month: "Apr", completed: 160, scheduled: 60, cancelled: 25 },
-  { month: "May", completed: 140, scheduled: 70, cancelled: 35 },
-  { month: "Jun", completed: 120, scheduled: 80, cancelled: 15 },
-  { month: "Jul", completed: 200, scheduled: 50, cancelled: 50 },
-  { month: "Aug", completed: 150, scheduled: 40, cancelled: 30 },
-  { month: "Sep", completed: 230, scheduled: 180, cancelled: 50 },
-  { month: "Oct", completed: 210, scheduled: 100, cancelled: 45 },
-  { month: "Nov", completed: 200, scheduled: 150, cancelled: 45 },
-  { month: "Dec", completed: 150, scheduled: 90, cancelled: 35 },
+  { month: "Jan", completed: 0, scheduled: 0, cancelled: 0 },
+  { month: "Feb", completed: 0, scheduled: 0, cancelled: 0 },
+  { month: "Mar", completed: 0, scheduled: 0, cancelled: 0 },
+  { month: "Apr", completed: 0, scheduled: 0, cancelled: 0 },
+  { month: "May", completed: 0, scheduled: 0, cancelled: 0 },
+  { month: "Jun", completed: 0, scheduled: 0, cancelled: 0 },
+  { month: "Jul", completed: 0, scheduled: 0, cancelled: 0 },
+  { month: "Aug", completed: 0, scheduled: 0, cancelled: 0 },
+  { month: "Sep", completed: 0, scheduled: 0, cancelled: 0 },
+  { month: "Oct", completed: 0, scheduled: 0, cancelled: 0 },
+  { month: "Nov", completed: 0, scheduled: 0, cancelled: 0 },
+  { month: "Dec", completed: 1, scheduled: 1, cancelled: 0 },
 ]
 
 const topTherapistsData = [
-  { name: "Dr. Sarah Mitchell", sessions: 160 },
-  { name: "Dr. James Cooper", sessions: 135 },
-  { name: "Dr. Emily Rodriguez", sessions: 170 },
-  { name: "Dr. Michael Chen", sessions: 130 },
+  { name: "Dr. Sarah Mitchell", sessions: 0 },
+  { name: "Dr. James Cooper", sessions: 0 },
+  { name: "Dr. Emily Rodriguez", sessions: 1 },
+  { name: "Dr. Michael Chen", sessions: 0 },
 ]
 
 const sessionTypeData = [
@@ -48,9 +48,9 @@ export default function ReportsAnalytics() {
   const [timeRange, setTimeRange] = useState<"week" | "month">("month")
 
   const stats = [
-    { label: "Total Sessions", value: "556", icon: "📋" },
-    { label: "Completed Sessions", value: "518", icon: "📈" },
-    { label: "Crisis Alerts", value: "14", icon: "⚠️" },
+    { label: "Total Sessions", value: "1", icon: "📋" },
+    { label: "Completed Sessions", value: "1", icon: "📈" },
+    { label: "Crisis Alerts", value: "0", icon: "⚠️" },
     { label: "Avg Patient Progress", value: "68%", icon: "👤" },
   ]
 
