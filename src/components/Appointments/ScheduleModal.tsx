@@ -32,7 +32,7 @@ interface Therapist {
 
 const ScheduleModal: React.FC<ScheduleModalProps> = ({ onClose }) => {
   const userType = useAppSelector((state) => state.auth.userType);
-  console.log(userType)
+  console.log(userType);
   const userId = useUserId();
   const [createAppointment, { isLoading: isCreating }] =
     useCreateAppointmentMutation();
@@ -134,11 +134,11 @@ const ScheduleModal: React.FC<ScheduleModalProps> = ({ onClose }) => {
       onClick={onClose}
     >
       <div
-        className="bg-[#ebf4f2] rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden"
+        className="bg-[#ebf4f2] rounded-2xl shadow w-full max-w-3xl  overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="p-6 border-b border-gray-100 flex justify-between items-center">
-          <h2 className="text-xl font-bold text-gray-800">
+          <h2 className="text-xl font-medium text-gray-800">
             Schedule New Appointment
           </h2>
           <button
@@ -216,35 +216,36 @@ const ScheduleModal: React.FC<ScheduleModalProps> = ({ onClose }) => {
             </div>
           </div>
 
-          {/* Duration */}
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Duration (minutes)
-            </label>
-            <input
-              type="number"
-              min={15}
-              value={duration}
-              onChange={(e) => setDuration(Number(e.target.value))}
-              className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-mint-500 focus:border-mint-500 transition duration-150 text-gray-800 bg-white shadow-inner"
-            />
-          </div>
+          <div className="flex w-full gap-3.5">
+            {/* Duration */}
+            <div className="mb-4 flex-1">
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Duration (minutes)
+              </label>
+              <input
+                type="number"
+                min={15}
+                value={duration}
+                onChange={(e) => setDuration(Number(e.target.value))}
+                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-mint-500 focus:border-mint-500 transition duration-150 text-gray-800 bg-white shadow-inner"
+              />
+            </div>
 
-          {/* Session Type */}
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Session Type
-            </label>
-            <select
-              value={sessionType}
-              onChange={(e) => setSessionType(e.target.value)}
-              className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-mint-500 focus:border-mint-500 transition duration-150 text-gray-800 bg-white shadow-inner"
-            >
-              <option value="virtual">Virtual</option>
-              <option value="onsite">Onsite</option>
-            </select>
+            {/* Session Type */}
+            <div className="mb-4 flex-1">
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Session Type
+              </label>
+              <select
+                value={sessionType}
+                onChange={(e) => setSessionType(e.target.value)}
+                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-mint-500 focus:border-mint-500 transition duration-150 text-gray-800 bg-white shadow-inner"
+              >
+                <option value="virtual">Virtual</option>
+                <option value="onsite">Onsite</option>
+              </select>
+            </div>
           </div>
-
           {/* Phone */}
           <div className="mb-4">
             <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -290,13 +291,13 @@ const ScheduleModal: React.FC<ScheduleModalProps> = ({ onClose }) => {
             <button
               type="button"
               onClick={onClose}
-              className="px-6 py-3 font-semibold rounded-full border border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors"
+              className="px-16 py-2 font-medium rounded-[12px] border border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors"
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="px-6 py-3 font-semibold rounded-full bg-mint-500 text-black hover:bg-mint-600 transition-colors shadow-lg shadow-mint-500/30"
+              className="px-16 py-2 font-medium rounded-[12px] bg-mint-500 text-white bg-[#3FDCBF] hover:bg-mint-600 transition-colors  shadow-mint-500/30"
             >
               {isCreating ? "Scheduling..." : "Schedule Appointment"}
             </button>
