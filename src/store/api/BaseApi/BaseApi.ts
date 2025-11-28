@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { logout, setToken } from "@/store/Slices/AuthSlice/authSlice";
+import { logOut, setToken } from "@/store/Slices/AuthSlice/authSlice";
 import {
   BaseQueryFn,
   FetchArgs,
@@ -36,7 +36,7 @@ const baseQueryWithReauth: BaseQueryFn<
     const refreshResult = await baseQuery({
       url: "/auth/refresh",
       method: "POST",
-      body: {refreshToken} ,
+      body: { refreshToken },
     }, api, extraOptions);
 
     if (
@@ -54,7 +54,7 @@ const baseQueryWithReauth: BaseQueryFn<
 
       result = await baseQuery(args, api, extraOptions);
     } else {
-      api.dispatch(logout());
+      api.dispatch(logOut());
     }
   }
 
@@ -64,9 +64,10 @@ const baseQueryWithReauth: BaseQueryFn<
 const baseApi = createApi({
   reducerPath: "baseApi",
   baseQuery: baseQueryWithReauth,
-  tagTypes: ["APPOINTMENT", "ClINIC", "RESOURCE", "SUBSCRIPTION_PLAN", "THERAPIST", "CLINIC", "SUPPORT_TICKET", "SUPPORT_MESSAGE", "ClINICClIENT", "SETTINGS"],
+  tagTypes: ["APPOINTMENT", "ClINIC", "RESOURCE", "SUBSCRIPTION_PLAN", "THERAPIST", "CLINIC", "SUPPORT_TICKET", "SUPPORT_MESSAGE", "ClINICClIENT", "SUBSCRIPTION", "PAYMENT", "PAYMENT_METHOD"],
 
   endpoints: () => ({}),
 });
 
 export default baseApi;
+

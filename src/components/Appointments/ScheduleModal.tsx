@@ -1,9 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { X } from "lucide-react";
-import { useGetAllClientQuery } from "@/store/api/ClientsApi";
 import { useUserId } from "@/hooks/useUserId";
 import { useCreateAppointmentMutation } from "@/store/api/AppoinmentsApi";
 import { toast } from "sonner";
+import { useGetAllClinicClientsQuery } from "@/store/api/ClinicClientsApi";
+import { useGetTherapistByClinicQuery } from "@/store/api/UsersApi";
+import { useAppSelector } from "@/hooks/useRedux";
+import { useGetAllClientQuery } from "@/store/api/ClientsApi";
+import { skipToken } from "@reduxjs/toolkit/query";
 
 interface ScheduleModalProps {
   onClose: () => void;
@@ -12,23 +16,57 @@ interface ScheduleModalProps {
 interface Client {
   id: string;
   name: string;
-  email: string;
+  email?: string;
   phone?: string;
   sessionCount: number;
   overallProgress: number;
   status: string;
 }
 
-const ScheduleModal: React.FC<ScheduleModalProps> = ({ onClose }) => {
-  const userId = useUserId();
-  const [createAppointment, { isLoading }] = useCreateAppointmentMutation();
-  const { data } = useGetAllClientQuery({
-    therapistId: userId,
-    search: "",
-    status: "",
-  });
+interface Therapist {
+  id: string;
+  fullName: string;
+  email: string;
+  speciality?: string;
+}
 
-  const [clientId, setClientId] = useState("");
+const ScheduleModal: React.FC<ScheduleModalProps> = ({ onClose }) => {
+  const userType = useAppSelector((state) => state.auth.userType);
+  const userId = useUserId();
+  const [createAppointment, { isLoading: isCreating }] =
+    useCreateAppointmentMutation();
+
+  const therapistQuery = useGetAllClientQuery(
+    userType === "THERAPIST"
+      ? {
+          therapistId: userId,
+          search: "",
+          status: "",
+        }
+      : skipToken
+  );
+  const clinicQuery = useGetAllClinicClientsQuery(
+    userType === "CLINIC"
+      ? {
+          clinicId: userId,
+          search: "",
+          status: "",
+        }
+      : skipToken
+  );
+
+  // Select the active query
+  const clientsData =
+    userType === "THERAPIST" ? therapistQuery.data : clinicQuery.data;
+
+  const { data: therapistsData } = useGetTherapistByClinicQuery(
+    userType === "CLINIC" ? userId! : skipToken
+  );
+
+  const [selectedClientId, setSelectedClientId] = useState("");
+  const [selectedTherapistId, setSelectedTherapistId] = useState(
+    userType === "THERAPIST" ? userId : ""
+  );
   const [scheduledDate, setScheduledDate] = useState("");
   const [scheduledTime, setScheduledTime] = useState("");
   const [duration, setDuration] = useState(60);
@@ -37,26 +75,35 @@ const ScheduleModal: React.FC<ScheduleModalProps> = ({ onClose }) => {
   const [email, setEmail] = useState("");
   const [notes, setNotes] = useState("");
 
+  // Update phone/email whenever selected client changes
   useEffect(() => {
-    if (!clientId || !data?.data) return;
+    if (!selectedClientId || !clientsData?.data) return;
 
-    const selectedClient = data.data.find((c: Client) => c.id === clientId);
-    if (selectedClient) {
-      setEmail(selectedClient.email || "");
-      setPhone(selectedClient.phone || "");
+    const client = clientsData.data.find(
+      (c: Client) => c.id === selectedClientId
+    );
+    if (client) {
+      setEmail(client.email || "");
+      setPhone(client.phone || "");
+    } else {
+      setEmail("");
+      setPhone("");
     }
-  }, [clientId, data]);
+  }, [selectedClientId, clientsData]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!clientId || !scheduledDate || !scheduledTime) {
+
+    const therapistId = userType === "THERAPIST" ? userId : selectedTherapistId;
+
+    if (!selectedClientId || !therapistId || !scheduledDate || !scheduledTime) {
       toast.error("Please fill all required fields");
       return;
     }
 
     const payload = {
-      clientId,
-      therapistId: userId,
+      clientId: selectedClientId,
+      therapistId: therapistId,
       scheduledDate,
       scheduledTime,
       duration,
@@ -98,20 +145,41 @@ const ScheduleModal: React.FC<ScheduleModalProps> = ({ onClose }) => {
         </div>
 
         <form className="p-6 space-y-4" onSubmit={handleSubmit}>
+          {/* Therapist Select - Only show for CLINIC users */}
+          {userType === "CLINIC" && (
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Therapist
+              </label>
+              <select
+                value={selectedTherapistId}
+                onChange={(e) => setSelectedTherapistId(e.target.value)}
+                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-mint-500 focus:border-mint-500 transition duration-150 text-gray-800 bg-white shadow-inner"
+              >
+                <option value="">Select Therapist</option>
+                {therapistsData?.data?.map((t: Therapist) => (
+                  <option key={t.id} value={t.id}>
+                    {t.fullName} ({t.email})
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+
           {/* Client Select */}
           <div className="mb-4">
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Client
             </label>
             <select
-              value={clientId}
-              onChange={(e) => setClientId(e.target.value)}
+              value={selectedClientId}
+              onChange={(e) => setSelectedClientId(e.target.value)}
               className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-mint-500 focus:border-mint-500 transition duration-150 text-gray-800 bg-white shadow-inner"
             >
               <option value="">Select Client</option>
-              {data?.data?.map((c: Client) => (
+              {clientsData?.data?.map((c: Client) => (
                 <option key={c.id} value={c.id}>
-                  {c.name} ({c.email})
+                  {c.name}
                 </option>
               ))}
             </select>
@@ -168,7 +236,7 @@ const ScheduleModal: React.FC<ScheduleModalProps> = ({ onClose }) => {
               className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-mint-500 focus:border-mint-500 transition duration-150 text-gray-800 bg-white shadow-inner"
             >
               <option value="virtual">Virtual</option>
-              <option value="in-person">In-Person</option>
+              <option value="onsite">Onsite</option>
             </select>
           </div>
 
@@ -225,7 +293,7 @@ const ScheduleModal: React.FC<ScheduleModalProps> = ({ onClose }) => {
               type="submit"
               className="px-6 py-3 font-semibold rounded-full bg-mint-500 text-black hover:bg-mint-600 transition-colors shadow-lg shadow-mint-500/30"
             >
-              {isLoading ? "Scheduling..." : "Schedule Appointment"}
+              {isCreating ? "Scheduling..." : "Schedule Appointment"}
             </button>
           </div>
         </form>

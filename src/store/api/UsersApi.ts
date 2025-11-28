@@ -1,246 +1,89 @@
 import baseApi from "./BaseApi/BaseApi";
 
-// Types
-export interface Clinic {
-    id: string;
-    name: string;
-    email: string;
-    phone?: string;
-    address?: string;
-    isActive: boolean;
-    subscriptionId?: string;
-    createdAt: string;
-    updatedAt: string;
-}
-
-export interface Therapist {
-    id: string;
-    fullName: string;
-    email: string;
-    phone?: string;
-    specialization?: string | null;
-    speciality?: string; // Some APIs return both
-    clinicId?: string;
-
-    // Full clinic object (optional)
-    clinic?: {
-        id: string;
-        privatePracticeName?: string;
-    } | null;
-
-    qualification?: string;
-    licenseNumber?: string;
-    defaultSessionDuration?: number;
-    timeZone?: string;
-
-    subscriptionId?: string;
-    isActive: boolean;
-    createdAt: string;
-    updatedAt: string;
-
-    _count?: {
-        clients: number;
-        appointments: number;
-    };
-}
-
-
-export interface UpdateClinicDto {
-    name?: string;
-    email?: string;
-    phone?: string;
-    address?: string;
-    isActive?: boolean;
-}
-
-export interface UpdateTherapistDto {
-    fullName?: string;
-    email?: string;
-    phone?: string;
-    specialization?: string;
-    isActive?: boolean;
-}
-
-export interface NotificationSettings {
-    emailNotifications?: boolean;
-    sessionReminders?: boolean;
-    crisisAlerts?: boolean;
-}
-
-export interface AssignSubscriptionDto {
-    subscriptionPlanId: string;
-    startDate?: string;
-    endDate?: string;
-}
-
 const usersApi = baseApi.injectEndpoints({
     endpoints: (builder) => ({
-        // Clinic endpoints
-        getAllClinics: builder.query<{ data: Clinic[] }, void>({
+        getAllClinics: builder.query({
             query: () => '/users/clinics',
-            providesTags: (result) => {
-                const list = result?.data ?? [];
-                return [
-                    ...list.map(({ id }) => ({ type: 'CLINIC' as const, id })),
-                    { type: 'CLINIC', id: 'LIST' },
-                ];
-            },
         }),
-
-        getClinicById: builder.query<Clinic, string>({
-            query: (id) => `/users/clinics/${id}`,
-            providesTags: (_result, _error, id) => [{ type: 'CLINIC', id }],
-        }),
-
-        getTherapistByClinic: builder.query<Therapist[], string>({
+        getTherapistByClinic: builder.query({
             query: (id) => `/users/clinics/${id}/therapists`,
-            providesTags: (_result, _error, clinicId) => [
-                { type: 'THERAPIST', id: `CLINIC_${clinicId}` },
-            ],
         }),
-
-        updateClinicProfile: builder.mutation<Clinic, { id: string; data: UpdateClinicDto }>({
+        getClinicById: builder.query({
+            query: (id) => `/users/clinics/${id}`,
+        }),
+        updateClinicProfile: builder.mutation({
             query: ({ id, data }) => ({
                 url: `/users/clinics/${id}`,
                 method: "PUT",
                 body: data,
             }),
-            invalidatesTags: (_result, _error, { id }) => [
-                { type: 'CLINIC', id },
-                { type: 'CLINIC', id: 'LIST' },
-            ],
         }),
-
-        deleteClinic: builder.mutation<{ message: string }, string>({
+        deleteClinic: builder.mutation({
             query: (id) => ({
                 url: `/users/clinics/${id}`,
                 method: "DELETE",
             }),
-            invalidatesTags: [{ type: 'CLINIC', id: 'LIST' }],
         }),
-
-        updateClinicNotification: builder.mutation<
-            Clinic,
-            { id: string; data: NotificationSettings }
-        >({
+        updateClinicNotification: builder.mutation({
             query: ({ id, data }) => ({
                 url: `/users/clinics/${id}/notifications`,
                 method: "PUT",
                 body: data,
             }),
-            invalidatesTags: (_result, _error, { id }) => [{ type: 'CLINIC', id }],
         }),
-
-        assignSubscriptionToClinic: builder.mutation<
-            Clinic,
-            { id: string; data: AssignSubscriptionDto }
-        >({
+        assignSubscriptionToClinic: builder.mutation({
             query: ({ id, data }) => ({
                 url: `/users/clinics/${id}/subscriptions`,
                 method: "POST",
                 body: data,
             }),
-            invalidatesTags: (_result, _error, { id }) => [
-                { type: 'CLINIC', id },
-                { type: 'CLINIC', id: 'LIST' },
-            ],
         }),
-
-        removeSubscriptionFromClinic: builder.mutation<
-            Clinic,
-            { id: string; data?: any }
-        >({
+        removeSubscriptionFromClinic: builder.mutation({
             query: ({ id, data }) => ({
                 url: `/users/clinics/${id}/subscription`,
                 method: "DELETE",
                 body: data,
             }),
-            invalidatesTags: (_result, _error, { id }) => [
-                { type: 'CLINIC', id },
-                { type: 'CLINIC', id: 'LIST' },
-            ],
         }),
-
-        // Therapist endpoints
-        getAllTherapist: builder.query<{ data: Therapist[] }, void>({
+        getAllTherapist: builder.query({
             query: () => '/users/therapists',
-            providesTags: (result) => {
-                const list = result?.data ?? [];
-                return [
-                    ...list.map(({ id }) => ({ type: 'THERAPIST' as const, id })),
-                    { type: 'THERAPIST', id: 'LIST' },
-                ];
-            },
         }),
-
-
-
-        updateTherapistProfile: builder.mutation<
-            Therapist,
-            { id: string; data: UpdateTherapistDto }
-        >({
+        updateTherapistProfile: builder.mutation({
             query: ({ id, data }) => ({
                 url: `/users/therapists/${id}`,
                 method: "PUT",
                 body: data,
             }),
-            invalidatesTags: (_result, _error, { id }) => [
-                { type: 'THERAPIST', id },
-                { type: 'THERAPIST', id: 'LIST' },
-            ],
         }),
-
-        deleteTherapist: builder.mutation<{ message: string }, string>({
+        deleteTherapist: builder.mutation({
             query: (id) => ({
                 url: `/users/therapists/${id}`,
                 method: "DELETE",
             }),
-            invalidatesTags: [{ type: 'THERAPIST', id: 'LIST' }],
         }),
-
-        assignSubscriptionToTherapist: builder.mutation<
-            Therapist,
-            { id: string; data: AssignSubscriptionDto }
-        >({
+        assignSubscriptionToTherapist: builder.mutation({
             query: ({ id, data }) => ({
                 url: `/users/therapists/${id}/subscription`,
                 method: "POST",
                 body: data,
             }),
-            invalidatesTags: (_result, _error, { id }) => [
-                { type: 'THERAPIST', id },
-                { type: 'THERAPIST', id: 'LIST' },
-            ],
         }),
-
-        removeTherapistFromSubscription: builder.mutation<Therapist, string>({
-            query: (id) => ({
+        removeTherapistFromSubscription: builder.mutation({
+            query: ( id ) => ({
                 url: `/users/therapists/${id}/subscription`,
                 method: "DELETE",
+               
             }),
-            invalidatesTags: (_result, _error, id) => [
-                { type: 'THERAPIST', id },
-                { type: 'THERAPIST', id: 'LIST' },
-            ],
+        }),
+        getTherapistById: builder.query({
+            query: (id) => `/users/therapists/${id}`,
         }),
     }),
-});
+})
 
-export const {
-    useGetAllClinicsQuery,
-    useGetTherapistByClinicQuery,
-    useGetAllTherapistQuery,
-    useGetClinicByIdQuery,
-    useUpdateClinicProfileMutation,
-    useDeleteClinicMutation,
-    useUpdateClinicNotificationMutation,
-    useAssignSubscriptionToClinicMutation,
-    useRemoveSubscriptionFromClinicMutation,
-    useUpdateTherapistProfileMutation,
-    useDeleteTherapistMutation,
-    useAssignSubscriptionToTherapistMutation,
-    useRemoveTherapistFromSubscriptionMutation,
-    useLazyGetAllClinicsQuery,
-    useLazyGetTherapistByClinicQuery,
-    useLazyGetAllTherapistQuery,
-} = usersApi;
+export const { useGetAllClinicsQuery, useGetTherapistByClinicQuery, useGetAllTherapistQuery, useGetClinicByIdQuery, 
+    useUpdateClinicProfileMutation, useDeleteClinicMutation, useUpdateClinicNotificationMutation, useAssignSubscriptionToClinicMutation, 
+    useRemoveSubscriptionFromClinicMutation, useUpdateTherapistProfileMutation, useDeleteTherapistMutation, useAssignSubscriptionToTherapistMutation,
+    useRemoveTherapistFromSubscriptionMutation, useGetTherapistByIdQuery
+ } = usersApi
+export default usersApi

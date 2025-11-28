@@ -22,7 +22,7 @@ export default function SessionsManagement() {
     data: _statsData, 
     isLoading: statsLoading 
   } = useGetSessionCompletionDataQuery()
-
+console.log(_statsData)
   // Calculate stats from the data
   const stats = useMemo(() => {
     const today = new Date().toDateString()
