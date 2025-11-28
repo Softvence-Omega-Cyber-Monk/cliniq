@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Client, Status } from "./types";
 import ClientListItem from "./ClientListItem";
-import { AddNewClient } from "./AddNewClient";
 import ClientListItemSkeleton from "../Skeleton/ClientListItemSkeleton";
 import { SearchIcon } from "lucide-react";
 import { useAppSelector } from "@/hooks/useRedux";
@@ -11,6 +10,7 @@ import { useGetAllClientQuery } from "@/store/api/ClientsApi";
 
 import { skipToken } from "@reduxjs/toolkit/query/react";
 import { useGetAllClinicClientsQuery } from "@/store/api/ClinicClientsApi";
+import AddClientModal from "../IndividualDashboard/AddClientModal";
 
 const ClientListDashboard: React.FC = () => {
   const userType = useAppSelector((state) => state.auth.userType);
@@ -64,10 +64,6 @@ const ClientListDashboard: React.FC = () => {
     userType === "THERAPIST" || userType === "INDIVIDUAL_THERAPIST"
       ? therapistQuery.error
       : clinicQuery.error;
-  const refetch =
-    userType === "THERAPIST" || userType === "INDIVIDUAL_THERAPIST"
-      ? therapistQuery.refetch
-      : clinicQuery.refetch;
 
   // Reset page on search/filter change
   useEffect(() => {
@@ -215,10 +211,9 @@ const ClientListDashboard: React.FC = () => {
 
       {/* Add New Client Modal */}
       {showAddNewClientModal && (
-        <AddNewClient
-          onClientAdded={refetch}
-          onClose={() => setShowAddNewClientModal(false)}
-        />
+       
+        <AddClientModal onClose={() => setShowAddNewClientModal(false)}/>
+      
       )}
     </div>
   );
