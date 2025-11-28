@@ -1,8 +1,10 @@
 import React from "react";
 import { useGetClinicRecentSessionsQuery } from "@/store/api/ReportsApi";
 import type { RecentSessionType } from "../../types/dashboard";
+import { useAppSelector } from "@/hooks/useRedux";
 
 const RecentSessions: React.FC = () => {
+  const userType = useAppSelector((state) => state.auth.userType);
   const {
     data: sessions = [],
     isLoading,
