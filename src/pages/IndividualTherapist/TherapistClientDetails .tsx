@@ -12,7 +12,11 @@ import {
 } from "lucide-react";
 import { useAppSelector } from "@/hooks/useRedux";
 import { useUserId } from "@/hooks/useUserId";
-import { useGetClientByIdQuery } from "@/store/api/ClientsApi";
+import {
+  useAddCrisisHistoryMutation,
+  useAddSessionHistoryMutation,
+  useGetClientByIdQuery,
+} from "@/store/api/ClientsApi";
 import {
   useAddClinicClientSessionHistoryMutation,
   useGetClinicClientByIdQuery,
@@ -41,6 +45,7 @@ const TherapistClientDetails: React.FC = () => {
   const [sendSession] = useSendSessionMutation();
   const [addClinicClientSessionHistory] =
     useAddClinicClientSessionHistoryMutation();
+  const [addedSessionbytherapist] = useAddSessionHistoryMutation();
   // Fetch client data based on user type
   const therapistQuery = useGetClientByIdQuery(
     userType === "THERAPIST" || userType === "INDIVIDUAL_THERAPIST"
@@ -171,16 +176,29 @@ const TherapistClientDetails: React.FC = () => {
         setAiInsights(aiInsight);
         toast.success("AI analysis completed!");
 
-        await addClinicClientSessionHistory({
-          clientId: id,
-          clinicId: userId,
-          sessionData: {
-            sessionDate: new Date().toISOString(),
-            sessionType: "Individual Therapy",
-            duration,
-            notes: aiInsight,
-          },
-        }).unwrap();
+        if (userType === "THERAPIST" || userType === "INDIVIDUAL_THERAPIST") {
+          await addedSessionbytherapist({
+            clientId: id,
+            therapistId: userId,
+            sessionData: {
+              sessionDate: new Date().toISOString(),
+              crisisDate: "Individual Therapy",
+              duration,
+              notes: aiInsight,
+            },
+          }).unwrap();
+        } else {
+          await addClinicClientSessionHistory({
+            clientId: id,
+            clinicId: userId,
+            sessionData: {
+              sessionDate: new Date().toISOString(),
+              sessionType: "Individual Therapy",
+              duration,
+              notes: aiInsight,
+            },
+          }).unwrap();
+        }
       }
 
       if (res.updatedMetrics) {

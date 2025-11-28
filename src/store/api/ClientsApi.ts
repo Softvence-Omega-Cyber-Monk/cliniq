@@ -5,10 +5,10 @@ const clientsApi = baseApi.injectEndpoints({
         createNewClient: builder.mutation({
             query: ({ therapistId, credentials }) => {
                 return ({
-                url: `/therapists/${therapistId}/clients`,
-                method: "POST",
-                body: credentials,
-            })
+                    url: `/therapists/${therapistId}/clients`,
+                    method: "POST",
+                    body: credentials,
+                })
             },
         }),
         addCrisisHistory: builder.mutation({
@@ -33,12 +33,13 @@ const clientsApi = baseApi.injectEndpoints({
             }),
         }),
         addSessionHistory: builder.mutation({
-            query: (credentials) => ({
-                url: '/therapists/{therapistId}/clients/{clientId}/session-history',
+            query: ({ therapistId, clientId, ...sessionData }) => ({
+                url: `/therapists/${therapistId}/clients/${clientId}/session-history`,
                 method: 'POST',
-                body: credentials,
+                body: sessionData,
             }),
         }),
+
         updateSessionHistory: builder.mutation({
             query: (credentials) => ({
                 url: '/therapists/{therapistId}/clients/{clientId}/session-history',
