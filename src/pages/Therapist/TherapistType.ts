@@ -19,6 +19,7 @@ export interface Therapist {
   qualifications: string;
   availability: string;
   speciality: string;
+  clinicId:string
 }
 
 export interface Patient {

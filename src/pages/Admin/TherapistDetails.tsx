@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { ArrowLeft, Loader2 } from "lucide-react"
 import { useNavigate, useParams } from "react-router-dom"
 import { useGetAllTherapistQuery, useDeleteTherapistMutation } from "@/store/api/UsersApi"
@@ -15,6 +16,7 @@ export default function TherapistDetails() {
     const therapist = apiResponse?.data?.find((t: any) => t.id === id)
 
     const handleDelete = async () => {
+        if(!id) return
         try {
             await deleteTherapist(id).unwrap()
             navigate("/admin-dashboard/admin-therapists")
@@ -190,11 +192,11 @@ export default function TherapistDetails() {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-10">
                 <div className="bg-card border border-gray-200 bg-white p-4 rounded-lg">
                     <p className="text-sm text-muted-foreground mb-1">Total Patients</p>
-                    <p className="text-2xl font-bold text-foreground">{therapist._count.clients}</p>
+                    <p className="text-2xl font-bold text-foreground">{therapist._count?.clients}</p>
                 </div>
                 <div className="bg-card border border-gray-200 bg-white p-4 rounded-lg">
                     <p className="text-sm text-muted-foreground mb-1">Total Appointments</p>
-                    <p className="text-2xl font-bold text-foreground">{therapist._count.appointments}</p>
+                    <p className="text-2xl font-bold text-foreground">{therapist._count?.appointments}</p>
                 </div>
                 <div className="bg-card border border-gray-200 bg-white p-4 rounded-lg">
                     <p className="text-sm text-muted-foreground mb-1">Practice Status</p>
