@@ -13,6 +13,18 @@ interface RefreshResponse {
   accessToken: string;
   refreshToken: string;
 }
+// const baseQuery = fetchBaseQuery({
+//   baseUrl: import.meta.env.VITE_API_BASE_URL,
+//   prepareHeaders: (headers) => {
+//     // const token = (getState() as RootState)?.auth?.accessToken;
+//     const token = localStorage.getItem("token");
+//     if (token) {
+//       headers.set("Authorization", `Bearer ${token}`);
+//     }
+//     return headers;
+//   },
+//   // credentials: "include",
+// });
 
 const baseQuery = fetchBaseQuery({
   baseUrl: import.meta.env.VITE_API_BASE_URL,
@@ -23,9 +35,7 @@ const baseQuery = fetchBaseQuery({
     }
     return headers;
   },
-  // credentials: "include",
-});
-
+}); 
 const baseQueryWithReauth: BaseQueryFn<
   string | FetchArgs,
   unknown,
@@ -39,7 +49,6 @@ const baseQueryWithReauth: BaseQueryFn<
       method: "POST",
       body: { refreshToken },
     }, api, extraOptions);
-
     if (
       refreshResult.data &&
       typeof refreshResult.data === "object"
@@ -51,7 +60,6 @@ const baseQueryWithReauth: BaseQueryFn<
           refreshToken: data.refreshToken,
         })
       );
-
       result = await baseQuery(args, api, extraOptions);
     } else {
       api.dispatch(logOut());

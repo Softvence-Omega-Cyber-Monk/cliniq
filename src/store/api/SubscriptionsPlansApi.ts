@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import baseApi from "./BaseApi/BaseApi";
 
 // Backend response type (what API actually returns)
