@@ -38,7 +38,21 @@ const IndividualTherapistSupport: React.FC<
   };
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log(formData);
+    if (!formData.subject.trim()) {
+      toast.error("Subject is required.");
+      return;
+    }
+
+    if (!formData.message.trim()) {
+      toast.error("Message is required.");
+      return;
+    }
+
+    if (formData.message.trim().length < 10) {
+      toast.error("Message must be at least 10 characters.");
+      return;
+    }
+
     try {
       const res = await createTicket(formData).unwrap();
       console.log(res);
