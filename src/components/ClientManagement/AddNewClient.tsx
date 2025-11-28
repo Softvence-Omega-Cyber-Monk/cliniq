@@ -47,7 +47,7 @@ const FormInput: React.FC<FormInputProps> = ({
       value={value}
       onChange={onChange}
       placeholder={placeholder}
-      className="p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition duration-150 text-base shadow-sm"
+      className="p-3 bg-[#FAFAF7] border border-[#EAE9DD] rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition duration-150 text-base "
     />
   </div>
 );
@@ -100,7 +100,7 @@ const HealthIssuesInput: React.FC<{
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={handleKeyDown}
           placeholder="Type and press Enter"
-          className="flex-1 outline-none"
+          className="flex-1 outline-none "
         />
       </div>
     </div>
@@ -140,8 +140,8 @@ export const AddNewClient: React.FC<{
       condition: formData.condition,
       status: "active",
     };
-try {
-      if (userType === "THERAPIST") {
+    try {
+      if (userType === "THERAPIST" || userType === "INDIVIDUAL_THERAPIST") {
         await createTherapistClient({
           therapistId: userId!,
           credentials: payload,
@@ -166,9 +166,11 @@ try {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#fff]/50 backdrop-blur-sm p-4">
-      <div className="bg-white w-full max-w-4xl rounded-xl shadow-2xl p-6 md:p-10">
+      <div className="bg-[#EBF4F2] w-full max-w-4xl rounded-xl shadow-2xl p-6 md:p-10">
         <div className="flex justify-between items-center mb-8">
-          <h2 className="text-2xl font-bold text-gray-800">Add New Client</h2>
+          <h2 className="text-2xl font-semibold text-gray-800">
+            Add New Client
+          </h2>
           <button
             onClick={onClose}
             className="text-gray-400 hover:text-gray-600 transition duration-150 p-1 rounded-full hover:bg-gray-100"

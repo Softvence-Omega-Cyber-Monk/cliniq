@@ -17,4 +17,5 @@ export interface AssessmentAlert {
   severity: "high" | "medium" | "low";
   timeAgo: string;
   createdAt: string;
+  message: string
 }
