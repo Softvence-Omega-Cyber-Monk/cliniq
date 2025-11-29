@@ -77,10 +77,10 @@ const TherapistClientDetails: React.FC = () => {
     userType === "THERAPIST" || userType === "INDIVIDUAL_THERAPIST"
       ? therapistQuery.error
       : therapistQuery.error || clinicQuery.error;
-  const refetch =
-    userType === "THERAPIST" || userType === "INDIVIDUAL_THERAPIST"
-      ? therapistQuery.refetch
-      : clinicQuery.refetch;
+  // const refetch =
+  //   userType === "THERAPIST" || userType === "INDIVIDUAL_THERAPIST"
+  //     ? therapistQuery.refetch
+  //     : clinicQuery.refetch;
 
   const [isRecording, setIsRecording] = useState(false);
   const [elapsed, setElapsed] = useState(0);
