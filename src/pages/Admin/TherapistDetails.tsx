@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { ArrowLeft, Loader2 } from "lucide-react"
 import { useNavigate, useParams } from "react-router-dom"
 import { useGetAllTherapistQuery, useDeleteTherapistMutation } from "@/store/api/UsersApi"
@@ -9,7 +10,7 @@ export default function TherapistDetails() {
     const [showDeleteModal, setShowDeleteModal] = useState(false)
 
     // Fetch all therapists and find the specific one
-    const { data: apiResponse, isLoading, isError } = useGetAllTherapistQuery()
+    const { data: apiResponse, isLoading, isError } = useGetAllTherapistQuery({})
     const [deleteTherapist, { isLoading: isDeleting }] = useDeleteTherapistMutation()
 
     const therapist = apiResponse?.data?.find((t: any) => t.id === id)

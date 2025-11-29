@@ -12,8 +12,14 @@ const appointmentsApi = baseApi.injectEndpoints({
       invalidatesTags: ["APPOINTMENT"],
     }),
     getAllAppointments: builder.query({
-      query: () => "/appointments",
+      query: ({ status, sessionType, page, limit }) => ({
+        url: `/appointments`,
+        method: "GET",
+        params: { status, sessionType, page, limit },
+      }),
+      providesTags: ["APPOINTMENT"],
     }),
+
     getAppointmentDetails: builder.query({
       query: (id) => `/appointments/${id}`,
     }),
@@ -74,8 +80,18 @@ const appointmentsApi = baseApi.injectEndpoints({
 
     // THERAPIST ALL
     getTherapistAppointments: builder.query({
-      query: (therapistId) => `/appointments/therapist/${therapistId}`,
+      query: ({ therapistId, status, sessionType, page = 1, limit = 10 }) => {
+        const params = new URLSearchParams();
+
+        if (status) params.append("status", status);
+        if (sessionType) params.append("sessionType", sessionType);
+        params.append("page", String(page));
+        params.append("limit", String(limit));
+
+        return `/appointments/therapist/${therapistId}?${params.toString()}`;
+      },
     }),
+
 
     // TODAY
     getTodaysAppointments: builder.query({

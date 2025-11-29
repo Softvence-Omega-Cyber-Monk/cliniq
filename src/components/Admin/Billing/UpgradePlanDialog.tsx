@@ -43,7 +43,7 @@ const UpgradePlanDialog: React.FC<UpgradePlanDialogProps> = ({
 
   const selectedPlan = plans.find((p) => p.id === selectedPlanId);
   const isUpgrade = selectedPlan && selectedPlan.price > currentPrice;
-  const isDowngrade = selectedPlan && selectedPlan.price < currentPrice;
+  // const isDowngrade = selectedPlan && selectedPlan.price < currentPrice;
 
   // Trigger preview when plan selected
   useEffect(() => {
@@ -68,7 +68,7 @@ const UpgradePlanDialog: React.FC<UpgradePlanDialogProps> = ({
 
       alert(preview?.description || "Your plan has been updated successfully.")
       onOpenChange(false);
-    } catch (err: any) {
+    } catch  {
       alert("Please try again")
     }
   };

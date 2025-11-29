@@ -19,8 +19,8 @@ import PlatformSettings from "@/pages/PlatformSettings";
 import SupportTickets from "@/pages/SupportTickets";
 import AdminSupportTickets from "@/components/Admin/SupportTickets";
 import ReportsTwo from "../pages/ReportsTwo";
-import Billing from "../pages/Billing";
-import Materials from "../pages/Materials";
+import Billing from "../pages/Billing/Billing";
+import Materials from "../pages/Materials/Materials";
 import IndividualTherapistDashboard from "../pages/IndividualTherapist/IndividualTherapistDashboard";
 import IndividualTherapistClients from "../pages/IndividualTherapist/IndividualTherapistClients";
 import IndividualTherapistAppointments from "../pages/IndividualTherapist/IndividualTherapistAppointments";
@@ -44,7 +44,7 @@ const routes = createBrowserRouter([
     element: <Layout />,
     children: [
       {
-        element: <ProtectedRoute allowedRoles={["THERAPIST"]} />,
+        element: <ProtectedRoute allowedRoles={"INDIVIDUAL_THERAPIST"} />,
         children: [
           {
             index: true,
@@ -68,6 +68,7 @@ const routes = createBrowserRouter([
           { path: "support", element: <IndividualTherapistSupport /> },
           { path: "about", element: <About /> },
           { path: "contact", element: <Contact /> },
+          { path: "billing", element: <Billing /> },
           { path: "services", element: <Services /> },
           { path: "form", element: <Form /> },
         ],
@@ -79,19 +80,18 @@ const routes = createBrowserRouter([
     element: <AdminLayout />,
     children: [
       { index: true, element: <AdminOverview /> },
-
       { path: "admin-therapists", element: <TherapistManagement /> },
-      { path: "admin-therapists/:id", element: <TherapistDetails />},
+      { path: "admin-therapists/:id", element: <TherapistDetails /> },
       { path: "admin-sessions", element: <SessionsManagement /> },
       { path: "admin-content", element: <ContentManagement /> },
       { path: "admin-reports", element: <ReportsAnalytics /> },
       { path: "admin-settings", element: <Settings /> },
-      { path: "admin-support", element: <AdminSupportTickets /> }
+      { path: "admin-support", element: <AdminSupportTickets /> },
     ],
   },
   {
     path: "/private-practice-admin",
-    element: <ProtectedRoute allowedRoles={["CLINIC"]} />,
+    element: <ProtectedRoute allowedRoles={"CLINIC"} />,
     children: [
       {
         path: "",
@@ -122,7 +122,7 @@ const routes = createBrowserRouter([
   },
   {
     path: "/admin-login",
-    element: <AdminLoginForm />
+    element: <AdminLoginForm />,
   },
   {
     path: "/signup",

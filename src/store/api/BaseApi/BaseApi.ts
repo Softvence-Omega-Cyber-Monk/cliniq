@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { logOut, setToken } from "@/store/Slices/AuthSlice/authSlice";
+import { RootState } from "@/store/store";
 import {
   BaseQueryFn,
   FetchArgs,
@@ -12,19 +13,29 @@ interface RefreshResponse {
   accessToken: string;
   refreshToken: string;
 }
+// const baseQuery = fetchBaseQuery({
+//   baseUrl: import.meta.env.VITE_API_BASE_URL,
+//   prepareHeaders: (headers) => {
+//     // const token = (getState() as RootState)?.auth?.accessToken;
+//     const token = localStorage.getItem("token");
+//     if (token) {
+//       headers.set("Authorization", `Bearer ${token}`);
+//     }
+//     return headers;
+//   },
+//   // credentials: "include",
+// });
 
 const baseQuery = fetchBaseQuery({
   baseUrl: import.meta.env.VITE_API_BASE_URL,
-  prepareHeaders: (headers) => {
-    const token = localStorage.getItem("token");
+  prepareHeaders: (headers, { getState }) => {
+    const token = (getState() as RootState)?.auth?.accessToken;
     if (token) {
       headers.set("Authorization", `Bearer ${token}`);
     }
     return headers;
   },
-  // credentials: "include",
-});
-
+}); 
 const baseQueryWithReauth: BaseQueryFn<
   string | FetchArgs,
   unknown,
@@ -38,20 +49,17 @@ const baseQueryWithReauth: BaseQueryFn<
       method: "POST",
       body: { refreshToken },
     }, api, extraOptions);
-
     if (
       refreshResult.data &&
       typeof refreshResult.data === "object"
     ) {
       const data = refreshResult.data as RefreshResponse;
-
       api.dispatch(
         setToken({
           accessToken: data.accessToken,
           refreshToken: data.refreshToken,
         })
       );
-
       result = await baseQuery(args, api, extraOptions);
     } else {
       api.dispatch(logOut());
@@ -64,9 +72,8 @@ const baseQueryWithReauth: BaseQueryFn<
 const baseApi = createApi({
   reducerPath: "baseApi",
   baseQuery: baseQueryWithReauth,
-  tagTypes: ["APPOINTMENT", "ClINIC", "RESOURCE", "SUBSCRIPTION_PLAN", "THERAPIST", "CLINIC", "SUPPORT_TICKET", "SUPPORT_MESSAGE", "ClINICClIENT", "SUBSCRIPTION", "PAYMENT", "PAYMENT_METHOD", "SETTINGS"],
-
   endpoints: () => ({}),
+  tagTypes: ["APPOINTMENT", "ClINIC","CLIENT", "RESOURCE", "SUBSCRIPTION_PLAN", "THERAPIST", "CLINIC", "SUPPORT_TICKET", "SUPPORT_MESSAGE", "ClINICClIENT", "SUBSCRIPTION", "PAYMENT", "PAYMENT_METHOD","SETTINGS" ],
 });
 
 export default baseApi;

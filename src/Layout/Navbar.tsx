@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Bell, Menu, LogOut, User } from "lucide-react";
+import { Menu, LogOut, User } from "lucide-react";
 import { useAppDispatch, useAppSelector } from "@/hooks/useRedux";
 import { logOut } from "@/store/Slices/AuthSlice/authSlice";
 
@@ -67,13 +67,13 @@ const Navbar: React.FC<NavbarProps> = ({ toggleSidebar }) => {
             <Menu className="w-6 h-6" />
           </button>
 
-          <button
+          {/* <button
             className="relative p-2 text-gray-600 hover:bg-gray-100 rounded-full transition"
             aria-label="Notifications"
           >
             <Bell className="w-6 h-6" />
             <span className="absolute top-2 right-2 block h-2 w-2 rounded-full ring-2 ring-white bg-pink-400"></span>
-          </button>
+          </button> */}
 
           {/* Avatar */}
           <div ref={dropdownRef} className="relative">

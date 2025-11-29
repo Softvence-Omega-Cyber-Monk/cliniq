@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // src/pages/Billing.tsx
 import { useState } from "react";
 import { format, parseISO } from "date-fns";
@@ -10,7 +11,13 @@ import {
   useDeletePaymentMethodMutation,
   useSetDefaultPaymentMethodMutation,
 } from "@/store/api/billingApi";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -25,7 +32,10 @@ const Billing = () => {
   const [isUpgradeOpen, setIsUpgradeOpen] = useState(false);
   const [isPurchaseOpen, setIsPurchaseOpen] = useState(false);
   const [isCancelOpen, setIsCancelOpen] = useState(false);
-  const [notification, setNotification] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
+  const [notification, setNotification] = useState<{
+    message: string;
+    type: "success" | "error";
+  } | null>(null);
 
   // === QUERIES ===
   const {
@@ -39,16 +49,18 @@ const Billing = () => {
 
 
   const [cancelSubscription] = useCancelSubscriptionMutation();
-  const [reactivateSubscription, { isLoading: reactivating }] = useReactivateSubscriptionMutation();
+  const [reactivateSubscription, { isLoading: reactivating }] =
+    useReactivateSubscriptionMutation();
   const [deletePaymentMethod] = useDeletePaymentMethodMutation();
   const [setDefaultPaymentMethod] = useSetDefaultPaymentMethodMutation();
-
   // === NOTIFICATION HELPER ===
-  const showNotification = (message: string, type: 'success' | 'error' = 'success') => {
+  const showNotification = (
+    message: string,
+    type: "success" | "error" = "success"
+  ) => {
     setNotification({ message, type });
     setTimeout(() => setNotification(null), 5000);
   };
-
   // === HELPERS ===
   const getStatusBadge = (status: string) => {
     switch (status) {
@@ -75,8 +87,9 @@ const Billing = () => {
       setIsCancelOpen(false);
     } catch (err: any) {
       showNotification(
-        err.data?.message || "Failed to cancel. Please try again or contact support.",
-        'error'
+        err.data?.message ||
+          "Failed to cancel. Please try again or contact support.",
+        "error"
       );
     }
   };
@@ -84,25 +97,29 @@ const Billing = () => {
   const handleReactivate = async () => {
     try {
       const result = await reactivateSubscription().unwrap();
-      showNotification(result.message || "Your subscription has been reactivated!");
+      showNotification(
+        result.message || "Your subscription has been reactivated!"
+      );
     } catch (err: any) {
       showNotification(
-        err.data?.message || "Failed to reactivate subscription. Please try again.",
-        'error'
+        err.data?.message ||
+          "Failed to reactivate subscription. Please try again.",
+        "error"
       );
     }
   };
 
   const handleDeletePaymentMethod = async (id: string) => {
-    if (!confirm("Are you sure you want to remove this payment method?")) return;
-    
+    if (!confirm("Are you sure you want to remove this payment method?"))
+      return;
+
     try {
       await deletePaymentMethod(id).unwrap();
       showNotification("Payment method removed successfully");
     } catch (err: any) {
       showNotification(
         err.data?.message || "Failed to remove payment method",
-        'error'
+        "error"
       );
     }
   };
@@ -114,7 +131,7 @@ const Billing = () => {
     } catch (err: any) {
       showNotification(
         err.data?.message || "Failed to set default payment method",
-        'error'
+        "error"
       );
     }
   };
@@ -131,19 +148,28 @@ const Billing = () => {
     return (
       <Alert variant="destructive" className="m-8">
         <AlertCircle className="h-4 w-4" />
-        <AlertDescription>Failed to load billing information. Please refresh the page.</AlertDescription>
+        <AlertDescription>
+          Failed to load billing information. Please refresh the page.
+        </AlertDescription>
       </Alert>
     );
   }
 
-  const { hasActiveSubscription, subscription: statusSub, capabilities, warnings } = statusData!;
+  const {
+    hasActiveSubscription,
+    subscription: statusSub,
+    capabilities,
+    warnings,
+  } = statusData!;
 
   return (
     <>
       <div className="max-w-7xl mx-auto px-4 py-8 space-y-8">
         {/* Notification */}
         {notification && (
-          <Alert variant={notification.type === 'error' ? 'destructive' : 'default'}>
+          <Alert
+            variant={notification.type === "error" ? "destructive" : "default"}
+          >
             <AlertDescription>{notification.message}</AlertDescription>
           </Alert>
         )}
@@ -164,47 +190,74 @@ const Billing = () => {
         <Card className="bg-white border border-gray-200">
           <CardHeader>
             <CardTitle className="text-2xl">Current Plan</CardTitle>
-            <CardDescription>Your subscription status and next billing date</CardDescription>
+            <CardDescription>
+              Your subscription status and next billing date
+            </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
             {hasActiveSubscription && statusSub ? (
               <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
                 <div>
-                  <h3 className="text-xl font-semibold">{statusSub.planName}</h3>
+                  <h3 className="text-xl font-semibold">
+                    {statusSub.planName}
+                  </h3>
                   <p className="text-3xl font-bold text-teal-600">
                     ${statusSub.price}
-                    <span className="text-lg font-normal text-gray-500">/month</span>
+                    <span className="text-lg font-normal text-gray-500">
+                      /month
+                    </span>
                   </p>
                   <div className="flex items-center gap-3 mt-3">
                     {getStatusBadge(statusSub.status)}
                     {statusSub.cancelAtPeriodEnd && (
                       <Badge variant="destructive">
-                        Cancels on {format(parseISO(statusSub.currentPeriodEnd), "MMM d, yyyy")}
+                        Cancels on{" "}
+                        {format(
+                          parseISO(statusSub.currentPeriodEnd),
+                          "MMM d, yyyy"
+                        )}
                       </Badge>
                     )}
                   </div>
                   <p className="text-sm text-gray-500 mt-2">
-                    Next billing: <strong>{format(parseISO(statusSub.currentPeriodEnd), "MMMM d, yyyy")}</strong>
+                    Next billing:{" "}
+                    <strong>
+                      {format(
+                        parseISO(statusSub.currentPeriodEnd),
+                        "MMMM d, yyyy"
+                      )}
+                    </strong>
                     {statusSub.daysUntilRenewal <= 7 && (
-                      <span className="text-orange-600 ml-2">({statusSub.daysUntilRenewal} days left)</span>
+                      <span className="text-orange-600 ml-2">
+                        ({statusSub.daysUntilRenewal} days left)
+                      </span>
                     )}
                   </p>
                 </div>
 
                 <div className="flex gap-3">
                   {capabilities.canUpgrade && (
-                    <Button onClick={() => setIsUpgradeOpen(true)} className="bg-teal-600 hover:bg-teal-700 cursor-pointer text-white">
+                    <Button
+                      onClick={() => setIsUpgradeOpen(true)}
+                      className="bg-teal-600 hover:bg-teal-700 cursor-pointer text-white"
+                    >
                       Upgrade Plan
                     </Button>
                   )}
                   {capabilities.canCancel && (
-                    <Button variant="outline" onClick={() => setIsCancelOpen(true)} className="cursor-pointer">
+                    <Button
+                      variant="outline"
+                      onClick={() => setIsCancelOpen(true)}
+                      className="cursor-pointer"
+                    >
                       Cancel Subscription
                     </Button>
                   )}
                   {capabilities.canReactivate && (
                     <Button onClick={handleReactivate} disabled={reactivating}>
-                      {reactivating ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
+                      {reactivating ? (
+                        <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                      ) : null}
                       Reactivate
                     </Button>
                   )}
@@ -215,9 +268,17 @@ const Billing = () => {
                 <div className="bg-gray-100 border-2 border-dashed rounded-xl w-24 h-24 mx-auto mb-4 flex items-center justify-center">
                   <CreditCard className="w-12 h-12 text-gray-400" />
                 </div>
-                <h3 className="text-xl font-semibold mb-2">No Active Subscription</h3>
-                <p className="text-gray-500 mb-6">Choose a plan to get started</p>
-                <Button onClick={() => setIsPurchaseOpen(true)} size="lg" className="bg-teal-600">
+                <h3 className="text-xl font-semibold mb-2">
+                  No Active Subscription
+                </h3>
+                <p className="text-gray-500 mb-6">
+                  Choose a plan to get started
+                </p>
+                <Button
+                  onClick={() => setIsPurchaseOpen(true)}
+                  size="lg"
+                  className="bg-teal-600"
+                >
                   View Plans
                 </Button>
               </div>
@@ -233,24 +294,42 @@ const Billing = () => {
               .filter((p) => !p.expiredAt)
               .map((plan) => {
                 const isCurrent = plan.id === statusSub?.planId;
-                const canUpgrade = capabilities.canUpgrade && plan.price > (statusSub?.price || 0);
-                const canDowngrade = capabilities.canDowngrade && plan.price < (statusSub?.price || 0);
+                const canUpgrade =
+                  capabilities.canUpgrade &&
+                  plan.price > (statusSub?.price || 0);
+                const canDowngrade =
+                  capabilities.canDowngrade &&
+                  plan.price < (statusSub?.price || 0);
 
                 return (
                   <Card
                     key={plan.id}
-                    className={`relative bg-white border-gray-200 ${plan.isPopular ? "border-teal-500 ring-2 ring-teal-500" : ""} ${isCurrent ? "opacity-60 bg-green-100 border-green-100" : ""}`}
+                    className={`relative bg-white border-gray-200 ${
+                      plan.isPopular
+                        ? "border-teal-500 ring-2 ring-teal-500"
+                        : ""
+                    } ${
+                      isCurrent
+                        ? "opacity-60 bg-green-100 border-green-100"
+                        : ""
+                    }`}
                   >
                     {plan.isPopular && (
                       <div className="absolute -top-4 left-1/2 -translate-x-1/2">
-                        <Badge className="bg-teal-600 text-white">Most Popular</Badge>
+                        <Badge className="bg-teal-600 text-white">
+                          Most Popular
+                        </Badge>
                       </div>
                     )}
                     <CardHeader>
                       <CardTitle>{plan.planName}</CardTitle>
-                      {plan.tagline && <CardDescription>{plan.tagline}</CardDescription>}
+                      {plan.tagline && (
+                        <CardDescription>{plan.tagline}</CardDescription>
+                      )}
                       <div className="mt-4">
-                        <span className="text-4xl font-bold">${plan.price}</span>
+                        <span className="text-4xl font-bold">
+                          ${plan.price}
+                        </span>
                         <span className="text-gray-500">/month</span>
                       </div>
                     </CardHeader>
@@ -274,10 +353,14 @@ const Billing = () => {
                           variant={canUpgrade ? "default" : "outline"}
                           onClick={() => setIsUpgradeOpen(true)}
                         >
-                          {canUpgrade ? "Upgrade" : canDowngrade ? "Downgrade" : "Switch Plan"}
+                          {canUpgrade
+                            ? "Upgrade"
+                            : canDowngrade
+                            ? "Downgrade"
+                            : "Switch Plan"}
                         </Button>
                       ) : (
-                        <Button 
+                        <Button
                           className="w-full bg-teal-600 hover:bg-teal-700"
                           onClick={() => setIsPurchaseOpen(true)}
                         >
@@ -309,7 +392,9 @@ const Billing = () => {
                 <Loader2 className="w-6 h-6 animate-spin" />
               </div>
             ) : paymentMethods.length === 0 ? (
-              <p className="text-center text-gray-500 py-8">No payment methods added yet</p>
+              <p className="text-center text-gray-500 py-8">
+                No payment methods added yet
+              </p>
             ) : (
               <div className="space-y-4">
                 {paymentMethods.map((pm) => (
@@ -322,7 +407,9 @@ const Billing = () => {
                       <div>
                         <p className="font-medium">
                           {pm.cardBrand} •••• {pm.cardLast4}
-                          {pm.isDefault && <Badge className="ml-2">Default</Badge>}
+                          {pm.isDefault && (
+                            <Badge className="ml-2">Default</Badge>
+                          )}
                         </p>
                         <p className="text-sm text-gray-500">
                           Expires {pm.expiryMonth}/{pm.expiryYear.slice(-2)}
@@ -416,21 +503,30 @@ const Billing = () => {
         <div className="text-center py-12">
           <h2 className="text-2xl font-bold mb-4">Need Help with Billing?</h2>
           <p className="text-gray-600 mb-6">
-            Our support team is here to help you with any subscription or payment questions.
+            Our support team is here to help you with any subscription or
+            payment questions.
           </p>
-          <Button size="lg" className="bg-teal-600 hover:bg-teal-700 text-white cursor-pointer">
+          <Button
+            size="lg"
+            className="bg-teal-600 hover:bg-teal-700 text-white cursor-pointer"
+          >
             Contact Support
           </Button>
         </div>
       </div>
 
       {/* Dialogs */}
-      <AddPaymentMethodDialog open={isAddCardOpen} onOpenChange={setIsAddCardOpen} />
+      <AddPaymentMethodDialog
+        open={isAddCardOpen}
+        onOpenChange={setIsAddCardOpen}
+      />
       <PurchasePlanDialog
         open={isPurchaseOpen}
         onOpenChange={setIsPurchaseOpen}
         plans={plans.filter((p) => !p.expiredAt)}
-        onSuccess={() => showNotification("Subscription purchased successfully!")}
+        onSuccess={() =>
+          showNotification("Subscription purchased successfully!")
+        }
       />
       <UpgradePlanDialog
         open={isUpgradeOpen}

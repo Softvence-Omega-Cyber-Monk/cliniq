@@ -3,12 +3,12 @@ import StatCard from "./StatCard";
 import SessionsCompletionChart from "./SessionsCompletionChart";
 import TherapistActivityChart from "./TherapistActivityChart";
 import RecentSessions from "./RecentSessions";
-import SystemAlerts from "./SystemAlerts";
+// import SystemAlerts from "./SystemAlerts";
 import type { StatCardType } from "../../types/dashboard";
 import {
   StatUserIcon,
   StatCalendarIcon,
-  StatAlertIcon,
+  // StatAlertIcon,
   StatCheckIcon,
 } from "../icons";
 import { FaPlus } from "react-icons/fa";
@@ -23,8 +23,8 @@ import AddClientModal from "./AddClientModal";
 const DashboardContent: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   // const user = useSelector((state: RootState) => state.auth.user);
-  
-  const [addClientModal,setAddClientModal] = useState(false);
+
+  const [addClientModal, setAddClientModal] = useState(false);
   const { data: stats, isLoading } = useGetDashboardStatsQuery({
     dateRange: "last_30_days",
     startDate: "2024-01-01",
@@ -33,7 +33,6 @@ const DashboardContent: React.FC = () => {
     status: "completed",
     reportType: "performance_overview",
   });
-  console.log(stats);
   const statCards: StatCardType[] = stats
     ? [
         {
@@ -52,13 +51,13 @@ const DashboardContent: React.FC = () => {
           trend: "up",
           iconBgColor: "bg-blue-100 text-blue-600",
         },
-        {
-          title: "Crisis Alerts",
-          value: stats?.crisisAlerts,
-          icon: StatAlertIcon,
-          iconBgColor: "bg-red-100 text-red-600",
-          trend: "up",
-        },
+        // {
+        //   title: "Crisis Alerts",
+        //   value: stats?.crisisAlerts,
+        //   icon: StatAlertIcon,
+        //   iconBgColor: "bg-red-100 text-red-600",
+        //   trend: "up",
+        // },
         {
           title: "Completed Sessions",
           value: stats?.totalSessions,
@@ -71,7 +70,6 @@ const DashboardContent: React.FC = () => {
 
   const handleOpenModal = () => setIsModalOpen(true);
   const handleCloseModal = () => setIsModalOpen(false);
-  
 
   return (
     <div className="p-4 sm:p-6 lg:p-8 flex-1">
@@ -83,13 +81,16 @@ const DashboardContent: React.FC = () => {
           >
             <FaPlus /> Add New Therapist
           </button>
-          <button onClick={() => setAddClientModal(!addClientModal)} className="py-[10px] px-[11px] bg-[#3FDCBF] text-[#fff] flex items-center gap-2 rounded-[12px]">
+          <button
+            onClick={() => setAddClientModal(!addClientModal)}
+            className="py-[10px] px-[11px] bg-[#3FDCBF] text-[#fff] flex items-center gap-2 rounded-[12px]"
+          >
             <FaPlus /> Add New Client
           </button>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mt-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mt-6">
         {isLoading
           ? Array.from({ length: 4 }).map((_, idx) => (
               <StatCardSkeleton key={idx} />
@@ -102,16 +103,15 @@ const DashboardContent: React.FC = () => {
         <TherapistActivityChart />
       </div>
 
-      <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 mt-6">
+      <div className=" mt-6">
         <RecentSessions />
-        <SystemAlerts />
+        {/* <SystemAlerts /> */}
       </div>
 
       <EditPersonalInfo isOpen={isModalOpen} onClose={handleCloseModal} />
-      {
-        addClientModal &&
-        <AddClientModal onClose={() => setAddClientModal(false)}/>
-      }
+      {addClientModal && (
+        <AddClientModal onClose={() => setAddClientModal(false)} />
+      )}
     </div>
   );
 };
