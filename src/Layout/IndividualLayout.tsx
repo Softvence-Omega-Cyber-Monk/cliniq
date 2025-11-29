@@ -10,8 +10,8 @@ import {
   // Bell,
   Menu,
   Calendar,
-  Book,
   LogOut,
+  BookOpen,
 } from "lucide-react";
 import { useGetProfileQuery, useLogoutMutation } from "@/store/api/AuthApi";
 import { toast } from "sonner";
@@ -67,7 +67,7 @@ const navItems: NavItem[] = [
   {
     id: 11,
     label: "Materials",
-    icon: Book,
+    icon: BookOpen,
     href: "/private-practice-admin/materials",
   },
   {

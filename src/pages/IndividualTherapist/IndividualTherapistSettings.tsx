@@ -4,6 +4,7 @@ import Notifications from "@/components/Settings/Notifications";
 import Security from "@/components/Settings/Security";
 import Preferences from "@/components/Settings/Preferences";
 import BillingAndSubscription from "@/components/Settings/BillingAndSubscription";
+import { useAppSelector } from "@/hooks/useRedux";
 
 interface File {
   name: string;
@@ -18,6 +19,7 @@ interface IndividualTherapistSettingsProps {
 const IndividualTherapistSettings: React.FC<
   IndividualTherapistSettingsProps
 > = () => {
+  const userType = useAppSelector((state) => state.auth.userType);
   return (
     <div className="min-h-screen">
       <main className=" px-4 sm:px-6 lg:px-8 py-10">
@@ -32,7 +34,7 @@ const IndividualTherapistSettings: React.FC<
           <Notifications />
           <Security />
           <Preferences />
-          <BillingAndSubscription />
+          {userType === "INDIVIDUAL_THERAPIST" && <BillingAndSubscription />}
         </div>
       </main>
 

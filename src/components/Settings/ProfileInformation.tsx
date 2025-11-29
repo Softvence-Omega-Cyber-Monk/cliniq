@@ -52,10 +52,12 @@ const ProfileInformation: React.FC = () => {
         licenseNumber: form.licenseNumber,
       };
 
-      const res = await updateTherapistProfile({id:userId, data:payload}).unwrap();
-      console.log(res)
+      const res = await updateTherapistProfile({
+        id: userId,
+        data: payload,
+      }).unwrap();
+      console.log(res);
       toast.success("Profile updated successfully");
-
     } catch (err: any) {
       toast.error(err?.data?.message || "Update failed. Please try again.");
     }
@@ -120,8 +122,12 @@ const ProfileInformation: React.FC = () => {
             <div />
           </div>
 
-          <div className="mt-4">
-            <button className="text-sm" disabled={isUpdating}>
+          <div className="mt-4 ">
+            <button
+              className="text-sm text-white font-semibold py-2 px-16 rounded-[12px] 
+      hover:opacity-90 cursor-pointer transition duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 bg-[#3fdcbf]"
+              disabled={isUpdating}
+            >
               {isUpdating ? "Saving..." : "Save Changes"}
             </button>
           </div>

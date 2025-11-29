@@ -216,33 +216,35 @@ const ScheduleModal: React.FC<ScheduleModalProps> = ({ onClose }) => {
             </div>
           </div>
 
-          {/* Duration */}
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Duration (minutes)
-            </label>
-            <input
-              type="number"
-              min={15}
-              value={duration}
-              onChange={(e) => setDuration(Number(e.target.value))}
-              className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-mint-500 focus:border-mint-500 transition duration-150 text-gray-800 bg-white shadow-inner"
-            />
-          </div>
+          <div className="flex justify-between gap-4">
+            {/* Duration */}
+            <div className="mb-4 flex-1">
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Duration (minutes)
+              </label>
+              <input
+                type="number"
+                min={15}
+                value={duration}
+                onChange={(e) => setDuration(Number(e.target.value))}
+                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-mint-500 focus:border-mint-500 transition duration-150 text-gray-800 bg-white shadow-inner"
+              />
+            </div>
 
-          {/* Session Type */}
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Session Type
-            </label>
-            <select
-              value={sessionType}
-              onChange={(e) => setSessionType(e.target.value)}
-              className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-mint-500 focus:border-mint-500 transition duration-150 text-gray-800 bg-white shadow-inner"
-            >
-              <option value="virtual">Virtual</option>
-              <option value="onsite">Onsite</option>
-            </select>
+            {/* Session Type */}
+            <div className="mb-4 flex-1">
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Session Type
+              </label>
+              <select
+                value={sessionType}
+                onChange={(e) => setSessionType(e.target.value)}
+                className="w-full px-4 py-3.5 border border-gray-300 rounded-xl focus:ring-mint-500 focus:border-mint-500 transition duration-150 text-gray-800 bg-white shadow-inner"
+              >
+                <option value="virtual">Virtual</option>
+                <option value="onsite">Onsite</option>
+              </select>
+            </div>
           </div>
 
           {/* Phone */}

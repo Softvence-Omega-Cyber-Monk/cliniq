@@ -17,7 +17,7 @@ const TherapistLayout: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex bg-gray-50">
+    <div className="min-h-screen flex bg-[#f3f3ec]">
       {/* Mobile overlay */}
       {isSidebarOpen && (
         <div

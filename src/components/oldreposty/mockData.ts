@@ -1,10 +1,10 @@
 import { StatCardProps, ReportCardProps } from './types';
 
 export const statsData: StatCardProps[] = [
-  { title: "Total Sessions", value: 328, percentage: 12.3, icon: 'clock' },
-  { title: "Active Clients", value: 24, percentage: 12.3, icon: 'users' },
-  { title: "Avg. Progress", value: "78%", percentage: 12.3, icon: 'chart' },
-  { title: "Session Hours", value: 246, percentage: 12.3, icon: 'hourglass' },
+  { title: "Total Sessions", value: 1, percentage: 12.3, icon: 'clock' },
+  { title: "Active Clients", value: 2, percentage: 12.3, icon: 'users' },
+  { title: "Avg. Progress", value: "70%", percentage: 12.3, icon: 'chart' },
+  { title: "Session Hours", value: 50, percentage: 12.3, icon: 'hourglass' },
 ];
 
 export const reportsData: ReportCardProps[] = [

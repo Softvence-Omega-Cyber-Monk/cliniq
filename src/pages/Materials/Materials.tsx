@@ -42,7 +42,11 @@ export default function App() {
     return ["All Category", ...Array.from(new Set(allCategories))];
   }, [data]);
   if (isLoading) {
-    return <div>Loading...</div>;
+    return (
+      <div className=" min-h-screen  flex justify-center items-center">
+        Loading...
+      </div>
+    );
   }
   if (selectedMaterialId && currentMaterial) {
     return (

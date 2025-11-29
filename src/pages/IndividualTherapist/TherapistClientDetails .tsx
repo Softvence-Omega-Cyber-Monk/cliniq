@@ -191,7 +191,7 @@ const TherapistClientDetails: React.FC = () => {
           await addedSessionbytherapist({
             clientId: id,
             therapistId: userId,
-            sessionData: {
+            data: {
               sessionDate: new Date().toISOString(),
               crisisDate: "Individual Therapy",
               duration,

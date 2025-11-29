@@ -49,6 +49,12 @@ const navItems: NavItem[] = [
     href: "individual-therapist/settings",
   },
   {
+    id: 6,
+    label: "Materials",
+    icon: HelpCircle,
+    href: "individual-therapist/materials",
+  },
+  {
     id: 7,
     label: "Support",
     icon: HelpCircle,
