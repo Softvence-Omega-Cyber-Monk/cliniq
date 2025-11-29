@@ -1,7 +1,7 @@
 import React from "react";
 import logincover from "@/assets/logincover.png";
 import { Role } from "./types";
-import logincover2 from "@/assets/logincover2.png";
+import logincover2 from "@/assets/welcome_individual.jpg";
 const individualCover = logincover2;
 
 interface AuthLayoutProps {

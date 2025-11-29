@@ -77,13 +77,13 @@ const DashboardContent: React.FC = () => {
         <div className="flex gap-[12px]">
           <button
             onClick={handleOpenModal}
-            className="py-[10px] px-[11px] bg-[#32363F] text-[#fff] flex items-center gap-2 rounded-[12px]"
+            className="py-[10px] px-[11px] bg-[#32363F] text-[#fff] flex items-center gap-2 rounded-[12px] cursor-pointer"
           >
             <FaPlus /> Add New Therapist
           </button>
           <button
             onClick={() => setAddClientModal(!addClientModal)}
-            className="py-[10px] px-[11px] bg-[#3FDCBF] text-[#fff] flex items-center gap-2 rounded-[12px]"
+            className="py-[10px] px-[11px] bg-[#3FDCBF] text-[#fff] flex items-center gap-2 rounded-[12px] cursor-pointer"
           >
             <FaPlus /> Add New Client
           </button>

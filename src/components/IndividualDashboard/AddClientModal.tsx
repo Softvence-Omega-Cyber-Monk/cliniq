@@ -14,7 +14,7 @@ const clientSchema = z.object({
   name: z.string().min(1, "Name is required"),
   email: z.string().email("Invalid email address"),
   phone: z.string().min(1, "Phone number is required"),
-  condition: z.string().min(1, "Condition is required"),
+  condition: z.string().min(1, "Diagnosis details is required"),
   healthIssues: z.array(z.string()).min(1, "At least one health issue is required"),
   treatmentGoals: z.string().min(1, "Treatment goals are required"),
   status: z.enum(["active", "inactive", "completed"]),
@@ -62,7 +62,7 @@ const AddClientModal = ({ onClose }: AddClientModalProps) => {
       setHealthIssues([...healthIssues, healthIssueInput.trim()]);
       setHealthIssueInput("");
     } else if (healthIssues.includes(healthIssueInput.trim())) {
-      toast.error("This health issue is already added");
+      toast.error("This behavioral health concern is already added");
     }
   };
 
@@ -123,12 +123,12 @@ const AddClientModal = ({ onClose }: AddClientModalProps) => {
           <form onSubmit={handleSubmit(onSubmitForm)}>
 
             {/* NEW — Therapist Dropdown */}
-            <div className="bg-gray rounded-xl p-4 mb-6">
+            <div className="bg-gray rounded-xl p-2">
               <h4 className="text-lg font-bold text-primary-text mb-4">Assign Therapist</h4>
 
               <label className="block text-sm mb-2">Select Therapist</label>
               <select
-                className="w-full p-2 border border-border rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-primary-blue"
+                className="w-full p-2 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-1 focus:ring-primary-blue"
                 value={selectedTherapist || ""}
                 onChange={(e) => setSelectedTherapist(e.target.value)}
               >
@@ -143,7 +143,7 @@ const AddClientModal = ({ onClose }: AddClientModalProps) => {
             </div>
 
             {/* Personal Information */}
-            <div className="bg-gray rounded-xl p-4 mb-6">
+            <div className="bg-gray rounded-xl p-2">
               <h4 className="text-lg font-bold text-primary-text mb-4">Personal Information</h4>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -153,7 +153,7 @@ const AddClientModal = ({ onClose }: AddClientModalProps) => {
                     type="text"
                     {...register("name")}
                     className={`w-full p-2 border ${
-                      errors.name ? "border-red-500" : "border-border"
+                      errors.name ? "border-red-500" : "border-gray-300"
                     } rounded-lg bg-white`}
                     placeholder="John Doe"
                   />
@@ -166,7 +166,7 @@ const AddClientModal = ({ onClose }: AddClientModalProps) => {
                     type="email"
                     {...register("email")}
                     className={`w-full p-2 border ${
-                      errors.email ? "border-red-500" : "border-border"
+                      errors.email ? "border-red-500" : "border-gray-300"
                     } rounded-lg bg-white`}
                     placeholder="john.doe@example.com"
                   />
@@ -179,7 +179,7 @@ const AddClientModal = ({ onClose }: AddClientModalProps) => {
                     type="tel"
                     {...register("phone")}
                     className={`w-full p-2 border ${
-                      errors.phone ? "border-red-500" : "border-border"
+                      errors.phone ? "border-red-500" : "border-gray-300"
                     } rounded-lg bg-white`}
                     placeholder="+1234567890"
                   />
@@ -189,20 +189,20 @@ const AddClientModal = ({ onClose }: AddClientModalProps) => {
             </div>
 
             {/* Medical Information */}
-            <div className="bg-gray rounded-xl p-4 mb-6">
+            <div className="bg-gray rounded-xl p-2">
               <h4 className="text-lg font-bold text-primary-text mb-4">Medical Information</h4>
 
               {/* Condition + Status */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm mb-2">Primary Condition</label>
+                  <label className="block text-sm mb-2">Primary Diagnosis Details</label>
                   <select
                     {...register("condition")}
                     className={`w-full p-2 border ${
-                      errors.condition ? "border-red-500" : "border-border"
+                      errors.condition ? "border-red-500" : "border-gray-300"
                     } rounded-lg bg-white`}
                   >
-                    <option value="">Select a condition</option>
+                    <option value="">Select a diagnosis details</option>
                     <option value="Anxiety Disorder">Anxiety Disorder</option>
                     <option value="Depression">Depression</option>
                     <option value="PTSD">PTSD</option>
@@ -216,7 +216,7 @@ const AddClientModal = ({ onClose }: AddClientModalProps) => {
                   <label className="block text-sm mb-2">Status</label>
                   <select
                     {...register("status")}
-                    className="w-full p-2 border border-border rounded-lg bg-white"
+                    className="w-full p-2 border border-gray-300 rounded-lg bg-white"
                   >
                     <option value="active">Active</option>
                     <option value="inactive">Inactive</option>
@@ -227,19 +227,19 @@ const AddClientModal = ({ onClose }: AddClientModalProps) => {
 
               {/* Health Issues */}
               <div className="mt-4">
-                <label className="block text-sm mb-2">Health Issues</label>
+                <label className="block text-sm mb-2">Behavioral Health Issues</label>
                 <div className="flex gap-2 mb-2">
                   <input
                     type="text"
                     value={healthIssueInput}
                     onChange={(e) => setHealthIssueInput(e.target.value)}
-                    placeholder="Add health issue"
-                    className="flex-1 p-2 border border-border rounded-lg bg-white"
+                    placeholder="Add behavioral health issue"
+                    className="flex-1 p-2 border border-gray-300 rounded-lg bg-white w-full"
                   />
                   <button
                     type="button"
                     onClick={handleAddHealthIssue}
-                    className="px-4 py-2 bg-primary-blue text-white rounded-lg"
+                    className="px-4 py-2 bg-[#3FDCBF] text-white rounded-lg cursor-pointer"
                   >
                     Add
                   </button>
@@ -249,7 +249,7 @@ const AddClientModal = ({ onClose }: AddClientModalProps) => {
                   {healthIssues.map((issue, index) => (
                     <div
                       key={index}
-                      className="flex items-center gap-1 bg-primary-blue/10 text-primary-blue text-xs px-2 py-1 rounded-full"
+                      className="flex items-center gap-1 bg-primary-blue/10 text-primary-blue text-xs px-2 py-1 rounded-full bg-green-50"
                     >
                       {issue}
                       <button
@@ -270,7 +270,7 @@ const AddClientModal = ({ onClose }: AddClientModalProps) => {
                 <textarea
                   {...register("treatmentGoals")}
                   className={`w-full p-2 border ${
-                    errors.treatmentGoals ? "border-red-500" : "border-border"
+                    errors.treatmentGoals ? "border-red-500" : "border-gray-300"
                   } rounded-lg bg-white`}
                   rows={3}
                   placeholder="Reduce anxiety, improve sleep quality"
@@ -279,11 +279,11 @@ const AddClientModal = ({ onClose }: AddClientModalProps) => {
             </div>
 
             {/* Buttons */}
-            <div className="flex justify-end gap-3 pt-4 border-t border-border">
+            <div className="flex justify-end gap-3 pt-4">
               <button
                 type="button"
                 onClick={onClose}
-                className="px-4 py-2 border border-border rounded-lg text-sm"
+                className="px-4 py-2 border border-gray-300 text-gray-700 cursor-pointer rounded-lg text-sm"
                 disabled={isSubmitting}
               >
                 Cancel
@@ -291,7 +291,7 @@ const AddClientModal = ({ onClose }: AddClientModalProps) => {
 
               <button
                 type="submit"
-                className="px-4 py-2 bg-black text-white rounded-lg text-sm"
+                className="px-4 py-2 bg-black text-white rounded-lg text-sm cursor-pointer"
                 disabled={isSubmitting}
               >
                 {isSubmitting ? "Adding Client..." : "Add Client"}

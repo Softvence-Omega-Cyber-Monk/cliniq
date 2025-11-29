@@ -8,14 +8,18 @@ import {
   Clock,
   Briefcase,
   ChevronLeft,
+  Calendar,
 } from "lucide-react";
 import { Therapist } from "./TherapistType";
-import { useGetTherapistClientTableQuery } from "@/store/api/TherapistApi";
+import { 
+  useGetTherapistClientTableQuery,
+  useGetTherapistOverviewQuery,
+} from "@/store/api/TherapistApi";
+import TherapistEditModal from "@/components/Therapists/TherapistEditModal";
 
 interface TherapistDetailProps {
   therapist: Therapist;
   onBack: () => void;
-  setIsEditModalOpen: (isOpen: boolean) => void;
   onViewPatientDetails: (patientId: string) => void;
 }
 
@@ -83,37 +87,41 @@ const DetailPatientRow: React.FC<{
 const TherapistDetail: React.FC<TherapistDetailProps> = ({
   therapist,
   onBack,
-  setIsEditModalOpen,
   onViewPatientDetails,
 }) => {
+  // --- Edit Modal State ---
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+
   // --- Therapist Clients Data ---
-  const { data } = useGetTherapistClientTableQuery(therapist?.id);
-  const therapistPatients = data?.data || [];
-  const totalPatients = data?.meta?.total || 0;
+  const { data: clientData, refetch: refetchClients } = useGetTherapistClientTableQuery(therapist?.id);
+  const therapistPatients = clientData?.data || [];
+
+  // --- Therapist Overview Data ---
+  const { data: overviewData, refetch: refetchOverview } = useGetTherapistOverviewQuery(therapist?.id);
+  const overview = overviewData?.data || {};
+  const totalPatients = overview.totalPatients || 0;
+  const totalSessions = overview.totalSessions || 0;
+  const totalAppointments = overview.totalAppointments || 0;
+
 
   // --- Therapist Status State ---
-  const [currentStatus, setCurrentStatus] = useState(
-    therapist.status === "Active"
-  );
+  const [currentStatus, setCurrentStatus] = useState(false);
 
   useEffect(() => {
-    setCurrentStatus(therapist.status === "Active");
-  }, [therapist.status]);
-
-  // --- Status Toggle Handler ---
-  const handleStatusChange = async () => {
-    const newStatus = currentStatus ? "Inactive" : "Active";
-    setCurrentStatus(!currentStatus);
-
-    try {
-      // await updateTherapistStatus({ therapistId: therapist.id, status: newStatus });
-      console.log(`Therapist ${therapist.id} status changed to ${newStatus}`);
-    } catch (err) {
-      console.error("Failed to update status", err);
-      setCurrentStatus(currentStatus); // revert if API fails
+    if (overviewData?.data?.accountStatus) {
+      setCurrentStatus(overviewData.data.accountStatus === "active");
     }
+  }, [overviewData]);
+
+  const handleEditSuccess = () => {
+    refetchClients();
+    refetchOverview();
   };
 
+  console.log("Therapist:", therapist);
+  console.log("Overview Data:", overviewData);
+  console.log("Current Status:", currentStatus);
+  
   return (
     <div className="space-y-6">
       {/* Breadcrumbs & Back Button */}
@@ -127,16 +135,20 @@ const TherapistDetail: React.FC<TherapistDetailProps> = ({
         </button>
         <span>/</span>
         <span className="font-semibold text-gray-800">
-          {therapist.fullName} ({therapist.initials})
+          {therapist.fullName} {therapist.initials}
         </span>
       </div>
 
       {/* Profile Header and Info */}
       <div className="bg-white p-6 rounded-xl shadow-lg">
-        <div className="flex justify-between items-start border-b pb-5 mb-5">
+        <div className="flex justify-between items-start border-b border-gray-200 pb-5 mb-5">
           <div className="flex items-center space-x-4">
             <div className="w-16 h-16 rounded-full overflow-hidden bg-gradient-to-br from-teal-400 to-teal-600 shadow-md flex items-center justify-center text-2xl font-bold text-white">
-              {therapist.initials}
+              {therapist.fullName
+                .split(" ")
+                .map((n) => n[0])
+                .join("")
+                .toUpperCase()}
             </div>
             <div>
               <h2 className="text-xl font-bold text-gray-900">
@@ -148,10 +160,10 @@ const TherapistDetail: React.FC<TherapistDetailProps> = ({
           {/* Edit Button */}
           <button
             onClick={() => setIsEditModalOpen(true)}
-            className="flex items-center bg-teal-500 text-white px-4 py-2 rounded-lg text-sm font-medium shadow-md hover:bg-teal-600 transition"
+            className="flex items-center bg-teal-500 text-white px-4 py-2 rounded-lg text-sm font-medium shadow-md hover:bg-teal-600 transition cursor-pointer"
           >
             <BookOpen size={16} className="mr-2" />
-            Edit Personal Info
+            Edit Therapist Info
           </button>
         </div>
 
@@ -160,9 +172,23 @@ const TherapistDetail: React.FC<TherapistDetailProps> = ({
           <DetailItem icon={User} label="Full Name" value={therapist.fullName} />
           <DetailItem icon={Mail} label="Email Address" value={therapist.email} />
           <DetailItem icon={Phone} label="Phone Number" value={therapist.phone} />
-          <DetailItem icon={BookOpen} label="Qualifications" value={therapist.qualification} />
+          <DetailItem
+            icon={BookOpen}
+            label="Qualifications"
+            value={therapist.qualification}
+          />
           <DetailItem icon={Briefcase} label="Specialty" value={therapist.speciality} />
-          <DetailItem icon={Clock} label="Availability" value={therapist.availability} />
+          <DetailItem
+            icon={Clock}
+            label="Availability"
+            value={
+              therapist.availableDays
+                ?.map(
+                  (day: string) => day.charAt(0) + day.slice(1).toLowerCase()
+                )
+                .join(", ") || "Not specified"
+            }
+          />
         </div>
       </div>
 
@@ -171,33 +197,31 @@ const TherapistDetail: React.FC<TherapistDetailProps> = ({
         <div className="bg-white p-5 rounded-xl shadow-lg flex items-center justify-between border-l-4 border-teal-500">
           <div>
             <p className="text-sm text-gray-500">Total Patients</p>
-            <p className="text-3xl font-bold text-gray-900 mt-1">{totalPatients}</p>
+            <p className="text-3xl font-bold text-gray-900 mt-1">
+              {totalPatients}
+            </p>
           </div>
           <User size={32} className="text-teal-400 opacity-50" />
         </div>
 
         <div className="bg-white p-5 rounded-xl shadow-lg flex items-center justify-between border-l-4 border-purple-500">
           <div>
-            <p className="text-sm text-gray-500">Total Sessions (L30 Days)</p>
-            <p className="text-3xl font-bold text-gray-900 mt-1">24</p>
+            <p className="text-sm text-gray-500">Total Sessions</p>
+            <p className="text-3xl font-bold text-gray-900 mt-1">
+              {totalSessions}
+            </p>
           </div>
           <Clock size={32} className="text-purple-400 opacity-50" />
         </div>
 
-        <div className="bg-white p-5 rounded-xl shadow-lg flex items-center justify-between border-l-4 border-gray-500">
+        <div className="bg-white p-5 rounded-xl shadow-lg flex items-center justify-between border-l-4 border-blue-500">
           <div>
-            <p className="text-sm text-gray-500">Account Status</p>
-            <p className="text-xl font-bold text-gray-900 mt-1">{currentStatus ? "Active" : "Inactive"}</p>
+            <p className="text-sm text-gray-500">Total Appointments</p>
+            <p className="text-3xl font-bold text-gray-900 mt-1">
+              {totalAppointments}
+            </p>
           </div>
-          <label className="relative inline-flex items-center cursor-pointer">
-            <input
-              type="checkbox"
-              className="sr-only peer"
-              checked={currentStatus}
-              onChange={handleStatusChange}
-            />
-            <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-teal-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-teal-600"></div>
-          </label>
+          <Calendar size={32} className="text-blue-400 opacity-50" />
         </div>
       </div>
 
@@ -216,17 +240,33 @@ const TherapistDetail: React.FC<TherapistDetailProps> = ({
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
-              {therapistPatients.map((patient: any) => (
-                <DetailPatientRow
-                  key={patient.id}
-                  patient={patient}
-                  onViewPatientDetails={onViewPatientDetails}
-                />
-              ))}
+              {therapistPatients.length > 0 ? (
+                therapistPatients.map((patient: any) => (
+                  <DetailPatientRow
+                    key={patient.id}
+                    patient={patient}
+                    onViewPatientDetails={onViewPatientDetails}
+                  />
+                ))
+              ) : (
+                <tr>
+                  <td colSpan={5} className="p-8 text-center text-gray-500">
+                    No patients found
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>
       </div>
+
+      {/* Edit Modal */}
+      <TherapistEditModal
+        therapist={therapist}
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+        onSuccess={handleEditSuccess}
+      />
     </div>
   );
 };
