@@ -46,7 +46,7 @@ const TherapistClientDetails: React.FC = () => {
   const [addClinicClientSessionHistory] =
     useAddClinicClientSessionHistoryMutation();
   const [addedSessionbytherapist] = useAddSessionHistoryMutation();
-  // Fetch client data based on user type
+
   const therapistQuery = useGetClientByIdQuery(
     userType === "THERAPIST" || userType === "INDIVIDUAL_THERAPIST"
       ? {
@@ -69,8 +69,18 @@ const TherapistClientDetails: React.FC = () => {
       ? therapistQuery.data
       : clinicQuery.data;
   console.log(client?.sessionHistory);
-  const isLoading = therapistQuery.isLoading || clinicQuery.isLoading;
-  const error = therapistQuery.error || clinicQuery.error;
+  const isLoading =
+    userType === "THERAPIST" || userType === "INDIVIDUAL_THERAPIST"
+      ? therapistQuery.isLoading
+      : therapistQuery.isLoading || clinicQuery.isLoading;
+  const error =
+    userType === "THERAPIST" || userType === "INDIVIDUAL_THERAPIST"
+      ? therapistQuery.error
+      : therapistQuery.error || clinicQuery.error;
+  const refetch =
+    userType === "THERAPIST" || userType === "INDIVIDUAL_THERAPIST"
+      ? therapistQuery.refetch
+      : clinicQuery.refetch;
 
   const [isRecording, setIsRecording] = useState(false);
   const [elapsed, setElapsed] = useState(0);
@@ -533,7 +543,14 @@ const TherapistClientDetails: React.FC = () => {
             therapistId={userId}
             crisisHistory={client?.crisisHistories}
           />
-          <SessionHistory sessionHistory={client?.sessionHistory} />
+          <SessionHistory
+            clientId={id}
+            therapistId={userId}
+            userType={userType}
+            addedSessionbytherapist={addedSessionbytherapist}
+            sessionHistory={client?.sessionHistory}
+            addClinicClientSessionHistory={addClinicClientSessionHistory}
+          />
         </div>
       </div>
 

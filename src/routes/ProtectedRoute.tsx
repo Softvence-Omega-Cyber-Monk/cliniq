@@ -10,17 +10,21 @@ const ProtectedRoute = ({ allowedRoles }: ProtectedRouteProps) => {
   const accessToken = useAppSelector((state) => state.auth.accessToken);
   const refreshToken = useAppSelector((state) => state.auth.refreshToken);
 
-  // Allow access if either accessToken OR refreshToken exists
+  console.log("ProtectedRoute:", { userType, allowedRoles });
+
+  // Check if user is authenticated
   if (!userType || (!accessToken && !refreshToken)) {
     return <Navigate to="/login" replace />;
   }
 
-  if (allowedRoles && !allowedRoles.includes(userType)) {
+  // Check if user's role matches the allowed role
+  if (userType !== allowedRoles) {
+    console.log("Role mismatch - redirecting based on userType:", userType);
     switch (userType) {
       case "ADMIN":
         return <Navigate to="/admin-dashboard" replace />;
       case "THERAPIST":
-        return <Navigate to="/individual-therapist-dashboard" replace />;
+        return <Navigate to="/therapist" replace />;
       case "CLINIC":
         return <Navigate to="/private-practice-admin" replace />;
       case "INDIVIDUAL_THERAPIST":
@@ -30,7 +34,8 @@ const ProtectedRoute = ({ allowedRoles }: ProtectedRouteProps) => {
     }
   }
 
+  // If role matches, render the protected content
   return <Outlet />;
 };
 
-export default ProtectedRoute;  
+export default ProtectedRoute;

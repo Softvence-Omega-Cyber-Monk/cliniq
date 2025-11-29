@@ -155,13 +155,12 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSwitchToSignUp }) => {
         })
       );
 
-      if (
-        response.userType === "INDIVIDUAL_THERAPIST" ||
-        response.userType === "THERAPIST"
-      ) {
+      if (response.userType === "INDIVIDUAL_THERAPIST") {
         navigate("/individual-therapist-dashboard");
       } else if (response.userType === "CLINIC") {
         navigate("/private-practice-admin");
+      } else if (response.userType === "THERAPIST") {
+        navigate("/therapist");
       }
 
       toast.success("Login successful!");
@@ -210,7 +209,10 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSwitchToSignUp }) => {
       </div>
 
       <div className="flex flex-col justify-center mx-4">
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 mt-[150px] md:w-2/4 mx-auto">
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="space-y-6 mt-[150px] md:w-2/4 mx-auto"
+        >
           <div>
             <label className="text-sm font-bold text-gray-700 block mb-2">
               Email

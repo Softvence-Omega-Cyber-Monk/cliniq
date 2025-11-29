@@ -22,37 +22,37 @@ const navItems: NavItem[] = [
     id: 1,
     label: "Dashboard",
     icon: LayoutGrid,
-    href: "/individual-therapist-dashboard",
+    href: "/therapist/dashboard",
   },
   {
     id: 2,
     label: "Clients",
     icon: Users,
-    href: "individual-therapist/clients",
+    href: "/therapist/clients",
   },
   {
     id: 3,
     label: "Appointments",
     icon: Calendar,
-    href: "individual-therapist/appointments",
+    href: "/therapist/appointments",
   },
   {
     id: 4,
     label: "Reports",
     icon: BarChart,
-    href: "individual-therapist/reports",
+    href: "/therapist/reports",
   },
   {
     id: 5,
     label: "Settings",
     icon: Settings,
-    href: "individual-therapist/settings",
+    href: "/therapist/settings",
   },
   {
     id: 7,
     label: "Support",
     icon: HelpCircle,
-    href: "individual-therapist/support",
+    href: "/therapist/support",
   },
 ];
 
@@ -93,7 +93,10 @@ interface SidebarProps {
   setActiveItemId: (id: number) => void;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ isOpen, setActiveItemId }) => {
+const TherapistSideBar: React.FC<SidebarProps> = ({
+  isOpen,
+  setActiveItemId,
+}) => {
   const sidebarClasses = `
     fixed left-0 top-0 h-full
     w-64 z-20
@@ -109,8 +112,8 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, setActiveItemId }) => {
     <div className={sidebarClasses}>
       {/* Logo/Header Section */}
       <div className="flex items-center px-2 py-4 mb-8">
-        <Zap className="h-6 w-6 text-sky-500 mr-2" />
-        <span className="text-xl font-bold text-gray-800"></span>
+        <Zap className="h-6 w-6 text-[#3FDCBF] mr-2" />
+        <span className="text-xl font-bold text-gray-800">Therapist</span>
       </div>
 
       {/* Navigation Links */}
@@ -127,4 +130,4 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, setActiveItemId }) => {
   );
 };
 
-export default Sidebar;
+export default TherapistSideBar;

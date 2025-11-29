@@ -1,23 +1,82 @@
+import SessionHistoryModal from "@/modals/SessionHistoryModal";
 import { formatToYMDWithTime } from "@/utils/formatDate";
 import { ChevronDown, Clock3 } from "lucide-react";
 import React, { useState } from "react";
+import { toast } from "sonner";
 
 interface Session {
   sessionDate: string;
   sessionType: string;
   notes: string;
+  duration: number;
   crisis?: boolean;
 }
 
 interface SessionHistoryProps {
   sessionHistory: Session[];
+  addedSessionbytherapist: any;
+  addClinicClientSessionHistory: any;
+  clientId: string | undefined;
+  therapistId: string | undefined;
+  userType:
+    | "THERAPIST"
+    | "ADMIN"
+    | "INDIVIDUAL_THERAPIST"
+    | "CLINIC"
+    | null
+    | undefined;
 }
 
-const SessionHistory: React.FC<SessionHistoryProps> = ({ sessionHistory }) => {
+const SessionHistory: React.FC<SessionHistoryProps> = ({
+  sessionHistory = [],
+  addedSessionbytherapist,
+  addClinicClientSessionHistory,
+  clientId,
+  therapistId,
+  userType,
+}) => {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
+  const [sessions, setSessions] = useState<Session[]>(sessionHistory);
 
   const toggle = (idx: number) => {
     setOpenIndex(openIndex === idx ? null : idx);
+  };
+
+  const handleAddSession = async (data: Session) => {
+    try {
+      setSessions([...sessions, data]);
+
+      if (userType === "THERAPIST" || userType === "INDIVIDUAL_THERAPIST") {
+        await addedSessionbytherapist({
+          clientId,
+          therapistId,
+          sessionData: {
+            sessionDate: data.sessionDate || new Date().toISOString(),
+            crisisDate: data.sessionType,
+            duration: data.duration,
+            notes: data.notes,
+          },
+        }).unwrap();
+      } else {
+        await addClinicClientSessionHistory({
+          clientId,
+          clinicId: therapistId, // if this is actually clinicId
+          sessionData: {
+            sessionDate: data.sessionDate || new Date().toISOString(),
+            crisisDate: data.sessionType,
+            duration: data.duration,
+            notes: data.notes,
+          },
+        }).unwrap();
+      }
+      toast.success("Session added successfully!");
+      // Success feedback
+    } catch (error: any) {
+      console.error("Error adding session:", error);
+
+      // Optionally, rollback the optimistic update
+      setSessions(sessions);
+    }
   };
 
   return (
@@ -25,17 +84,20 @@ const SessionHistory: React.FC<SessionHistoryProps> = ({ sessionHistory }) => {
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-lg text-[#32363F] font-bold">Session History</h2>
         <span className="text-sm text-gray-500">
-          {sessionHistory.length} sessions
+          {sessions.length} sessions
         </span>
+        <div className="mt-4">
+          <SessionHistoryModal onSubmit={handleAddSession} />
+        </div>
       </div>
 
       <div className="space-y-3">
-        {sessionHistory.map((s, idx) => {
+        {sessions.map((s, idx) => {
           const isOpen = openIndex === idx;
           return (
             <div
               key={idx}
-              className={`rounded-[8px]  overflow-hidden transition-all ${
+              className={`rounded-[8px] overflow-hidden transition-all ${
                 s.crisis
                   ? "bg-red-50 border-red-200"
                   : "bg-white border-gray-200"
@@ -69,6 +131,9 @@ const SessionHistory: React.FC<SessionHistoryProps> = ({ sessionHistory }) => {
               {isOpen && (
                 <div className="px-4 pb-4 text-sm text-gray-700">
                   <p className="mt-2">{s.notes}</p>
+                  <p className="mt-1 text-xs text-gray-500">
+                    Duration: {s.duration} minutes
+                  </p>
                 </div>
               )}
             </div>

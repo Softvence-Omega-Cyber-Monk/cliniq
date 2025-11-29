@@ -47,5 +47,5 @@ const clientsApi = baseApi.injectEndpoints({
     }),
 })
 
-export const { useAddClinicClientMutation, useGetAllClinicClientsQuery, useGetClinicClientByIdQuery, useAddClinicClientCrisisHistoryMutation, useAddClinicClientSessionHistoryMutation } = clientsApi
+export const { useAddClinicClientMutation, useGetAllClinicClientsQuery, useGetClinicClientByIdQuery, useAddClinicClientCrisisHistoryMutation, useAddClinicClientSessionHistoryMutation, } = clientsApi
 export default clientsApi

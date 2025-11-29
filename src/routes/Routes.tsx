@@ -37,6 +37,7 @@ import TherapistDetails from "@/pages/Admin/TherapistDetails";
 import ReportsAnalytics from "@/components/Admin/ReportAnalytics";
 import Settings from "@/components/Admin/Settings";
 import TherapistClientDetails from "@/pages/IndividualTherapist/TherapistClientDetails ";
+import TherapistLayout from "@/Layout/TherapistLayout";
 
 const routes = createBrowserRouter([
   {
@@ -54,10 +55,58 @@ const routes = createBrowserRouter([
             path: "individual-therapist-dashboard",
             element: <IndividualTherapistDashboard />,
           },
+          {
+            path: "individual-therapist/clients",
+            element: <IndividualTherapistClients />,
+          },
+          {
+            path: "individual-therapist/clients/:id",
+            element: <TherapistClientDetails></TherapistClientDetails>,
+          },
+          {
+            path: "individual-therapist/appointments",
+            element: <IndividualTherapistAppointments />,
+          },
+          {
+            path: "individual-therapist/reports",
+            element: <IndividualTherapistOldreport />,
+          },
+          {
+            path: "individual-therapist/settings",
+            element: <IndividualTherapistSettings />,
+          },
+          {
+            path: "individual-therapist/support",
+            element: <IndividualTherapistSupport />,
+          },
+          { path: "individual-therapist/about", element: <About /> },
+          { path: "individual-therapist/contact", element: <Contact /> },
+          { path: "individual-therapist/billing", element: <Billing /> },
+          { path: "individual-therapist/services", element: <Services /> },
+          { path: "individual-therapist/form", element: <Form /> },
+        ],
+      },
+    ],
+  },
+  {
+    path: "/therapist",
+    element: <ProtectedRoute allowedRoles={"THERAPIST"} />,
+    children: [
+      {
+        element: <TherapistLayout />,
+        children: [
+          {
+            index: true,
+            element: <Navigate to="dashboard" replace />,
+          },
+          {
+            path: "dashboard",
+            element: <IndividualTherapistDashboard />,
+          },
           { path: "clients", element: <IndividualTherapistClients /> },
           {
             path: "clients/:id",
-            element: <TherapistClientDetails></TherapistClientDetails>,
+            element: <TherapistClientDetails />,
           },
           {
             path: "appointments",
@@ -66,11 +115,6 @@ const routes = createBrowserRouter([
           { path: "reports", element: <IndividualTherapistOldreport /> },
           { path: "settings", element: <IndividualTherapistSettings /> },
           { path: "support", element: <IndividualTherapistSupport /> },
-          { path: "about", element: <About /> },
-          { path: "contact", element: <Contact /> },
-          { path: "billing", element: <Billing /> },
-          { path: "services", element: <Services /> },
-          { path: "form", element: <Form /> },
         ],
       },
     ],

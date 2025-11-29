@@ -92,7 +92,7 @@ const DashboardContent: React.FC = () => {
 
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mt-6">
         {isLoading
-          ? Array.from({ length: 4 }).map((_, idx) => (
+          ? Array.from({ length: 3 }).map((_, idx) => (
               <StatCardSkeleton key={idx} />
             ))
           : statCards.map((card) => <StatCard key={card.title} {...card} />)}
