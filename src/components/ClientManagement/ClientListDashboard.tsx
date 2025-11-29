@@ -11,6 +11,7 @@ import { useGetAllClientQuery } from "@/store/api/ClientsApi";
 import { skipToken } from "@reduxjs/toolkit/query/react";
 import { useGetAllClinicClientsQuery } from "@/store/api/ClinicClientsApi";
 import AddClientModal from "../IndividualDashboard/AddClientModal";
+import AddNewClient from "./AddNewClient";
 
 const ClientListDashboard: React.FC = () => {
   const userType = useAppSelector((state) => state.auth.userType);
@@ -21,6 +22,7 @@ const ClientListDashboard: React.FC = () => {
   const limit = 10;
   const [clients, setClients] = useState<Client[]>([]);
   const [showAddNewClientModal, setShowAddNewClientModal] = useState(false);
+  const [showSecondModal, setShowSecondModal] = useState(false);
 
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const therapistQuery = useGetAllClientQuery(
@@ -140,8 +142,11 @@ const ClientListDashboard: React.FC = () => {
           </button>
         ) : userType === "THERAPIST" || userType === "INDIVIDUAL_THERAPIST" ? (
           // Another button for therapist roles
-          <button className="mt-4 md:mt-0 px-5 py-2.5 bg-blue-500 text-white font-semibold rounded-lg hover:bg-blue-600 transition shadow-md">
-            Another Button
+          <button
+            onClick={() => setShowSecondModal(true)}
+            className="mt-4 md:mt-0 px-5 py-2.5 bg-[#3FDCBF] text-white font-semibold rounded-lg hover:bg-[#46ddc1] transition shadow-md flex items-center space-x-2"
+          >
+            Added New Client
           </button>
         ) : null}
       </header>
@@ -220,6 +225,9 @@ const ClientListDashboard: React.FC = () => {
       {/* Add New Client Modal */}
       {showAddNewClientModal && (
         <AddClientModal onClose={() => setShowAddNewClientModal(false)} />
+      )}
+      {showSecondModal && (
+        <AddNewClient onClose={() => setShowSecondModal(false)} />
       )}
     </div>
   );

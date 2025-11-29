@@ -88,6 +88,7 @@ const TherapistClientDetails: React.FC = () => {
   const [sessionCompleted, setSessionCompleted] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [isProgressModalOpen, setIsProgressModalOpen] = useState(false);
+  console.log(isProgressModalOpen);
   const [progressNotes, setProgressNotes] = useState("");
   const [aiInsights, setAiInsights] = useState<string | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
@@ -449,16 +450,6 @@ const TherapistClientDetails: React.FC = () => {
                       Start New Session
                     </span>
                   </button>
-
-                  <button
-                    onClick={() => setIsProgressModalOpen(true)}
-                    className="w-full  bg-[#3FDCBF1A]  text-[#3FDCBF] font-semibold rounded-xl px-8 py-2.5  transition-all transform  border border-[#3FDCBF] cursor-pointer"
-                  >
-                    <span className="flex items-center justify-center gap-2">
-                      <TrendingUp className="w-5 h-5" />
-                      Update Treatment Progress
-                    </span>
-                  </button>
                 </div>
               ) : isRecording ? (
                 // During recording - show stop button
@@ -528,14 +519,13 @@ const TherapistClientDetails: React.FC = () => {
 
         {/* Main Content Grid */}
         <div className="space-y-6">
-          {aiInsights && (
-            <div className="animate-in slide-in-from-bottom-3 duration-500 ease-out">
-              <TreatmentProgressCard
-                aiInsight={aiInsights}
-                metrics={currentProgressMetrics}
-              />
-            </div>
-          )}
+          <div className="animate-in slide-in-from-bottom-3 duration-500 ease-out">
+            <TreatmentProgressCard
+              setIsProgressModalOpen={setIsProgressModalOpen}
+              aiInsight={aiInsights}
+              metrics={currentProgressMetrics}
+            />
+          </div>
 
           {/* Left Column - Crisis History */}
           <CrisisHistory

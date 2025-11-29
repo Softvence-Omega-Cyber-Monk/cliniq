@@ -45,14 +45,15 @@ const SessionHistory: React.FC<SessionHistoryProps> = ({
   const handleAddSession = async (data: Session) => {
     try {
       setSessions([...sessions, data]);
+      console.log(data);
 
       if (userType === "THERAPIST" || userType === "INDIVIDUAL_THERAPIST") {
         await addedSessionbytherapist({
           clientId,
           therapistId,
-          sessionData: {
-            sessionDate: data.sessionDate || new Date().toISOString(),
-            crisisDate: data.sessionType,
+          data: {
+            sessionDate: new Date().toISOString(),
+            sessionType: data.sessionType,
             duration: data.duration,
             notes: data.notes,
           },
@@ -62,8 +63,8 @@ const SessionHistory: React.FC<SessionHistoryProps> = ({
           clientId,
           clinicId: therapistId, // if this is actually clinicId
           sessionData: {
-            sessionDate: data.sessionDate || new Date().toISOString(),
-            crisisDate: data.sessionType,
+            sessionDate: new Date().toISOString(),
+            sessionType: data.sessionType,
             duration: data.duration,
             notes: data.notes,
           },
