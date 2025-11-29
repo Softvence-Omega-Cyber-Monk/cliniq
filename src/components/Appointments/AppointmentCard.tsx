@@ -103,9 +103,11 @@ const AppointmentCard: React.FC<AppointmentCardProps> = ({ appointment }) => {
         </div>
         <Link
           to={
-            userType === "CLINIC"
-              ? `/private-practice-admin/clients/${client.id}`
-              : `/clients/${client.id}`
+            userType === "THERAPIST"
+              ? `/therapist/clients/${client.id}`
+              : userType === "INDIVIDUAL_THERAPIST"
+              ? `/individual-therapist/clients/${client.id}`
+              : `/private-practice-admin/clients/${client.id}`
           }
           className="flex items-center px-4 py-2 text-sm font-semibold rounded-[12px] border border-mint-500 text-mint-600  hover:bg-mint-50 text-white transition-colors bg-[#3FDCBF]"
         >
