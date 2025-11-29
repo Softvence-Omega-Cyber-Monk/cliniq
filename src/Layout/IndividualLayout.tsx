@@ -63,7 +63,7 @@ const navItems: NavItem[] = [
     id: 9,
     label: "Reports",
     icon: BarChart,
-    href: "/private-practice-admin/reportstwo",
+    href: "/private-practice-admin/reports",
   },
   {
     id: 11,
@@ -128,15 +128,15 @@ const Navbar: React.FC<NavbarProps> = ({ toggleSidebar }) => {
   const dropdownRef = useRef<HTMLDivElement>(null);
   const [logout] = useLogoutMutation();
   const dispatch = useAppDispatch();
-  const handleLogout = async() => {
+  const handleLogout = async () => {
     console.log("Logging out...");
-    
+
     try {
-       await logout({})
-      dispatch(logOut())
-} catch {
-  toast.error("Failed to logout. Please try again.");
-}
+      await logout({});
+      dispatch(logOut());
+    } catch {
+      toast.error("Failed to logout. Please try again.");
+    }
     // Implement your logout logic here
     setDropdownOpen(false);
   };
@@ -163,7 +163,8 @@ const Navbar: React.FC<NavbarProps> = ({ toggleSidebar }) => {
         <div className="flex flex-col">
           <h1 className="text-2xl font-bold text-gray-900">Welcome</h1>
           <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-            Welcome back, {data?.user?.fullName}. Here's your overview for today.
+            Welcome back, {data?.user?.fullName}. Here's your overview for
+            today.
           </p>
         </div>
 

@@ -32,7 +32,7 @@ interface Therapist {
 
 const ScheduleModal: React.FC<ScheduleModalProps> = ({ onClose }) => {
   const userType = useAppSelector((state) => state.auth.userType);
-  console.log(userType)
+  console.log(userType);
   const userId = useUserId();
   const [createAppointment, { isLoading: isCreating }] =
     useCreateAppointmentMutation();
@@ -134,7 +134,7 @@ const ScheduleModal: React.FC<ScheduleModalProps> = ({ onClose }) => {
       onClick={onClose}
     >
       <div
-        className="bg-[#ebf4f2] rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden"
+        className="bg-[#ebf4f2] rounded-2xl shadow-2xl w-full max-w-3xl overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="p-6 border-b border-gray-100 flex justify-between items-center">
