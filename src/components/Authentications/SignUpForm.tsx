@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState, useRef, useEffect } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { Role } from "./types";
@@ -5,8 +6,8 @@ import { UserIcon, UsersIcon, ChevronDownIcon } from "./Icons";
 import { toast } from "sonner";
 import { Eye, EyeOff } from "lucide-react";
 import {
-  useRegistrationClinicMutation,
-  useRegistrationTherapistMutation,
+  useRegisterClinicMutation,
+  useRegisterIndividualTherapistMutation,
 } from "@/store/api/AuthApi";
 import { useNavigate } from "react-router-dom";
 
@@ -386,8 +387,9 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const navigate = useNavigate();
-  const [registrationClinic, { isLoading }] = useRegistrationClinicMutation();
-  const [registrationTherapist] = useRegistrationTherapistMutation();
+  const [registerClinic, { isLoading }] = useRegisterClinicMutation();
+  const [registerIndividualTherapist] =
+    useRegisterIndividualTherapistMutation();
   const {
     register,
     handleSubmit,
@@ -420,21 +422,30 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
       };
       let result;
       if (currentRole === Role.PRIVATE_PRACTICE) {
-        result = await registrationClinic(payload).unwrap();
-      
+        result = await registerClinic(payload).unwrap();
       } else {
-        result = await registrationTherapist(payload).unwrap();
-        console.log(result)
+        result = await registerIndividualTherapist(payload).unwrap();
+        console.log(result);
       }
 
       toast.success("Account created successfully!");
       navigate("/login", {
-        state: {email: data.email, password: data.password,userType:result.userType},
+        state: {
+          email: data.email,
+          password: data.password,
+          userType: result.userType,
+        },
       });
       onSwitchToLogin();
-    } catch (error) {
+    } catch (error: any) {
       console.error("Signup error:", error);
-      toast.error("Account creation failed. Please try again.");
+      const msg = error?.data?.message || "Account creation failed.";
+
+      if (msg.includes("Email already")) {
+        toast.error(msg);
+      } else {
+        toast.error(msg);
+      }
     }
   };
 
@@ -476,7 +487,7 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
             </p>
           </div>
 
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 ">
             <div>
               <label
                 htmlFor="fullName"

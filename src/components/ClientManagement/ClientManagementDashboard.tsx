@@ -4,15 +4,14 @@ import ClientListDashboard from "./ClientListDashboard";
 import ClientDetailView from "./ClientDetailView";
 import UpdateProgressModal from "./UpdateProgressModal";
 
-
 const ClientManagementDashboard = () => {
   const [selectedClient, setSelectedClient] = useState<Client | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const handleSelectClient = useCallback((client: Client) => {
-    setSelectedClient(client);
-    window.scrollTo(0, 0);
-  }, []);
+  // const handleSelectClient = useCallback((client: Client) => {
+  //   setSelectedClient(client);
+  //   window.scrollTo(0, 0);
+  // }, []);
 
   const handleBackToList = useCallback(() => {
     setSelectedClient(null);
@@ -21,13 +20,12 @@ const ClientManagementDashboard = () => {
 
   const handleUpdateProgress = (notes: string) => {
     console.log("Progress Notes Submitted:", notes);
-    // In a real app, you would send this to Firestore/API
     setIsModalOpen(false);
     alert("Progress Note saved successfully!");
   };
 
   return (
-    <div className="min-h-screen font-sans bg-gray-50">
+    <div className="">
       {selectedClient ? (
         <ClientDetailView
           client={selectedClient}
@@ -35,7 +33,7 @@ const ClientManagementDashboard = () => {
           onOpenModal={() => setIsModalOpen(true)}
         />
       ) : (
-        <ClientListDashboard onSelectClient={handleSelectClient} />
+        <ClientListDashboard />
       )}
 
       {/* Modal is rendered outside the main view components */}

@@ -49,7 +49,7 @@ export const reportsApi = baseApi.injectEndpoints({
     }),
     getCrisisAlerts: builder.query({
       query: (params) => ({
-        url: "/reports/crisis-alerts",
+        url: "/reports/session-alerts",
         method: "GET",
         params: {
           limit: params.limit,
@@ -70,6 +70,15 @@ export const reportsApi = baseApi.injectEndpoints({
         },
       }),
     }),
+    getClinicRecentSessions: builder.query({
+      query: (params) => ({
+        url: "/reports/recent-sessions",
+        method: "GET",
+        params: {
+          limit: params.limit,
+        },
+      }),
+    })
   }),
 });
 
@@ -79,4 +88,5 @@ export const {
   useGetTherapistActivityQuery,
   useGetCrisisAlertsQuery,
   useGetSessionDataQuery,
+  useGetClinicRecentSessionsQuery
 } = reportsApi;

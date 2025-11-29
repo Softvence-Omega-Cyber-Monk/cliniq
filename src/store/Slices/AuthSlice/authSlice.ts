@@ -1,11 +1,12 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+
 export interface User {
-  user: User;
   id: string;
   fullName: string;
   licenseNumber: string;
   qualification: string;
   email: string;
+  photoUrl: string;
   phone: string;
   speciality: string;
   defaultSessionDuration: number;
@@ -16,14 +17,15 @@ export interface User {
   clinic: string | null;
   subscriptionPlan: string | null;
   createdAt: string;
-  userType: "THERAPIST" | "ADMIN" | "PRIVATE_PRACTICE" | "CLINIC";
+  userType: "THERAPIST" | "ADMIN" | "INDIVIDUAL_THERAPIST" | "CLINIC";
   updatedAt: string;
 }
+
 interface AuthState {
   user: User | null;
   accessToken: string | null;
   refreshToken: string | null;
-  userType: "THERAPIST" | "ADMIN" | "PRIVATE_PRACTICE" | "CLINIC" | null;
+  userType?: "THERAPIST" | "ADMIN" | "INDIVIDUAL_THERAPIST" | "CLINIC" | null;
 }
 
 const initialState: AuthState = {
@@ -43,7 +45,7 @@ const authSlice = createSlice({
         user: User;
         accessToken: string;
         refreshToken?: string;
-        userType: "THERAPIST" | "ADMIN" | "PRIVATE_PRACTICE" | "CLINIC";
+        userType: "THERAPIST" | "ADMIN" | "INDIVIDUAL_THERAPIST" | "CLINIC";
       }>
     ) => {
       state.user = action.payload.user;
@@ -52,20 +54,25 @@ const authSlice = createSlice({
       if (action.payload.refreshToken) {
         state.refreshToken = action.payload.refreshToken;
       }
-      localStorage.setItem("token", action.payload.accessToken);
+      // ✅ Removed localStorage.setItem - redux-persist handles this
     },
-    login: (state, action) => {
+    setToken: (state, action: PayloadAction<{ accessToken: string; refreshToken: string }>) => {
+      state.accessToken = action.payload.accessToken;
+      state.refreshToken = action.payload.refreshToken;
+      // ✅ Removed localStorage.setItem - redux-persist handles this
+    },
+    login: (state, action: PayloadAction<User>) => {
       state.user = action.payload;
     },
-    logout: (state) => {
+    logOut: (state) => {
       state.user = null;
       state.accessToken = null;
       state.refreshToken = null;
       state.userType = null;
-      localStorage.removeItem("token");
+      // ✅ Removed localStorage.removeItem - redux-persist handles this
     },
   },
 });
 
-export const { login, logout, setCredentials } = authSlice.actions;
+export const { login, logOut, setCredentials, setToken } = authSlice.actions;
 export default authSlice.reducer;
