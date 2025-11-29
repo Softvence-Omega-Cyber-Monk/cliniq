@@ -68,6 +68,7 @@ const routes = createBrowserRouter([
           { path: "support", element: <IndividualTherapistSupport /> },
           { path: "about", element: <About /> },
           { path: "contact", element: <Contact /> },
+          { path: "billing", element: <Billing /> },
           { path: "services", element: <Services /> },
           { path: "form", element: <Form /> },
         ],
@@ -79,7 +80,6 @@ const routes = createBrowserRouter([
     element: <AdminLayout />,
     children: [
       { index: true, element: <AdminOverview /> },
-
       { path: "admin-therapists", element: <TherapistManagement /> },
       { path: "admin-therapists/:id", element: <TherapistDetails /> },
       { path: "admin-sessions", element: <SessionsManagement /> },

@@ -5,6 +5,7 @@ import { useAppSelector } from "@/hooks/useRedux";
 
 const RecentSessions: React.FC = () => {
   const userType = useAppSelector((state) => state.auth.userType);
+  console.log(userType)
   const {
     data: sessions = [],
     isLoading,

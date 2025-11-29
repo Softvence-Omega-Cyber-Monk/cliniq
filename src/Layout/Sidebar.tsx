@@ -9,6 +9,7 @@ import {
   Zap,
 } from "lucide-react";
 import { NavLink } from "react-router-dom";
+import { CiMoneyBill } from "react-icons/ci";
 
 // Define the shape of a navigation item
 interface NavItem {
@@ -30,7 +31,8 @@ const navItems: NavItem[] = [
   { id: 3, label: "Appointments", icon: Calendar, href: "/appointments" },
   { id: 4, label: "Reports", icon: BarChart, href: "/reports" },
   { id: 5, label: "Settings", icon: Settings, href: "/settings" },
-  { id: 6, label: "Support", icon: HelpCircle, href: "/support" },
+  { id: 6, label: "Billing", icon: CiMoneyBill, href: "/billing" },
+  { id: 7, label: "Support", icon: HelpCircle, href: "/support" },
 ];
 
 /**

@@ -1,14 +1,8 @@
-import { Mail, Phone, MessageSquare, User, FileText, ClipboardList, TrendingUp } from 'lucide-react';
+import { Mail, Phone, User, FileText, ClipboardList, TrendingUp } from 'lucide-react';
 import { ContactDetail, FaqItem, ResourceItem } from './types';
 
 export const contactData: ContactDetail[] = [
-  {
-    icon: MessageSquare,
-    title: "Live Chat",
-    description: "Chat with our support team in real-time.",
-    actionText: "Start Chat",
-    detail: "", // No specific detail for chat
-  },
+
   {
     icon: Mail,
     title: "Email Support",
