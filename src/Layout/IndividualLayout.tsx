@@ -66,12 +66,6 @@ const navItems: NavItem[] = [
     href: "/private-practice-admin/reportstwo",
   },
   {
-    id: 10,
-    label: "Billing",
-    icon: CreditCard,
-    href: "/private-practice-admin/billing",
-  },
-  {
     id: 11,
     label: "Materials",
     icon: Book,

@@ -13,6 +13,7 @@ import {
   useUpdateClinicProfileMutation,
 } from "@/store/api/UsersApi";
 import { toast } from "sonner";
+import BillingComponent from "@/components/BillingComponent";
 
 // --- Interfaces for Type Safety ---
 interface ToggleItemProps {
@@ -66,7 +67,7 @@ const ToggleItem: React.FC<ToggleItemProps> = ({
     </div>
     <button
       onClick={onToggle}
-      className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 ${
+      className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 cursor-pointer ${
         isEnabled
           ? "bg-indigo-600 focus:ring-indigo-500"
           : "bg-gray-200 focus:ring-gray-400"
@@ -131,7 +132,7 @@ const ProfileSection: React.FC<{
           />
           <button
             onClick={triggerFileInput}
-            className="absolute bottom-0 right-0 p-1 bg-indigo-600 rounded-full text-white border-2 border-white shadow-md hover:bg-indigo-700 transition"
+            className="absolute bottom-0 right-0 p-1 bg-indigo-600 rounded-full text-white border-2 border-white shadow-md hover:bg-indigo-700 transition cursor-pointer"
             aria-label="Change profile picture"
             type="button"
           >
@@ -345,7 +346,7 @@ const App: React.FC = () => {
           </div>
           <button
             onClick={handleSaveChanges}
-            className="flex items-center space-x-2 px-4 py-2 bg-gray-700 text-white text-sm font-medium rounded-lg shadow-md hover:bg-gray-800 transition duration-150 transform hover:scale-[1.02]"
+            className="flex items-center space-x-2 px-4 py-2 bg-gray-700 text-white text-sm font-medium rounded-lg shadow-md hover:bg-gray-800 transition duration-150 transform hover:scale-[1.02] cursor-pointer"
           >
             <Save size={16} />
             <span>Save Changes</span>
@@ -371,6 +372,7 @@ const App: React.FC = () => {
           </ToggleCard>
         </div>
       </div>
+      <BillingComponent />
     </div>
   );
 };

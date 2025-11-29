@@ -64,43 +64,7 @@ const BillingAndSubscription: React.FC = () => {
       />
 
       {/* Current Plan Banner */}
-      <div className="p-4 bg-emerald-50 rounded-lg border border-emerald-200 mb-8">
-        <div className="flex justify-between items-center">
-          <div>
-            <p className="text-lg font-bold text-emerald-800">Professional Plan</p>
-            <p className="text-sm text-emerald-700">
-              $49/month - Renews June 1, 2024
-            </p>
-          </div>
-          <span className="text-sm font-semibold text-emerald-700 bg-emerald-200 px-3 py-1 rounded-full">
-            ACTIVE
-          </span>
-        </div>
-      </div>
-
-      <h3 className="text-md font-semibold text-gray-700 mb-4">Available Plans</h3>
-      
-      {/* Plan Cards */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {plans.map((plan, index) => (
-          <PlanCard key={index} {...plan} />
-        ))}
-      </div>
-
-      {/* Bottom Links */}
-      <div className="mt-8 flex flex-wrap gap-4 text-sm text-gray-500 justify-center lg:justify-start">
-        <button className="text-blue-600 hover:text-blue-800 transition">
-          Update Payment Method
-        </button>
-        <span className="hidden lg:inline">|</span>
-        <button className="text-blue-600 hover:text-blue-800 transition">
-          View Invoices
-        </button>
-        <span className="hidden lg:inline">|</span>
-        <button className="text-blue-600 hover:text-blue-800 transition">
-          Cancel Subscription
-        </button>
-      </div>
+      {/*  */}
     </div>
   );
 };
