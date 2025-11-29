@@ -22,7 +22,7 @@ export default function SessionHistoryModal({
     sessionType: "",
   });
 
-  const handleChange = (e) => {
+  const handleChange = (e : any) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 

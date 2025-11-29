@@ -1,6 +1,5 @@
 import { Outlet } from "react-router-dom";
 import { useState, useCallback } from "react";
-import Sidebar from "./Sidebar"; // Your sidebar component
 import Navbar from "./Navbar"; // Your top navbar component
 import TherapistSideBar from "./TherapistSideBar";
 
