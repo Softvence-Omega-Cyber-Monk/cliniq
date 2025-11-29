@@ -63,7 +63,7 @@ const AddTherapistModal: React.FC<AddTherapistModalProps> = ({
   const [updateTherapistProfile] = useUpdateTherapistProfileMutation();
 
   // const fileInputRef = useRef<HTMLInputElement>(null);
-  const [previewImage, setPreviewImage] = useState<string>("");
+  const [_previewImage, setPreviewImage] = useState<string>("");
 
   const daysAvailable = watch("daysAvailable");
   const name = watch("name");

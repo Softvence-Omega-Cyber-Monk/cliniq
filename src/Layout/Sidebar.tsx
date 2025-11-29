@@ -9,9 +9,7 @@ import {
   Zap,
 } from "lucide-react";
 import { NavLink } from "react-router-dom";
-import { CiMoneyBill } from "react-icons/ci";
 
-// Define the shape of a navigation item
 interface NavItem {
   id: number;
   label: string;
@@ -19,7 +17,6 @@ interface NavItem {
   href: string;
 }
 
-// Data for the sidebar navigation links
 const navItems: NavItem[] = [
   {
     id: 1,
@@ -31,14 +28,9 @@ const navItems: NavItem[] = [
   { id: 3, label: "Appointments", icon: Calendar, href: "/appointments" },
   { id: 4, label: "Reports", icon: BarChart, href: "/reports" },
   { id: 5, label: "Settings", icon: Settings, href: "/settings" },
-  { id: 6, label: "Billing", icon: CiMoneyBill, href: "/billing" },
   { id: 7, label: "Support", icon: HelpCircle, href: "/support" },
 ];
 
-/**
- * SidebarLink Component
- * Renders a single navigation link item.
- */
 interface SidebarLinkProps {
   item: NavItem;
   onClick: () => void;
@@ -71,10 +63,6 @@ const SidebarLink: React.FC<SidebarLinkProps> = ({ item, onClick }) => {
   );
 };
 
-/**
- * Sidebar Component
- * The main container for the navigation.
- */
 interface SidebarProps {
   isOpen: boolean;
   setActiveItemId: (id: number) => void;
