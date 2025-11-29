@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState, useMemo, useEffect } from "react";
 import { Search, ChevronDown, Plus } from "lucide-react";
-import AddTherapistModal from "./AddTherapistModal";
 import { useGetTherapistByClinicQuery } from "@/store/api/UsersApi";
 import { useUserId } from "@/hooks/useUserId";
 import { Patient, Therapist } from "./TherapistType";
@@ -10,8 +9,7 @@ import PatientDetail from "./PatientDetail";
 import TherapistDetail from "./TherapistDetail";
 import { useGetTherapistClientDetailsQuery, useGetTherapistClientTableQuery } from "@/store/api/TherapistApi";
 import { Spinner } from "@/components/ui/spinner";
-
-// --- Main Component ---
+import EditPersonalInfo from "@/components/IndividualDashboard/EditPersonalInfo";
 
 const App: React.FC = () => {
   const userId = useUserId();
@@ -22,6 +20,7 @@ const App: React.FC = () => {
     null
   );
   const { data, isLoading } = useGetTherapistByClinicQuery(userId);
+  const handleCloseModal = () => setIsModalOpen(false);
   const {data : patientData} = useGetTherapistClientTableQuery(selectedTherapistId, {skip: !selectedTherapistId});
   const {data:patientDetails,isLoading:patientDetailsLoading} = useGetTherapistClientDetailsQuery({therapistId:selectedTherapistId,clientId:selectedPatientId}, {skip: !selectedTherapistId || !selectedPatientId});
 
@@ -37,14 +36,14 @@ const App: React.FC = () => {
   "All" | "Active" | "Inactive"
   >("All");
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isEditMode, setIsEditMode] = useState(false);
+  const [_isEditMode, setIsEditMode] = useState(false);
   
   const filteredTherapists = useMemo(() => {
     return therapists.filter((therapist) => {
       const matchesSearch =
       searchTerm.trim() === "" ||
-      therapist.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      therapist.specialty.toLowerCase().includes(searchTerm.toLowerCase());
+      therapist?.fullName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      therapist?.specialty?.toLowerCase().includes(searchTerm.toLowerCase());
       
       const matchesStatus =
       filterStatus === "All" || therapist.status === filterStatus;
@@ -59,13 +58,6 @@ const App: React.FC = () => {
     setIsEditMode(false);
     setIsModalOpen(true);
   };
-
-  const openEditModal = () => {
-    setIsEditMode(true);
-    setIsModalOpen(true);
-  };
-
-
 
   const handleViewPatientDetails = (patientId: string) => {
     setSelectedPatientId(patientId);
@@ -106,7 +98,7 @@ const App: React.FC = () => {
             </div>
             <button
               onClick={openAddModal}
-              className="flex items-center bg-gray-800 text-white px-4 py-2 rounded-lg text-sm font-medium shadow-lg hover:bg-gray-700 transition"
+              className="cursor-pointer flex items-center bg-gray-800 text-white px-4 py-2 rounded-lg text-sm font-medium shadow-lg hover:bg-gray-700 transition"
             >
               <Plus size={16} className="mr-2" />
               Add New Therapist
@@ -169,7 +161,6 @@ const App: React.FC = () => {
         <TherapistDetail
           therapist={selectedTherapist}
           onBack={handleBackToList}
-          setIsEditModalOpen={openEditModal}
           onViewPatientDetails={handleViewPatientDetails} // Pass the handler
         />
       ) : (
@@ -191,13 +182,9 @@ const App: React.FC = () => {
         </div>
       )}
 
-      {/* Add/Edit Therapist Modal */}
-      <AddTherapistModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        // onSave={handleAddTherapist}
-        isEditMode={isEditMode}
-        therapistData={selectedTherapist}
+      <EditPersonalInfo 
+        isOpen={isModalOpen} 
+        onClose={handleCloseModal}
       />
     </div>
   );

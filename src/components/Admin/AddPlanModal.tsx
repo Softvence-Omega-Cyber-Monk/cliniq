@@ -11,6 +11,7 @@ export default function AddPlanModal({ onClose }: AddPlanModalProps) {
     name: "",
     price: "",
     billingCycle: "MONTHLY" as "MONTHLY" | "YEARLY",
+    role: "CLINIC" as "CLINIC" | "INDIVIDUAL_THERAPIST",
     maxClients: "",
     maxTherapists: "",
     isActive: true,
@@ -29,7 +30,7 @@ export default function AddPlanModal({ onClose }: AddPlanModalProps) {
     if (!formData.price || parseFloat(formData.price) <= 0) {
       newErrors.price = "Valid price is required"
     }
-    
+
     const validFeatures = features.filter(f => f.trim())
     if (validFeatures.length === 0) {
       newErrors.features = "At least one feature is required"
@@ -64,6 +65,7 @@ export default function AddPlanModal({ onClose }: AddPlanModalProps) {
         price: parseFloat(formData.price),
         billingCycle: formData.billingCycle,
         features: validFeatures,
+        role: formData.role,
         maxClients: formData.maxClients ? parseInt(formData.maxClients) : undefined,
         maxTherapists: formData.maxTherapists ? parseInt(formData.maxTherapists) : undefined,
         isActive: formData.isActive,
@@ -72,8 +74,8 @@ export default function AddPlanModal({ onClose }: AddPlanModalProps) {
       onClose()
     } catch (error: any) {
       console.error('Failed to create plan:', error)
-      setErrors({ 
-        submit: error?.data?.message || "Failed to create plan. Please try again." 
+      setErrors({
+        submit: error?.data?.message || "Failed to create plan. Please try again."
       })
     }
   }
@@ -83,8 +85,8 @@ export default function AddPlanModal({ onClose }: AddPlanModalProps) {
       <div className="bg-white rounded-lg shadow-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between p-6 border-b border-gray-200 sticky top-0 bg-white z-10">
           <h2 className="text-xl font-bold text-gray-900">Add New Subscription Plan</h2>
-          <button 
-            onClick={onClose} 
+          <button
+            onClick={onClose}
             className="p-1 hover:bg-gray-100 rounded-lg transition-colors"
             disabled={isLoading}
           >
@@ -103,9 +105,8 @@ export default function AddPlanModal({ onClose }: AddPlanModalProps) {
               placeholder="e.g., Individual Plan"
               value={formData.name}
               onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-              className={`w-full px-3 py-2 rounded-lg border ${
-                errors.name ? 'border-red-500' : 'border-gray-300'
-              } focus:outline-none focus:ring-2 focus:ring-teal-500`}
+              className={`w-full px-3 py-2 rounded-lg border ${errors.name ? 'border-red-500' : 'border-gray-300'
+                } focus:outline-none focus:ring-2 focus:ring-teal-500`}
               disabled={isLoading}
             />
             {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name}</p>}
@@ -122,9 +123,8 @@ export default function AddPlanModal({ onClose }: AddPlanModalProps) {
                 placeholder="29"
                 value={formData.price}
                 onChange={(e) => setFormData({ ...formData, price: e.target.value })}
-                className={`w-full px-3 py-2 rounded-lg border ${
-                  errors.price ? 'border-red-500' : 'border-gray-300'
-                } focus:outline-none focus:ring-2 focus:ring-teal-500`}
+                className={`w-full px-3 py-2 rounded-lg border ${errors.price ? 'border-red-500' : 'border-gray-300'
+                  } focus:outline-none focus:ring-2 focus:ring-teal-500`}
                 disabled={isLoading}
                 min="0"
                 step="0.01"
@@ -144,6 +144,22 @@ export default function AddPlanModal({ onClose }: AddPlanModalProps) {
               >
                 <option value="MONTHLY">Monthly</option>
                 <option value="YEARLY">Yearly</option>
+              </select>
+            </div>
+          </div>
+          <div className="grid grid-cols-1 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Role
+              </label>
+              <select
+                value={formData.role}
+                onChange={(e) => setFormData({ ...formData, role: e.target.value as "CLINIC" | "INDIVIDUAL_THERAPIST" })}
+                className="w-full px-3 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-teal-500"
+                disabled={isLoading}
+              >
+                <option value="CLINIC">Clinic</option>
+                <option value="INDIVIDUAL_THERAPIST">Individual Therapist</option>
               </select>
             </div>
           </div>

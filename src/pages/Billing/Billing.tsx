@@ -6,7 +6,6 @@ import {
   useGetSubscriptionStatusQuery,
   useGetSubscriptionPlansQuery,
   useGetPaymentMethodsQuery,
-  useGetPaymentHistoryQuery,
   useCancelSubscriptionMutation,
   useReactivateSubscriptionMutation,
   useDeletePaymentMethodMutation,
@@ -22,13 +21,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import {
-  Loader2,
-  CreditCard,
-  AlertCircle,
-  CheckCircle2,
-  Plus,
-} from "lucide-react";
+import { Loader2, CreditCard, AlertCircle, CheckCircle2, Plus } from "lucide-react";
 import AddPaymentMethodDialog from "@/components/Admin/Billing/AddPaymentMethodDialog";
 import UpgradePlanDialog from "@/components/Admin/Billing/UpgradePlanDialog";
 import CancelSubscriptionDialog from "@/components/Admin/Billing/CancelSubscriptionDialog";
@@ -50,24 +43,16 @@ const Billing = () => {
     isLoading: statusLoading,
     error: statusError,
   } = useGetSubscriptionStatusQuery();
-  
-  const { data: plans = [], isLoading: plansLoading } =
-    useGetSubscriptionPlansQuery();
-  const { data: paymentMethods = [], isLoading: pmLoading } =
-    useGetPaymentMethodsQuery();
-  const { data: paymentsResponse, isLoading: historyLoading } =
-    useGetPaymentHistoryQuery({
-      page: 1,
-      limit: 10,
-    });
+
+  const { data: plans = [], isLoading: plansLoading } = useGetSubscriptionPlansQuery();
+  const { data: paymentMethods = [], isLoading: pmLoading } = useGetPaymentMethodsQuery();
+
 
   const [cancelSubscription] = useCancelSubscriptionMutation();
   const [reactivateSubscription, { isLoading: reactivating }] =
     useReactivateSubscriptionMutation();
   const [deletePaymentMethod] = useDeletePaymentMethodMutation();
   const [setDefaultPaymentMethod] = useSetDefaultPaymentMethodMutation();
-  const payments = paymentsResponse?.data || [];
-  console.log(payments);
   // === NOTIFICATION HELPER ===
   const showNotification = (
     message: string,
@@ -76,13 +61,6 @@ const Billing = () => {
     setNotification({ message, type });
     setTimeout(() => setNotification(null), 5000);
   };
-  if (historyLoading) {
-    return (
-      <div className="flex items-center justify-center h-screen">
-        <Loader2 className="animate-spin" />
-      </div>
-    );
-  }
   // === HELPERS ===
   const getStatusBadge = (status: string) => {
     switch (status) {

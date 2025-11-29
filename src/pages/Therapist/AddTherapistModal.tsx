@@ -170,12 +170,7 @@ const AddTherapistModal: React.FC<AddTherapistModalProps> = ({
     setPreviewImage("");
     onClose();
   };
-
   if (!isOpen) return null;
-
-  /* --------------------------------------
-              COMPONENT UI
-  ---------------------------------------*/
   return (
     <div
       className="fixed inset-0 flex items-center justify-center p-4 bg-black/10 backdrop-blur-sm z-50"
@@ -205,7 +200,7 @@ const AddTherapistModal: React.FC<AddTherapistModalProps> = ({
                 accept="image/*"
               /> */}
 
-              <div className="w-20 h-20 rounded-full bg-gray-200 overflow-hidden flex items-center justify-center shadow-md">
+              {/* <div className="w-20 h-20 rounded-full bg-gray-200 overflow-hidden flex items-center justify-center shadow-md">
                 {previewImage ? (
                   <img
                     src={previewImage}
@@ -216,7 +211,7 @@ const AddTherapistModal: React.FC<AddTherapistModalProps> = ({
                     {name ? name[0] : "T"}
                   </span>
                 )}
-              </div>
+              </div> */}
 
               {/* <button
                 type="button"

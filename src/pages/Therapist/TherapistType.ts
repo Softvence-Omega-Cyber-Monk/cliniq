@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export interface Therapist {
+  availableDays: any;
   id: string;
   fullName: string;
   initials: string;

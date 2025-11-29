@@ -50,6 +50,7 @@ export interface CreateSubscriptionPlanDto {
   maxClients?: number;
   maxTherapists?: number;
   isActive?: boolean;
+  role?: 'CLINIC' | 'INDIVIDUAL_THERAPIST';
 }
 
 export interface UpdateSubscriptionPlanDto {
