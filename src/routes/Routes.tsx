@@ -90,24 +90,16 @@ const routes = createBrowserRouter([
   },
   {
     path: "/therapist",
-    element: <ProtectedRoute allowedRoles={"THERAPIST"} />,
+    element: <ProtectedRoute allowedRoles="THERAPIST" />,
     children: [
       {
+        path: "",
         element: <TherapistLayout />,
         children: [
-          {
-            index: true,
-            element: <Navigate to="dashboard" replace />,
-          },
-          {
-            path: "dashboard",
-            element: <IndividualTherapistDashboard />,
-          },
+          { index: true, element: <Navigate to="dashboard" replace /> },
+          { path: "dashboard", element: <IndividualTherapistDashboard /> },
           { path: "clients", element: <IndividualTherapistClients /> },
-          {
-            path: "clients/:id",
-            element: <TherapistClientDetails />,
-          },
+          { path: "clients/:id", element: <TherapistClientDetails /> },
           {
             path: "appointments",
             element: <IndividualTherapistAppointments />,

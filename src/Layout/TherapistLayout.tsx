@@ -29,7 +29,10 @@ const TherapistLayout: React.FC = () => {
       )}
 
       {/* Sidebar */}
-      <TherapistSideBar />
+      <TherapistSideBar
+        isOpen={isSidebarOpen}
+        setActiveItemId={handleSidebarClose}
+      />
 
       {/* Main content area */}
       <div

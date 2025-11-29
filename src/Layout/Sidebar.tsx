@@ -110,7 +110,9 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, setActiveItemId }) => {
       {/* Logo/Header Section */}
       <div className="flex items-center px-2 py-4 mb-8">
         <Zap className="h-6 w-6 text-sky-500 mr-2" />
-        <span className="text-xl font-bold text-gray-800"></span>
+        <span className="text-xl font-bold text-gray-800">
+          Individual Therapist
+        </span>
       </div>
 
       {/* Navigation Links */}
