@@ -73,18 +73,20 @@ const ClientListItem: React.FC<{
         </div>
       )}
     </div>
+    
     <Link
-      className="hidden md:inline-flex items-center justify-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition duration-150"
-      to={
-        userType === "THERAPIST" ||
-        userType === "INDIVIDUAL_THERAPIST" ||
-        (userType === null && client.id !== undefined)
-          ? `/clients/${client.id}`
-          : `/private-practice-admin/clients/${client.id}`
-      }
-    >
-      View Details
-    </Link>
+     className="hidden md:inline-flex items-center justify-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition duration-150"
+  to={
+    userType === "THERAPIST"
+      ? `/therapist/clients/${client.id}`
+      : userType === "INDIVIDUAL_THERAPIST"
+      ? `/individual-therapist/clients/${client.id}`
+      : `/private-practice-admin/clients/${client.id}`
+  }
+>
+  View Details
+</Link>
+
     <button
       onClick={(e) => {
         e.stopPropagation();

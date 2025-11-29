@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import { useCreateNewClientMutation } from "@/store/api/ClientsApi";
 import { useGetTherapistByClinicQuery } from "@/store/api/UsersApi";
 import { useUserId } from "@/hooks/useUserId";
+import { useAppSelector } from "@/hooks/useRedux";
 
 // Validation
 const clientSchema = z.object({
@@ -34,6 +35,8 @@ const AddClientModal = ({ onClose }: AddClientModalProps) => {
   const userId = useUserId();
   const [createNewClient] = useCreateNewClientMutation();
   const { data: therapist } = useGetTherapistByClinicQuery(userId);
+const userType = useAppSelector((state) => state.auth.userType);
+console.log(userType)
 
   const {
     register,
