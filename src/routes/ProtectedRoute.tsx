@@ -20,7 +20,7 @@ const ProtectedRoute = ({ allowedRoles }: ProtectedRouteProps) => {
       case "ADMIN":
         return <Navigate to="/admin-dashboard" replace />;
       case "THERAPIST":
-        return <Navigate to="/individual-therapist-dashboard" replace />;
+        return <Navigate to="/therapist-dashboard" replace />;
       case "CLINIC":
         return <Navigate to="/private-practice-admin" replace />;
       case "INDIVIDUAL_THERAPIST":
