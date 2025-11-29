@@ -10,7 +10,6 @@ import {
   // Bell,
   Menu,
   Calendar,
-  CreditCard,
   Book,
   LogOut,
 } from "lucide-react";
