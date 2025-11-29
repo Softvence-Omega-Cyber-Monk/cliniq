@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, use } from "react";
 import { Client, Status } from "./types";
 import ClientListItem from "./ClientListItem";
 import ClientListItemSkeleton from "../Skeleton/ClientListItemSkeleton";
@@ -117,25 +117,33 @@ const ClientListDashboard: React.FC = () => {
             Manage your client list and sessions
           </p>
         </div>
-        <button
-          className="mt-4 md:mt-0 px-5 py-2.5 bg-[#3FDCBF] text-white font-semibold rounded-lg hover:bg-[#46ddc1] transition shadow-md flex items-center space-x-2"
-          onClick={() => setShowAddNewClientModal(true)}
-        >
-          <svg
-            className="w-5 h-5"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
+        {userType === "CLINIC" ? (
+          // Show Add New Client button
+          <button
+            className="mt-4 md:mt-0 px-5 py-2.5 bg-[#3FDCBF] text-white font-semibold rounded-lg hover:bg-[#46ddc1] transition shadow-md flex items-center space-x-2"
+            onClick={() => setShowAddNewClientModal(true)}
           >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-            />
-          </svg>
-          <span>Add New Client</span>
-        </button>
+            <svg
+              className="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+              />
+            </svg>
+            <span>Add New Client</span>
+          </button>
+        ) : userType === "THERAPIST" || userType === "INDIVIDUAL_THERAPIST" ? (
+          // Another button for therapist roles
+          <button className="mt-4 md:mt-0 px-5 py-2.5 bg-blue-500 text-white font-semibold rounded-lg hover:bg-blue-600 transition shadow-md">
+            Another Button
+          </button>
+        ) : null}
       </header>
 
       {/* Search and Filter */}
@@ -211,9 +219,7 @@ const ClientListDashboard: React.FC = () => {
 
       {/* Add New Client Modal */}
       {showAddNewClientModal && (
-       
-        <AddClientModal onClose={() => setShowAddNewClientModal(false)}/>
-      
+        <AddClientModal onClose={() => setShowAddNewClientModal(false)} />
       )}
     </div>
   );
