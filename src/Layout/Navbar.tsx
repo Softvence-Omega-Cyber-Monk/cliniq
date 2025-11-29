@@ -85,7 +85,7 @@ const Navbar: React.FC<NavbarProps> = ({ toggleSidebar }) => {
                 <img
                   src={avatarUrl}
                   alt="User Avatar"
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-cover cursor-pointer"
                   onError={(
                     e: React.SyntheticEvent<HTMLImageElement, Event>
                   ) => {
@@ -103,14 +103,8 @@ const Navbar: React.FC<NavbarProps> = ({ toggleSidebar }) => {
             {dropdownOpen && (
               <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg py-2 z-50">
                 <button
-                  onClick={handleProfile}
-                  className="flex items-center gap-2 w-full px-4 py-2 text-gray-700 hover:bg-gray-100 transition"
-                >
-                  <User size={18} /> Profile
-                </button>
-                <button
                   onClick={handleLogout}
-                  className="flex items-center gap-2 w-full px-4 py-2 text-gray-700 hover:bg-gray-100 transition"
+                  className="flex items-center gap-2 w-full px-4 py-2 text-gray-700 hover:bg-gray-100 transition cursor-pointer"
                 >
                   <LogOut size={18} /> Logout
                 </button>
