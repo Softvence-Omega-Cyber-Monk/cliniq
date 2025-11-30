@@ -36,6 +36,7 @@ const AppointmentCard: React.FC<AppointmentCardProps> = ({ appointment }) => {
     );
   const userType = useAppSelector((state) => state.auth.userType);
   const userId = useUserId();
+  console.log(therapist.id, userId);
   return (
     <div className="bg-[#FAFAF7] p-5 rounded-xl  border border-gray-100 flex flex-col justify-between transition-all duration-300 hover:shadow-xl hover:border-mint-200">
       <div>
@@ -103,18 +104,34 @@ const AppointmentCard: React.FC<AppointmentCardProps> = ({ appointment }) => {
             />
           </a>
         </div>
-        <Link
-          to={
-            userType === "THERAPIST"
-              ? `/therapist/clients/${client.id}`
-              : userType === "INDIVIDUAL_THERAPIST"
-              ? `/individual-therapist/clients/${client.id}`
-              : `/private-practice-admin/clients/${client.id}`
-          }
-          className="flex items-center px-4 py-2 text-sm font-semibold rounded-[12px] border border-mint-500 text-mint-600  hover:bg-mint-50 text-white transition-colors bg-[#3FDCBF]"
-        >
-          <Play size={16} className="mr-2" /> Start Session
-        </Link>
+        {therapist.id === userId && (
+          <Link
+            to={
+              userType === "THERAPIST"
+                ? `/therapist/clients/${client.id}`
+                : userType === "INDIVIDUAL_THERAPIST"
+                ? `/individual-therapist/clients/${client.id}`
+                : `/private-practice-admin/clients/${client.id}`
+            }
+            className="flex items-center px-4 py-2 text-sm font-semibold rounded-[12px] border border-mint-500 text-mint-600  hover:bg-mint-50 text-white transition-colors bg-[#3FDCBF]"
+          >
+            <Play size={16} className="mr-2" /> Start Session
+          </Link>
+        )}
+        {therapist.id !== userId && (
+          <Link
+            to={
+              userType === "THERAPIST"
+                ? `/therapist/clients/${client.id}`
+                : userType === "INDIVIDUAL_THERAPIST"
+                ? `/individual-therapist/clients/${client.id}`
+                : `/private-practice-admin/clients/${client.id}`
+            }
+            className="flex items-center px-4 py-2 text-sm font-semibold rounded-[12px] border border-mint-500 text-mint-600  hover:bg-mint-50 text-white transition-colors bg-[#3FDCBF]"
+          >
+            View Details
+          </Link>
+        )}
       </div>
     </div>
   );

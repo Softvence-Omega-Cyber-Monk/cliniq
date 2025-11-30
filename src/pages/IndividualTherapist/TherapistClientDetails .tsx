@@ -27,6 +27,8 @@ import { useSendSessionMutation } from "@/store/api/BaseApi/AiApi";
 import CrisisHistory from "./CrisisHistory";
 import SessionHistory from "./SessionHistory";
 import TreatmentProgressCard from "./TreatmentProgressCard";
+import { Select } from "@radix-ui/react-select";
+import TherapistSelector from "./TherapistSeletor";
 
 // Format seconds to HH:MM:SS
 const formatTime = (totalSeconds: number) => {
@@ -46,6 +48,7 @@ const TherapistClientDetails: React.FC = () => {
   const [addClinicClientSessionHistory] =
     useAddClinicClientSessionHistoryMutation();
   const [addedSessionbytherapist] = useAddSessionHistoryMutation();
+  console.log(userId);
 
   const therapistQuery = useGetClientByIdQuery(
     userType === "THERAPIST" || userType === "INDIVIDUAL_THERAPIST"
@@ -81,7 +84,7 @@ const TherapistClientDetails: React.FC = () => {
   //   userType === "THERAPIST" || userType === "INDIVIDUAL_THERAPIST"
   //     ? therapistQuery.refetch
   //     : clinicQuery.refetch;
-
+  console.log(client?.therapistId, userId);
   const [isRecording, setIsRecording] = useState(false);
   const [elapsed, setElapsed] = useState(0);
   const [, setAudioURL] = useState<string | null>(null);
@@ -307,9 +310,9 @@ const TherapistClientDetails: React.FC = () => {
       <div className="px-6 py-8">
         {/* Client Header Card */}
         <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8 mb-6">
-          <div className="flex flex-col lg:flex-row justify-between gap-8">
+          <div className="flex flex-col  lg:flex-row justify-between gap-8">
             {/* Client Info */}
-            <div className="flex gap-6">
+            <div className="flex gap-6 flex-1 ">
               <div className="size-[64px] bg-[#96C75E1A] rounded-full text-[#3FDCBF] flex items-center justify-center flex-shrink-0">
                 <span className="text-[#3FDCBF] text-[28px] font-semibold">
                   {client.name.charAt(0).toUpperCase()}
@@ -355,140 +358,107 @@ const TherapistClientDetails: React.FC = () => {
               </div>
             </div>
 
-            {/* Session Control */}
-            <div className="flex flex-col items-center justify-center gap-4 lg:min-w-[280px]">
-              <div
-                className={`w-full rounded-xl p-6 text-center transition-all ${
-                  isRecording
-                    ? "bg-gradient-to-br from-red-50 to-red-100 border-2 border-red-200"
-                    : isAnalyzing
-                    ? "bg-gradient-to-br from-purple-50 to-purple-100 border-2 border-purple-200"
-                    : isProcessing
-                    ? "bg-gradient-to-br from-orange-50 to-orange-100 border-2 border-orange-200"
-                    : sessionCompleted
-                    ? "bg-gradient-to-br from-green-50 to-green-100 border-2 border-green-200"
-                    : "bg-gradient-to-br from-gray-50 to-gray-100 border-2 border-gray-200"
-                }`}
-              >
-                <div className="flex items-center justify-center gap-2 mb-2">
-                  {isAnalyzing ? (
-                    <Brain
-                      size={16}
-                      className="text-purple-600 animate-pulse"
-                    />
-                  ) : isProcessing ? (
-                    <Loader2
-                      size={16}
-                      className="text-orange-600 animate-spin"
-                    />
-                  ) : (
-                    <Clock
-                      size={16}
-                      className={
-                        isRecording
-                          ? "text-red-600"
-                          : sessionCompleted
-                          ? "text-green-600"
-                          : "text-gray-400"
-                      }
-                    />
-                  )}
-                  <p className="text-xs font-semibold uppercase tracking-wide">
-                    {isRecording
-                      ? "Session in Progress"
-                      : isAnalyzing
-                      ? "AI Analysis"
-                      : isProcessing
-                      ? "Processing Session"
-                      : sessionCompleted
-                      ? "Session Completed"
-                      : "Ready to Start"}
-                  </p>
-                </div>
-                <p
-                  className={`text-4xl font-bold font-mono ${
+            {client?.therapistId === userId ? (
+              <div className="flex flex-col items-center justify-center gap-4 lg:min-w-[280px]">
+                <div
+                  className={`w-full rounded-xl p-6 text-center transition-all ${
                     isRecording
-                      ? "text-red-600"
+                      ? "bg-gradient-to-br from-red-50 to-red-100 border-2 border-red-200"
                       : isAnalyzing
-                      ? "text-purple-600"
+                      ? "bg-gradient-to-br from-purple-50 to-purple-100 border-2 border-purple-200"
                       : isProcessing
-                      ? "text-orange-600"
+                      ? "bg-gradient-to-br from-orange-50 to-orange-100 border-2 border-orange-200"
                       : sessionCompleted
-                      ? "text-green-600"
-                      : "text-gray-400"
+                      ? "bg-gradient-to-br from-green-50 to-green-100 border-2 border-green-200"
+                      : "bg-gradient-to-br from-gray-50 to-gray-100 border-2 border-gray-200"
                   }`}
                 >
-                  {formatTime(elapsed)}
-                </p>
-                {isAnalyzing && (
-                  <p className="text-xs text-purple-600 mt-2 font-medium">
-                    AI is analyzing session...
-                  </p>
-                )}
-                {isProcessing && !isAnalyzing && (
-                  <p className="text-xs text-orange-600 mt-2 font-medium">
-                    Uploading session...
-                  </p>
-                )}
-                {sessionCompleted && aiInsights && (
-                  <p className="text-xs text-green-600 mt-2 font-medium">
-                    AI Insights Ready!
-                  </p>
-                )}
-              </div>
-
-              {/* Button Logic - Fixed state handling */}
-              {!isRecording && !isProcessing && !sessionCompleted ? (
-                // Initial state - two separate buttons
-                <div className="flex flex-col gap-3 w-full">
-                  <button
-                    onClick={startRecording}
-                    className="w-full font-semibold rounded-xl px-8 py-2.5  transition-all transform  border border-[#3FDCBF] cursor-pointer text-white bg-[#3FDCBF]"
-                  >
-                    <span className="flex items-center justify-center gap-2">
-                      <Plus className="w-5 h-5" />
-                      Start New Session
-                    </span>
-                  </button>
-                </div>
-              ) : isRecording ? (
-                // During recording - show stop button
-                <button
-                  onClick={stopRecording}
-                  className="w-full font-semibold rounded-xl px-8 py-2.5  transition-all transform  border border-[#D45B53] cursor-pointer text-white bg-[#D45B53]"
-                >
-                  <span className="flex items-center justify-center gap-2">
-                    <svg
-                      className="w-5 h-5"
-                      fill="currentColor"
-                      viewBox="0 0 20 20"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M10 18a8 8 0 100-16 8 8 0 000 16zM8 7a1 1 0 00-1 1v4a1 1 0 001 1h4a1 1 0 001-1V8a1 1 0 00-1-1H8z"
-                        clipRule="evenodd"
+                  <div className="flex items-center justify-center gap-2 mb-2">
+                    {isAnalyzing ? (
+                      <Brain
+                        size={16}
+                        className="text-purple-600 animate-pulse"
                       />
-                    </svg>
-                    End Session
-                  </span>
-                </button>
-              ) : isProcessing || isAnalyzing ? (
-                // During processing/analyzing - show disabled button
-                <button
-                  disabled
-                  className="w-full font-semibold rounded-xl px-8 py-2.5  transition-all transform  border border-[#D45B53] cursor-pointer text-white bg-[#D45B53]"
-                >
-                  <span className="flex items-center justify-center gap-2">
-                    <Loader2 className="w-5 h-5 animate-spin" />
-                    {isAnalyzing ? "AI Analyzing..." : "Processing..."}
-                  </span>
-                </button>
-              ) : sessionCompleted ? (
-                // After completion - show option to start new session
-                <div className="flex flex-col gap-3 w-full">
+                    ) : isProcessing ? (
+                      <Loader2
+                        size={16}
+                        className="text-orange-600 animate-spin"
+                      />
+                    ) : (
+                      <Clock
+                        size={16}
+                        className={
+                          isRecording
+                            ? "text-red-600"
+                            : sessionCompleted
+                            ? "text-green-600"
+                            : "text-gray-400"
+                        }
+                      />
+                    )}
+                    <p className="text-xs font-semibold uppercase tracking-wide">
+                      {isRecording
+                        ? "Session in Progress"
+                        : isAnalyzing
+                        ? "AI Analysis"
+                        : isProcessing
+                        ? "Processing Session"
+                        : sessionCompleted
+                        ? "Session Completed"
+                        : "Ready to Start"}
+                    </p>
+                  </div>
+                  <p
+                    className={`text-4xl font-bold font-mono ${
+                      isRecording
+                        ? "text-red-600"
+                        : isAnalyzing
+                        ? "text-purple-600"
+                        : isProcessing
+                        ? "text-orange-600"
+                        : sessionCompleted
+                        ? "text-green-600"
+                        : "text-gray-400"
+                    }`}
+                  >
+                    {formatTime(elapsed)}
+                  </p>
+                  {isAnalyzing && (
+                    <p className="text-xs text-purple-600 mt-2 font-medium">
+                      AI is analyzing session...
+                    </p>
+                  )}
+                  {isProcessing && !isAnalyzing && (
+                    <p className="text-xs text-orange-600 mt-2 font-medium">
+                      Uploading session...
+                    </p>
+                  )}
+                  {sessionCompleted && aiInsights && (
+                    <p className="text-xs text-green-600 mt-2 font-medium">
+                      AI Insights Ready!
+                    </p>
+                  )}
+                </div>
+
+                {/* Button Logic - Fixed state handling */}
+                {!isRecording && !isProcessing && !sessionCompleted ? (
+                  // Initial state - two separate buttons
+                  <div className="flex flex-col gap-3 w-full">
+                    <button
+                      onClick={startRecording}
+                      className="w-full font-semibold rounded-xl px-8 py-2.5  transition-all transform  border border-[#3FDCBF] cursor-pointer text-white bg-[#3FDCBF]"
+                    >
+                      <span className="flex items-center justify-center gap-2">
+                        <Plus className="w-5 h-5" />
+                        Start New Session
+                      </span>
+                    </button>
+                  </div>
+                ) : isRecording ? (
+                  // During recording - show stop button
                   <button
-                    onClick={resetSession}
-                    className="w-full font-semibold rounded-xl px-8 py-2.5  transition-all transform  border border-[#3FDCBF] cursor-pointer text-white bg-[#3FDCBF]"
+                    onClick={stopRecording}
+                    className="w-full font-semibold rounded-xl px-8 py-2.5  transition-all transform  border border-[#D45B53] cursor-pointer text-white bg-[#D45B53]"
                   >
                     <span className="flex items-center justify-center gap-2">
                       <svg
@@ -496,24 +466,63 @@ const TherapistClientDetails: React.FC = () => {
                         fill="currentColor"
                         viewBox="0 0 20 20"
                       >
-                        <path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z" />
+                        <path
+                          fillRule="evenodd"
+                          d="M10 18a8 8 0 100-16 8 8 0 000 16zM8 7a1 1 0 00-1 1v4a1 1 0 001 1h4a1 1 0 001-1V8a1 1 0 00-1-1H8z"
+                          clipRule="evenodd"
+                        />
                       </svg>
-                      Start New Session
+                      End Session
                     </span>
                   </button>
-
+                ) : isProcessing || isAnalyzing ? (
+                  // During processing/analyzing - show disabled button
                   <button
-                    onClick={() => setIsProgressModalOpen(true)}
-                    className="w-full  bg-[#3FDCBF1A]  text-[#3FDCBF] font-semibold rounded-xl px-8 py-2.5  transition-all transform  border border-[#3FDCBF] cursor-pointer"
+                    disabled
+                    className="w-full font-semibold rounded-xl px-8 py-2.5  transition-all transform  border border-[#D45B53] cursor-pointer text-white bg-[#D45B53]"
                   >
                     <span className="flex items-center justify-center gap-2">
-                      <TrendingUp className="w-5 h-5" />
-                      Update Treatment Progress
+                      <Loader2 className="w-5 h-5 animate-spin" />
+                      {isAnalyzing ? "AI Analyzing..." : "Processing..."}
                     </span>
                   </button>
-                </div>
-              ) : null}
-            </div>
+                ) : sessionCompleted ? (
+                  // After completion - show option to start new session
+                  <div className="flex flex-col gap-3 w-full">
+                    <button
+                      onClick={resetSession}
+                      className="w-full font-semibold rounded-xl px-8 py-2.5  transition-all transform  border border-[#3FDCBF] cursor-pointer text-white bg-[#3FDCBF]"
+                    >
+                      <span className="flex items-center justify-center gap-2">
+                        <svg
+                          className="w-5 h-5"
+                          fill="currentColor"
+                          viewBox="0 0 20 20"
+                        >
+                          <path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z" />
+                        </svg>
+                        Start New Session
+                      </span>
+                    </button>
+
+                    <button
+                      onClick={() => setIsProgressModalOpen(true)}
+                      className="w-full  bg-[#3FDCBF1A]  text-[#3FDCBF] font-semibold rounded-xl px-8 py-2.5  transition-all transform  border border-[#3FDCBF] cursor-pointer"
+                    >
+                      <span className="flex items-center justify-center gap-2">
+                        <TrendingUp className="w-5 h-5" />
+                        Update Treatment Progress
+                      </span>
+                    </button>
+                  </div>
+                ) : null}
+              </div>
+            ) : (
+              <div className="flex  flex-col gap-2 ">
+                <span className="text-[#7E8086]">Assigned Doctor</span>
+                <TherapistSelector />
+              </div>
+            )}
           </div>
         </div>
 
@@ -552,7 +561,7 @@ const TherapistClientDetails: React.FC = () => {
       {isProgressModalOpen && (
         <div className="fixed inset-0 bg-black/10 flex  items-center justify-center p-4 z-50">
           <div className="bg-white rounded-2xl shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between p-6 border-b border-gray-200">
+            <div className="flex items-center justify-between p-6 -b border-gray-200">
               <h3 className="text-lg font-bold text-gray-900">
                 Update Treatment Progress
               </h3>

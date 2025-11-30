@@ -60,11 +60,11 @@ const ClientListDashboard: React.FC = () => {
     userType === "THERAPIST" || userType === "INDIVIDUAL_THERAPIST"
       ? therapistQuery.data
       : clinicQuery.data;
-
+  
   console.log(data);
   const clients = data?.data || [];
   const meta = data?.meta;
-
+  
   const isFetching =
     userType === "THERAPIST" || userType === "INDIVIDUAL_THERAPIST"
       ? therapistQuery.isFetching
@@ -103,7 +103,7 @@ const ClientListDashboard: React.FC = () => {
   // Generate page numbers for pagination
   const getPageNumbers = () => {
     if (!meta) return [];
-
+    
     const totalPages = meta.totalPages;
     const currentPage = page;
     const delta = 2; // Number of pages to show on each side of current page
@@ -119,7 +119,7 @@ const ClientListDashboard: React.FC = () => {
     }
 
     if (currentPage - delta > 2) {
-      rangeWithDots.push(1, "...");
+      rangeWithDots.push(1, '...');
     } else {
       rangeWithDots.push(1);
     }
@@ -127,7 +127,7 @@ const ClientListDashboard: React.FC = () => {
     rangeWithDots.push(...range);
 
     if (currentPage + delta < totalPages - 1) {
-      rangeWithDots.push("...", totalPages);
+      rangeWithDots.push('...', totalPages);
     } else if (totalPages > 1) {
       rangeWithDots.push(totalPages);
     }
@@ -240,8 +240,7 @@ const ClientListDashboard: React.FC = () => {
         <div className="flex flex-col sm:flex-row items-center justify-between space-y-4 sm:space-y-0 bg-white p-4 rounded-lg shadow-sm">
           {/* Page Info */}
           <div className="text-sm text-gray-600">
-            Showing {(page - 1) * limit + 1} to{" "}
-            {Math.min(page * limit, meta.total)} of {meta.total} clients
+            Showing {(page - 1) * limit + 1} to {Math.min(page * limit, meta.total)} of {meta.total} clients
           </div>
 
           {/* Pagination Buttons */}
@@ -263,19 +262,15 @@ const ClientListDashboard: React.FC = () => {
             {getPageNumbers().map((pageNumber, index) => (
               <button
                 key={index}
-                onClick={() =>
-                  typeof pageNumber === "number"
-                    ? handlePageClick(pageNumber)
-                    : null
-                }
+                onClick={() => typeof pageNumber === 'number' ? handlePageClick(pageNumber) : null}
                 className={`min-w-[40px] h-10 flex items-center justify-center rounded-lg border text-sm font-medium ${
                   pageNumber === page
                     ? "bg-[#298CDF] text-white border-[#298CDF]"
-                    : pageNumber === "..."
+                    : pageNumber === '...'
                     ? "text-gray-500 cursor-default"
                     : "text-gray-600 border-gray-300 hover:bg-gray-100 cursor-pointer"
                 }`}
-                disabled={pageNumber === "..."}
+                disabled={pageNumber === '...'}
               >
                 {pageNumber}
               </button>
