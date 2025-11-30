@@ -64,7 +64,7 @@ export default function App() {
   return (
     <div className="min-h-screen p-4 sm:p-8">
       <header className="mb-8">
-        <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight">
+        <h1 className="text-3xl font-semibold text-[#32363F] tracking-tight">
           MATERIALS
         </h1>
         <p className="mt-2 text-gray-600">

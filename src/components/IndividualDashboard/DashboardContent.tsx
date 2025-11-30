@@ -10,6 +10,7 @@ import {
   StatCalendarIcon,
   // StatAlertIcon,
   StatCheckIcon,
+  StatAlertIcon,
 } from "../icons";
 import { FaPlus } from "react-icons/fa";
 import EditPersonalInfo from "./EditPersonalInfo";
@@ -19,29 +20,32 @@ import StatCardSkeleton from "@/common/StatCardSkeleton";
 // import { useSelector } from "react-redux";
 // import { RootState } from "@/store/store";
 import AddClientModal from "./AddClientModal";
+import { useUserId } from "@/hooks/useUserId";
+import { ClipboardPlus, Users } from "lucide-react";
 
 const DashboardContent: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  // const user = useSelector((state: RootState) => state.auth.user);
+  const userId = useUserId();
 
   const [addClientModal, setAddClientModal] = useState(false);
   const { data: stats, isLoading } = useGetDashboardStatsQuery({
     dateRange: "last_30_days",
-    startDate: "2024-01-01",
-    endDate: "2024-01-31",
-    therapistId: "123e4567-e89b-12d3-a456-426614174000",
+    startDate: "",
+    endDate: "",
+    therapistId: userId,
     status: "completed",
     reportType: "performance_overview",
   });
+
   const statCards: StatCardType[] = stats
     ? [
         {
           title: "Total Therapists",
           value: stats?.totalTherapists,
-          icon: StatUserIcon,
+          icon: ClipboardPlus,
           percentage: stats.therapistsGrowth,
           trend: "up",
-          iconBgColor: "bg-green-100 text-green-600",
+          iconBgColor: "bg-green-100 text-[#3FDCBF]",
         },
         {
           title: "Upcoming Sessions",
@@ -49,22 +53,29 @@ const DashboardContent: React.FC = () => {
           icon: StatCalendarIcon,
           percentage: stats.upcomingGrowth,
           trend: "up",
-          iconBgColor: "bg-blue-100 text-blue-600",
+          iconBgColor: "bg-[#3FDCBF1A] text-[#3FDCBF]",
         },
-        // {
-        //   title: "Crisis Alerts",
-        //   value: stats?.crisisAlerts,
-        //   icon: StatAlertIcon,
-        //   iconBgColor: "bg-red-100 text-red-600",
-        //   trend: "up",
-        // },
         {
-          title: "Completed Sessions",
-          value: stats?.totalSessions,
-          icon: StatCheckIcon,
-          iconBgColor: "bg-cyan-100 text-cyan-600",
+          title: "Total Clients",
+          value: stats?.totalClients,
+          icon: Users,
+          iconBgColor: "bg-[#3FDCBF1A] text-[#3FDCBF]",
           trend: "up",
         },
+        {
+          title: "Crisis Alerts",
+          value: stats?.crisisAlerts,
+          icon: StatAlertIcon,
+          iconBgColor: "bg-red-100 text-red-600",
+          trend: "up",
+        },
+        // {
+        //   title: "Completed Sessions",
+        //   value: stats?.totalSessions,
+        //   icon: StatCheckIcon,
+        //   iconBgColor: "bg-cyan-100 text-cyan-600",
+        //   trend: "up",
+        // },
       ]
     : [];
 
@@ -90,9 +101,9 @@ const DashboardContent: React.FC = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mt-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mt-6">
         {isLoading
-          ? Array.from({ length: 3 }).map((_, idx) => (
+          ? Array.from({ length: 4 }).map((_, idx) => (
               <StatCardSkeleton key={idx} />
             ))
           : statCards.map((card) => <StatCard key={card.title} {...card} />)}

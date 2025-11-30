@@ -1,5 +1,4 @@
 import {
- 
   ChevronDown,
   CalendarCheck,
   Users,
@@ -473,7 +472,7 @@ const App: React.FC = () => {
       status: "completed",
       reportType: "financial_summary",
     });
-
+  console.log(dashboardData);
   const { data: sessionData, isLoading: loadingSession } =
     useGetSessionDataQuery({
       dateRange: "last_30_days",
@@ -481,7 +480,6 @@ const App: React.FC = () => {
       status: "completed",
       reportType: "performance_overview",
     });
-  console.log("session", sessionData);
   const { data: sessionTrends, isLoading: loadingTrends } =
     useGetSessionTrendsQuery({
       dateRange: "last_30_days",

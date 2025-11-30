@@ -23,7 +23,7 @@ const DashboardView: React.FC<DashboardViewProps> = ({
 }) => {
   const userType = useAppSelector((state) => state.auth.userType);
   const userId = useUserId();
-
+  console.log(userId);
   const [page, setPage] = useState(1);
 
   // Clinic Query
@@ -56,7 +56,7 @@ const DashboardView: React.FC<DashboardViewProps> = ({
     userType === "THERAPIST" || userType === "INDIVIDUAL_THERAPIST"
       ? therapistClients.data
       : clinicAppointments.data;
-
+  console.log("app", appointments);
   const isLoading =
     userType === "THERAPIST" || userType === "INDIVIDUAL_THERAPIST"
       ? therapistClients.isLoading

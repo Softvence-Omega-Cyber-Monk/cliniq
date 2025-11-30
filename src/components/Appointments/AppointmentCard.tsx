@@ -12,6 +12,7 @@ import {
 import { Appointment } from "./types";
 import { Link } from "react-router-dom";
 import { useAppSelector } from "@/hooks/useRedux";
+import { useUserId } from "@/hooks/useUserId";
 
 interface AppointmentCardProps {
   appointment: Appointment;
@@ -34,7 +35,7 @@ const AppointmentCard: React.FC<AppointmentCardProps> = ({ appointment }) => {
       <User size={16} className="text-gray-500" />
     );
   const userType = useAppSelector((state) => state.auth.userType);
-
+  const userId = useUserId();
   return (
     <div className="bg-[#FAFAF7] p-5 rounded-xl  border border-gray-100 flex flex-col justify-between transition-all duration-300 hover:shadow-xl hover:border-mint-200">
       <div>
@@ -56,7 +57,8 @@ const AppointmentCard: React.FC<AppointmentCardProps> = ({ appointment }) => {
         <div className="space-y-2 text-sm text-gray-600 border-t border-gray-100 pt-3">
           <div className="flex items-center">
             <ClipboardPlus size={16} className="mr-3 text-mint-500" />
-            <span>{therapist?.fullName}</span>
+            <span>{therapist?.fullName}</span>{" "}
+            {therapist?.id === userId && " (You)"}
           </div>
           <div className="flex items-center">
             <Calendar size={16} className="mr-3 text-mint-500" />

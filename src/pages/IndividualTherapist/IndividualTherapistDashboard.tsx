@@ -1,16 +1,17 @@
-import React from "react";
-import SummaryCard, {
-  summaryCardsData,
-} from "@/components/Dashboard/SummaryCard";
+import SummaryCard from "@/components/Dashboard/SummaryCard";
 import SessionAlert from "@/components/Dashboard/SessionAlert";
 import AppointmentItem from "@/components/Dashboard/AppointmentItem";
 import { useGetUpcomingAppointmentsQuery } from "@/store/api/AppoinmentsApi";
 import { Appointment } from "@/components/Appointments/types";
 import AppointmentItemSkeleton from "@/components/Skeleton/AppointmentItemSkeleton";
-import { useGetCrisisAlertsQuery } from "@/store/api/ReportsApi";
+import {
+  useGetCrisisAlertsQuery,
+  useGetDashboardStatsQuery,
+} from "@/store/api/ReportsApi";
 import { AssessmentAlert } from "@/components/oldreposty/types";
 import SessionAlertSkeleton from "@/components/Skeleton/SessionAlertSkeleton";
-import { AlertTriangle } from "lucide-react";
+import { AlertTriangle, Calendar, ChartPie, Clock, Users } from "lucide-react";
+import { useUserId } from "@/hooks/useUserId";
 
 interface File {
   name: string;
@@ -25,6 +26,7 @@ interface IndividualTherapistDashboardProps {
 const IndividualTherapistDashboard: React.FC<
   IndividualTherapistDashboardProps
 > = () => {
+  const userId = useUserId();
   const {
     data: appointments,
     isLoading,
@@ -36,7 +38,49 @@ const IndividualTherapistDashboard: React.FC<
   const { data: alerts, isLoading: loadingAlerts } = useGetCrisisAlertsQuery({
     limit: 5,
   });
-  console.log(alerts);
+  const { data: stats, isLoading: loadingStats } = useGetDashboardStatsQuery({
+    dateRange: "last_30_days",
+    startDate: "",
+    endDate: "",
+    therapistId: userId,
+    status: "",
+    reportType: "performance_overview",
+  });
+  console.log(stats);
+  const summaryCardsData = [
+    {
+      title: "Total Clients",
+      value: stats?.totalClients,
+      percent: 12.3,
+      icon: Users,
+      iconColor: "text-[#3FDCBF]",
+      bgColor: "bg-[#F3F3EC]",
+    },
+    {
+      title: "Upcoming Appointments",
+      value: 2,
+      percent: 12.3,
+      icon: Calendar,
+      iconColor: "text-[#3FDCBF]",
+      bgColor: "bg-[#F3F3EC]",
+    },
+    {
+      title: "Sessions Completed",
+      value: 9,
+      percent: 12.3,
+      icon: Clock,
+      iconColor: "text-[#3FDCBF]",
+      bgColor: "bg-[#F3F3EC]",
+    },
+    {
+      title: "Treatment Progress",
+      value: 6,
+      percent: 12.3,
+      icon: ChartPie,
+      iconColor: "text-[#3FDCBF]",
+      bgColor: "bg-[#F3F3EC]",
+    },
+  ];
   return (
     <div className="flex-1 p-4 md:p-8  min-h-[calc(100vh-80px)]">
       {/* 1. Summary Cards */}

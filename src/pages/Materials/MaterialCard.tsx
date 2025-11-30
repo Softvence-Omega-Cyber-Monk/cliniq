@@ -20,10 +20,10 @@ const MaterialCard: React.FC<{
   onView: (id: string) => void;
 }> = ({ material, onView }) => {
   return (
-    <div className="bg-white p-6 rounded-xl shadow-lg border border-gray-100 transition-all hover:shadow-xl">
+    <div className="bg-white p-6 rounded-xl  border border-gray-100 transition-all hover:shadow">
       <div className="flex justify-between items-start mb-4">
         <div className="flex items-start">
-          <div className="p-2 mr-3 bg-green-50 text-green-600 rounded-lg">
+          <div className="p-3 mr-3 bg-[#3FDCBF1A]  text-website-primary-color rounded-lg">
             <FileTextIcon />
           </div>
 
@@ -48,7 +48,7 @@ const MaterialCard: React.FC<{
         </div>
 
         <button
-          className="px-6 py-2 bg-teal-500 text-white font-medium rounded-lg shadow-md hover:bg-teal-600 transition duration-150 ease-in-out transform hover:scale-[1.02]"
+          className="px-9 py-2 bg-website-primary-color text-white font-medium rounded-lg  hover:bg-teal-600 transition duration-150 ease-in-out transform hover:scale-[1.02] cursor-pointer"
           onClick={() => onView(material.id)}
         >
           View

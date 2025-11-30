@@ -5,6 +5,7 @@ import Security from "@/components/Settings/Security";
 import Preferences from "@/components/Settings/Preferences";
 import BillingAndSubscription from "@/components/Settings/BillingAndSubscription";
 import { useAppSelector } from "@/hooks/useRedux";
+import BillingComponent from "@/components/BillingComponent";
 
 interface File {
   name: string;
@@ -34,7 +35,7 @@ const IndividualTherapistSettings: React.FC<
           <Notifications />
           <Security />
           <Preferences />
-          {userType === "INDIVIDUAL_THERAPIST" && <BillingAndSubscription />}
+          {userType === "INDIVIDUAL_THERAPIST" && <BillingComponent />}
         </div>
       </main>
 

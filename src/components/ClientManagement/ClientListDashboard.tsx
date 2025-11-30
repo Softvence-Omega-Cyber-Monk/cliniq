@@ -122,7 +122,7 @@ const ClientListDashboard: React.FC = () => {
         {userType === "CLINIC" ? (
           // Show Add New Client button
           <button
-            className="mt-4 md:mt-0 px-5 py-2.5 bg-[#3FDCBF] text-white font-semibold rounded-lg hover:bg-[#46ddc1] transition shadow-md flex items-center space-x-2"
+            className="mt-4 md:mt-0 px-5 py-2.5 bg-[#3FDCBF] text-white font-semibold rounded-lg hover:bg-[#46ddc1] transition shadow-md flex items-center space-x-2 cursor-pointer"
             onClick={() => setShowAddNewClientModal(true)}
           >
             <svg
@@ -144,9 +144,9 @@ const ClientListDashboard: React.FC = () => {
           // Another button for therapist roles
           <button
             onClick={() => setShowSecondModal(true)}
-            className="mt-4 md:mt-0 px-5 py-2.5 bg-[#3FDCBF] text-white font-semibold rounded-lg hover:bg-[#46ddc1] transition shadow-md flex items-center space-x-2"
+            className="mt-4 md:mt-0 px-5 py-2.5 bg-[#3FDCBF] text-white font-semibold rounded-lg hover:bg-[#46ddc1] transition shadow-md flex items-center space-x-2 cursor-pointer"
           >
-            Added New Client
+            Add New Client
           </button>
         ) : null}
       </header>
