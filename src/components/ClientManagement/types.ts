@@ -38,4 +38,7 @@ export interface Client {
   crisisHistory: CrisisEvent[];
   progressItems: ProgressItem[];
   sessionHistory: Session[];
+
+  overallProgress: number | null;
+
 }

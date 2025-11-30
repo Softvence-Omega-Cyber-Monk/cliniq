@@ -3,7 +3,6 @@ import ProfileInformation from "@/components/Settings/ProfileInformation";
 import Notifications from "@/components/Settings/Notifications";
 import Security from "@/components/Settings/Security";
 import Preferences from "@/components/Settings/Preferences";
-import BillingAndSubscription from "@/components/Settings/BillingAndSubscription";
 import { useAppSelector } from "@/hooks/useRedux";
 import BillingComponent from "@/components/BillingComponent";
 

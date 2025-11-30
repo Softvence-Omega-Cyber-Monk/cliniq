@@ -2,11 +2,19 @@ import React, { useState, useEffect, useRef } from "react";
 import { Client, Status } from "./types";
 import ClientListItem from "./ClientListItem";
 import ClientListItemSkeleton from "../Skeleton/ClientListItemSkeleton";
-import { SearchIcon } from "lucide-react";
+import { SearchIcon, ChevronLeft, ChevronRight } from "lucide-react";
 import { useAppSelector } from "@/hooks/useRedux";
 import { useUserId } from "@/hooks/useUserId";
 import { toast } from "sonner";
 import { useGetAllClientQuery } from "@/store/api/ClientsApi";
+interface Client {
+  id: string;
+  name: string;
+  email: string;
+  sessionCount: number;
+  overallProgress: number | null;
+  status: "active" | "inactive" | string;
+}
 
 import { skipToken } from "@reduxjs/toolkit/query/react";
 import { useGetAllClinicClientsQuery } from "@/store/api/ClinicClientsApi";
@@ -20,11 +28,10 @@ const ClientListDashboard: React.FC = () => {
   const [filter, setFilter] = useState<Status | "all">("all");
   const [page, setPage] = useState(1);
   const limit = 10;
-  const [clients, setClients] = useState<Client[]>([]);
+
   const [showAddNewClientModal, setShowAddNewClientModal] = useState(false);
   const [showSecondModal, setShowSecondModal] = useState(false);
 
-  const scrollContainerRef = useRef<HTMLDivElement>(null);
   const therapistQuery = useGetAllClientQuery(
     userType === "THERAPIST" || userType === "INDIVIDUAL_THERAPIST"
       ? {
@@ -53,7 +60,11 @@ const ClientListDashboard: React.FC = () => {
     userType === "THERAPIST" || userType === "INDIVIDUAL_THERAPIST"
       ? therapistQuery.data
       : clinicQuery.data;
+
   console.log(data);
+  const clients = data?.data || [];
+  const meta = data?.meta;
+
   const isFetching =
     userType === "THERAPIST" || userType === "INDIVIDUAL_THERAPIST"
       ? therapistQuery.isFetching
@@ -72,42 +83,57 @@ const ClientListDashboard: React.FC = () => {
     setPage(1);
   }, [searchTerm, filter]);
 
-  // Update clients when new data arrives
-  useEffect(() => {
-    if (data?.data) {
-      setClients((prev) => {
-        if (page === 1) {
-          return data.data;
-        } else {
-          const newClients = data.data.filter(
-            (c: (typeof data.data)[number]) => !prev.some((p) => p.id === c.id)
-          );
-          return [...prev, ...newClients];
-        }
-      });
-    }
-  }, [data, page]);
-
-  // Infinite scroll handler
-  const handleScroll = () => {
-    const container = scrollContainerRef.current;
-    const totalPages = data?.meta?.totalPages || 1;
-    if (!container || isFetching || page >= totalPages) return;
-
-    if (
-      container.scrollTop + container.clientHeight >=
-      container.scrollHeight - 10
-    ) {
-      setPage((prev) => prev + 1);
+  // Pagination handlers
+  const handleNextPage = () => {
+    if (meta && page < meta.totalPages) {
+      setPage(page + 1);
     }
   };
 
-  // Error toast
-  useEffect(() => {
-    if (error) {
-      toast.error("Failed to load clients.");
+  const handlePrevPage = () => {
+    if (page > 1) {
+      setPage(page - 1);
     }
-  }, [error]);
+  };
+
+  const handlePageClick = (pageNumber: number) => {
+    setPage(pageNumber);
+  };
+
+  // Generate page numbers for pagination
+  const getPageNumbers = () => {
+    if (!meta) return [];
+
+    const totalPages = meta.totalPages;
+    const currentPage = page;
+    const delta = 2; // Number of pages to show on each side of current page
+    const range = [];
+    const rangeWithDots = [];
+
+    for (
+      let i = Math.max(2, currentPage - delta);
+      i <= Math.min(totalPages - 1, currentPage + delta);
+      i++
+    ) {
+      range.push(i);
+    }
+
+    if (currentPage - delta > 2) {
+      rangeWithDots.push(1, "...");
+    } else {
+      rangeWithDots.push(1);
+    }
+
+    rangeWithDots.push(...range);
+
+    if (currentPage + delta < totalPages - 1) {
+      rangeWithDots.push("...", totalPages);
+    } else if (totalPages > 1) {
+      rangeWithDots.push(totalPages);
+    }
+
+    return rangeWithDots;
+  };
 
   return (
     <div className="p-6 md:p-10 min-h-screen">
@@ -120,7 +146,6 @@ const ClientListDashboard: React.FC = () => {
           </p>
         </div>
         {userType === "CLINIC" ? (
-          // Show Add New Client button
           <button
             className="mt-4 md:mt-0 px-5 py-2.5 bg-[#3FDCBF] text-white font-semibold rounded-lg hover:bg-[#46ddc1] transition shadow-md flex items-center space-x-2 cursor-pointer"
             onClick={() => setShowAddNewClientModal(true)}
@@ -141,7 +166,6 @@ const ClientListDashboard: React.FC = () => {
             <span>Add New Client</span>
           </button>
         ) : userType === "THERAPIST" || userType === "INDIVIDUAL_THERAPIST" ? (
-          // Another button for therapist roles
           <button
             onClick={() => setShowSecondModal(true)}
             className="mt-4 md:mt-0 px-5 py-2.5 bg-[#3FDCBF] text-white font-semibold rounded-lg hover:bg-[#46ddc1] transition shadow-md flex items-center space-x-2 cursor-pointer"
@@ -183,12 +207,8 @@ const ClientListDashboard: React.FC = () => {
         </div>
       </div>
 
-      {/* Client list with infinite scroll */}
-      <div
-        className="space-y-4 overflow-y-auto"
-        ref={scrollContainerRef}
-        onScroll={handleScroll}
-      >
+      {/* Client list with pagination */}
+      <div className="space-y-4 overflow-y-auto mb-6">
         {/* Loading Skeletons */}
         {isLoading &&
           Array.from({ length: 8 }).map((_, index) => (
@@ -205,7 +225,7 @@ const ClientListDashboard: React.FC = () => {
         {/* Client List */}
         {!isLoading &&
           clients.length > 0 &&
-          clients.map((client) => (
+          clients.map((client: Client) => (
             <ClientListItem
               key={client.id}
               client={client}
@@ -213,14 +233,69 @@ const ClientListDashboard: React.FC = () => {
               userType={userType}
             />
           ))}
-
-        {/* Pagination Skeletons */}
-        {!isLoading &&
-          isFetching &&
-          Array.from({ length: 5 }).map((_, index) => (
-            <ClientListItemSkeleton key={index} />
-          ))}
       </div>
+
+      {/* Pagination Controls */}
+      {meta && meta.totalPages > 1 && (
+        <div className="flex flex-col sm:flex-row items-center justify-between space-y-4 sm:space-y-0 bg-white p-4 rounded-lg shadow-sm">
+          {/* Page Info */}
+          <div className="text-sm text-gray-600">
+            Showing {(page - 1) * limit + 1} to{" "}
+            {Math.min(page * limit, meta.total)} of {meta.total} clients
+          </div>
+
+          {/* Pagination Buttons */}
+          <div className="flex items-center space-x-2">
+            {/* Previous Button */}
+            <button
+              onClick={handlePrevPage}
+              disabled={page === 1}
+              className={`p-2 rounded-lg border ${
+                page === 1
+                  ? "text-gray-400 cursor-not-allowed"
+                  : "text-gray-600 hover:bg-gray-100 cursor-pointer"
+              }`}
+            >
+              <ChevronLeft size={16} />
+            </button>
+
+            {/* Page Numbers */}
+            {getPageNumbers().map((pageNumber, index) => (
+              <button
+                key={index}
+                onClick={() =>
+                  typeof pageNumber === "number"
+                    ? handlePageClick(pageNumber)
+                    : null
+                }
+                className={`min-w-[40px] h-10 flex items-center justify-center rounded-lg border text-sm font-medium ${
+                  pageNumber === page
+                    ? "bg-[#298CDF] text-white border-[#298CDF]"
+                    : pageNumber === "..."
+                    ? "text-gray-500 cursor-default"
+                    : "text-gray-600 border-gray-300 hover:bg-gray-100 cursor-pointer"
+                }`}
+                disabled={pageNumber === "..."}
+              >
+                {pageNumber}
+              </button>
+            ))}
+
+            {/* Next Button */}
+            <button
+              onClick={handleNextPage}
+              disabled={page === meta.totalPages}
+              className={`p-2 rounded-lg border ${
+                page === meta.totalPages
+                  ? "text-gray-400 cursor-not-allowed"
+                  : "text-gray-600 hover:bg-gray-100 cursor-pointer"
+              }`}
+            >
+              <ChevronRight size={16} />
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Add New Client Modal */}
       {showAddNewClientModal && (
