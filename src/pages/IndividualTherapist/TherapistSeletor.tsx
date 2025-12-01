@@ -13,7 +13,7 @@ export default function TherapistSelector() {
       </option>
       {isLoading && <option>Loading...</option>}
 
-      {therapists?.data?.map((t) => (
+      {therapists?.data?.map((t: any) => (
         <option key={t.id} value={t.id} style={{ color: "black" }}>
           {t.fullName}
         </option>

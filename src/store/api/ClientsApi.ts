@@ -10,33 +10,41 @@ const clientsApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["CLIENT"],
     }),
+
     addCrisisHistory: builder.mutation({
       query: ({ therapistId, clientId, crisisData }) => ({
         url: `/therapists/${therapistId}/clients/${clientId}/crisis-history`,
         method: "POST",
         body: crisisData,
       }),
+      invalidatesTags: ["CLIENT"],
     }),
+
     updateCrisisHistory: builder.mutation({
-      query: (credentials) => ({
-        url: "/therapists/{therapistId}/clients/{clientId}/crisis-history",
+      query: ({ therapistId, clientId, credentials }) => ({
+        url: `/therapists/${therapistId}/clients/${clientId}/crisis-history`,
         method: "PUT",
         body: credentials,
       }),
+      invalidatesTags: ["CLIENT"],
     }),
+
     updateOverallProgress: builder.mutation({
-      query: (credentials) => ({
-        url: "/therapists/{therapistId}/clients/{clientId}/overall-progress",
+      query: ({ therapistId, clientId, credentials }) => ({
+        url: `/therapists/${therapistId}/clients/${clientId}/overall-progress`,
         method: "PUT",
         body: credentials,
       }),
+      invalidatesTags: ["CLIENT"],
     }),
+
     addSessionHistory: builder.mutation({
       query: ({ therapistId, clientId, data }) => ({
         url: `/therapists/${therapistId}/clients/${clientId}/session-history`,
         method: "POST",
         body: data,
       }),
+      invalidatesTags: ["CLIENT"],
     }),
 
     updateSessionHistory: builder.mutation({
@@ -45,29 +53,36 @@ const clientsApi = baseApi.injectEndpoints({
         method: "PUT",
         body: data,
       }),
+      invalidatesTags: ["CLIENT"],
     }),
 
     updateTreatmentGoals: builder.mutation({
-      query: (credentials) => ({
-        url: "/therapists/{therapistId}/clients/{clientId}/treatment-goals",
+      query: ({ therapistId, clientId, credentials }) => ({
+        url: `/therapists/${therapistId}/clients/${clientId}/treatment-goals`,
         method: "PUT",
         body: credentials,
       }),
+      invalidatesTags: ["CLIENT"],
     }),
+
     addTreatmentProgress: builder.mutation({
-      query: (credentials) => ({
-        url: "/therapists/{therapistId}/clients/{clientId}/treatment-progress",
+      query: ({ therapistId, clientId, credentials }) => ({
+        url: `/therapists/${therapistId}/clients/${clientId}/treatment-progress`,
         method: "POST",
         body: credentials,
       }),
+      invalidatesTags: ["CLIENT"],
     }),
+
     updateTreatmentProgress: builder.mutation({
-      query: (credentials) => ({
-        url: "/therapists/{therapistId}/clients/{clientId}/treatment-progress",
+      query: ({ therapistId, clientId, credentials }) => ({
+        url: `/therapists/${therapistId}/clients/${clientId}/treatment-progress`,
         method: "PUT",
         body: credentials,
       }),
+      invalidatesTags: ["CLIENT"],
     }),
+
     getAllClient: builder.query({
       query: ({ therapistId, search, status, page = 1, limit = 10 }) => {
         const params = new URLSearchParams();
@@ -83,11 +98,13 @@ const clientsApi = baseApi.injectEndpoints({
       },
       providesTags: ["CLIENT"],
     }),
+
     getClientById: builder.query({
       query: ({ therapistId, clientId }) => ({
         url: `/therapists/${therapistId}/clients/${clientId}`,
         method: "GET",
       }),
+      providesTags: ["CLIENT"],
     }),
   }),
 });
@@ -105,4 +122,5 @@ export const {
   useGetAllClientQuery,
   useGetClientByIdQuery,
 } = clientsApi;
+
 export default clientsApi;

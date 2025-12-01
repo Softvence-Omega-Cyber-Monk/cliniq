@@ -7,7 +7,10 @@ import { Patient, Therapist } from "./TherapistType";
 import TherapistCard from "./TherapistCard";
 import PatientDetail from "./PatientDetail";
 import TherapistDetail from "./TherapistDetail";
-import { useGetTherapistClientDetailsQuery, useGetTherapistClientTableQuery } from "@/store/api/TherapistApi";
+import {
+  useGetTherapistClientDetailsQuery,
+  useGetTherapistClientTableQuery,
+} from "@/store/api/TherapistApi";
 import { Spinner } from "@/components/ui/spinner";
 import EditPersonalInfo from "@/components/IndividualDashboard/EditPersonalInfo";
 
@@ -21,8 +24,15 @@ const App: React.FC = () => {
   );
   const { data, isLoading } = useGetTherapistByClinicQuery(userId);
   const handleCloseModal = () => setIsModalOpen(false);
-  const {data : patientData} = useGetTherapistClientTableQuery(selectedTherapistId, {skip: !selectedTherapistId});
-  const {data:patientDetails,isLoading:patientDetailsLoading} = useGetTherapistClientDetailsQuery({therapistId:selectedTherapistId,clientId:selectedPatientId}, {skip: !selectedTherapistId || !selectedPatientId});
+  const { data: patientData } = useGetTherapistClientTableQuery(
+    selectedTherapistId,
+    { skip: !selectedTherapistId }
+  );
+  const { data: patientDetails, isLoading: patientDetailsLoading } =
+    useGetTherapistClientDetailsQuery(
+      { therapistId: selectedTherapistId, clientId: selectedPatientId },
+      { skip: !selectedTherapistId || !selectedPatientId }
+    );
 
   const therapistData = data?.data || [];
   const [therapists, setTherapist] = useState<Therapist[]>(therapistData);
@@ -33,27 +43,37 @@ const App: React.FC = () => {
   }, [data]);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState<
-  "All" | "Active" | "Inactive"
+    "All" | "Active" | "Inactive"
   >("All");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [_isEditMode, setIsEditMode] = useState(false);
-  
+
   const filteredTherapists = useMemo(() => {
     return therapists.filter((therapist) => {
       const matchesSearch =
-      searchTerm.trim() === "" ||
-      therapist?.fullName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      therapist?.specialty?.toLowerCase().includes(searchTerm.toLowerCase());
-      
+        searchTerm.trim() === "" ||
+        therapist?.fullName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        therapist?.specialty?.toLowerCase().includes(searchTerm.toLowerCase());
+
       const matchesStatus =
-      filterStatus === "All" || therapist.status === filterStatus;
-      
+        filterStatus === "All" || therapist.status === filterStatus;
+
       return matchesSearch && matchesStatus;
     });
   }, [searchTerm, filterStatus, therapists]);
-  if (isLoading) return <div>Loading...</div>;
-  if(patientDetailsLoading) return <div><Spinner /></div>
-  
+  if (isLoading)
+    return (
+      <div className=" min-h-screen  flex justify-center items-center">
+        Loading...
+      </div>
+    );
+  if (patientDetailsLoading)
+    return (
+      <div>
+        <Spinner />
+      </div>
+    );
+
   const openAddModal = () => {
     setIsEditMode(false);
     setIsModalOpen(true);
@@ -76,14 +96,16 @@ const App: React.FC = () => {
   const selectedTherapist = therapists.find(
     (t) => t.id === selectedTherapistId
   );
-  const selectedPatient = patientData?.data?.find((p:Patient) => p.id === selectedPatientId!);
+  const selectedPatient = patientData?.data?.find(
+    (p: Patient) => p.id === selectedPatientId!
+  );
   const isListView = selectedTherapistId === null || !selectedTherapist;
   const isTherapistDetailView = !isListView && selectedPatientId === null;
   const isPatientDetailView =
     selectedPatientId !== null && selectedPatient && selectedTherapist;
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4 sm:p-8 ">
+    <div className="min-h-screen bg-[#f3f3ec] p-4 sm:p-8 ">
       {/* List Header and Controls - Show only in list view */}
       {isListView && (
         <>
@@ -116,7 +138,7 @@ const App: React.FC = () => {
                 placeholder="Search..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full py-3 pl-10 pr-4 border border-gray-200 rounded-xl focus:ring-teal-500 focus:border-teal-500 transition shadow-sm"
+                className="w-full py-3 pl-10 pr-4 border bg-[#ffffff] border-gray-200 rounded-xl focus:ring-teal-500 focus:border-teal-500 transition shadow-sm"
               />
             </div>
 
@@ -182,10 +204,7 @@ const App: React.FC = () => {
         </div>
       )}
 
-      <EditPersonalInfo 
-        isOpen={isModalOpen} 
-        onClose={handleCloseModal}
-      />
+      <EditPersonalInfo isOpen={isModalOpen} onClose={handleCloseModal} />
     </div>
   );
 };

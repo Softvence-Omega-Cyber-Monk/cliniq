@@ -7,6 +7,7 @@ import {
   Settings,
   HelpCircle,
   Zap,
+  BookOpen,
 } from "lucide-react";
 import { NavLink } from "react-router-dom";
 
@@ -51,7 +52,7 @@ const navItems: NavItem[] = [
   {
     id: 6,
     label: "Materials",
-    icon: HelpCircle,
+    icon: BookOpen,
     href: "individual-therapist/materials",
   },
   {

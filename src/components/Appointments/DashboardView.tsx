@@ -91,7 +91,7 @@ const DashboardView: React.FC<DashboardViewProps> = ({
       <div className="flex flex-wrap gap-4 mb-10">
         <StatCard
           title="Total Appointments"
-          value={appointments.meta?.total || 0}
+          value={appointments?.meta?.total || 0}
           delta={stats.totalAppointmentsDelta}
         />
         <StatCard

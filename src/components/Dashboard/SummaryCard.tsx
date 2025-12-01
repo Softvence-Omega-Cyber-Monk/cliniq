@@ -1,7 +1,41 @@
+import { BarChartIcon, Calendar, Clock, Users } from "lucide-react";
 import React from "react";
 
 // 1. Summary Card Data
-
+export const summaryCardsData = [
+  {
+    title: "Total Clients",
+    value: 29,
+    percent: 12.3,
+    icon: Users,
+    iconColor: "text-purple-500",
+    bgColor: "bg-purple-100",
+  },
+  {
+    title: "Upcoming Appointments",
+    value: 29,
+    percent: 12.3,
+    icon: Calendar,
+    iconColor: "text-green-500",
+    bgColor: "bg-green-100",
+  },
+  {
+    title: "Sessions Completed",
+    value: 29,
+    percent: 12.3,
+    icon: Clock,
+    iconColor: "text-orange-500",
+    bgColor: "bg-orange-100",
+  },
+  {
+    title: "Treatment Progress",
+    value: 29,
+    percent: 12.3,
+    icon: BarChartIcon,
+    iconColor: "text-sky-500",
+    bgColor: "bg-sky-100",
+  },
+];
 /**
  * SummaryCard Component
  */

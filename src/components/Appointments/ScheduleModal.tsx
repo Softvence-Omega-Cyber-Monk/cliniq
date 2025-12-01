@@ -7,6 +7,7 @@ import { useGetAllClinicClientsQuery } from "@/store/api/ClinicClientsApi";
 import { useAppSelector } from "@/hooks/useRedux";
 import { useGetAllClientQuery } from "@/store/api/ClientsApi";
 import { skipToken } from "@reduxjs/toolkit/query";
+import { useGetTherapistByClinicQuery } from "@/store/api/UsersApi";
 
 interface ScheduleModalProps {
   onClose: () => void;
@@ -22,12 +23,25 @@ interface Client {
   status: string;
 }
 
+interface Therapist {
+  id: string;
+  fullName: string;
+  email: string;
+  speciality?: string;
+}
 const ScheduleModal: React.FC<ScheduleModalProps> = ({ onClose }) => {
   const userType = useAppSelector((state) => state.auth.userType);
   const userId = useUserId();
+  const [selectedTherapistId, setSelectedTherapistId] = useState(
+    userType === "THERAPIST" || userType === "INDIVIDUAL_THERAPIST"
+      ? userId
+      : ""
+  );
   const [createAppointment, { isLoading: isCreating }] =
     useCreateAppointmentMutation();
-
+  const { data: therapistsData } = useGetTherapistByClinicQuery(
+    userType === "CLINIC" ? userId! : skipToken
+  );
   const therapistQuery = useGetAllClientQuery(
     userType === "THERAPIST" || userType === "INDIVIDUAL_THERAPIST"
       ? {
@@ -82,14 +96,23 @@ const ScheduleModal: React.FC<ScheduleModalProps> = ({ onClose }) => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!selectedClientId || !userId || !scheduledDate || !scheduledTime) {
+    if (
+      !selectedClientId ||
+      !userId ||
+      !scheduledDate ||
+      !scheduledTime ||
+      !duration ||
+      !sessionType ||
+      !phone ||
+      !email
+    ) {
       toast.error("Please fill all required fields");
       return;
     }
 
     const payload = {
       clientId: selectedClientId,
-      therapistId: userId,
+      therapistId: userType === "CLINIC" ? selectedTherapistId : userId,
       scheduledDate,
       scheduledTime,
       duration,
@@ -131,6 +154,26 @@ const ScheduleModal: React.FC<ScheduleModalProps> = ({ onClose }) => {
         </div>
 
         <form className=" space-y-4" onSubmit={handleSubmit}>
+          {/* Therapist Select - Only show for CLINIC users */}
+          {userType === "CLINIC" && (
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Therapist
+              </label>
+              <select
+                value={selectedTherapistId}
+                onChange={(e) => setSelectedTherapistId(e.target.value)}
+                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-mint-500 focus:border-mint-500 transition duration-150 text-gray-800 bg-white shadow-inner"
+              >
+                <option value="">Select Therapist</option>
+                {therapistsData?.data?.map((t: Therapist) => (
+                  <option key={t.id} value={t.id}>
+                    {t.fullName} ({t.email})
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
           {/* Client Select */}
           <div className="mb-4">
             <label className="block text-sm font-medium text-gray-700 mb-1">

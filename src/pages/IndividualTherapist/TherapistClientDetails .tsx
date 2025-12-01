@@ -7,7 +7,6 @@ import {
   Clock,
   AlertTriangle,
   Loader2,
-  X,
   Brain,
   Plus,
 } from "lucide-react";
@@ -27,7 +26,6 @@ import { useSendSessionMutation } from "@/store/api/BaseApi/AiApi";
 import CrisisHistory from "./CrisisHistory";
 import SessionHistory from "./SessionHistory";
 import TreatmentProgressCard from "./TreatmentProgressCard";
-import { Select } from "@radix-ui/react-select";
 import TherapistSelector from "./TherapistSeletor";
 import { StatusBadge } from "@/components/ClientManagement/utilityComponents";
 
@@ -71,7 +69,7 @@ const TherapistClientDetails: React.FC = () => {
     userType === "THERAPIST" || userType === "INDIVIDUAL_THERAPIST"
       ? therapistQuery.data
       : clinicQuery.data;
-  console.log("Client:", client);
+
   const isLoading =
     userType === "THERAPIST" || userType === "INDIVIDUAL_THERAPIST"
       ? therapistQuery.isLoading
@@ -84,20 +82,19 @@ const TherapistClientDetails: React.FC = () => {
   //   userType === "THERAPIST" || userType === "INDIVIDUAL_THERAPIST"
   //     ? therapistQuery.refetch
   //     : clinicQuery.refetch;
-  console.log(client);
+
   const therapistId =
     userType === "THERAPIST" || userType === "INDIVIDUAL_THERAPIST"
       ? client?.therapist?.id
       : client?.clinicId;
-  console.log(therapistId);
+  const treatmentProgress = client?.treatmentProgress?.entries || [];
+  console.log("Client:", treatmentProgress);
   const [isRecording, setIsRecording] = useState(false);
   const [elapsed, setElapsed] = useState(0);
   const [, setAudioURL] = useState<string | null>(null);
   const [sessionCompleted, setSessionCompleted] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
-  const [isProgressModalOpen, setIsProgressModalOpen] = useState(false);
-  console.log(isProgressModalOpen);
-  const [progressNotes, setProgressNotes] = useState("");
+
   const [aiInsights, setAiInsights] = useState<string | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [currentProgressMetrics, setCurrentProgressMetrics] = useState([
@@ -173,7 +170,6 @@ const TherapistClientDetails: React.FC = () => {
       .forEach((track) => track.stop());
   };
 
-  // Function to send session to AI for analysis
   const sendSessionToAI = async (audioBlob: Blob, duration: number) => {
     setIsProcessing(true);
     setIsAnalyzing(true);
@@ -188,9 +184,6 @@ const TherapistClientDetails: React.FC = () => {
     try {
       const res = await sendSession(formData).unwrap();
       const aiInsight = res?.data?.insight;
-
-      console.log("AI Response:", aiInsight);
-
       if (aiInsight && id && userId) {
         setAiInsights(aiInsight);
         toast.success("AI analysis completed!");
@@ -243,30 +236,6 @@ const TherapistClientDetails: React.FC = () => {
     }
   };
 
-  // Handle progress metric update
-  const handleProgressUpdate = (index: number, newProgress: number) => {
-    const updatedMetrics = [...currentProgressMetrics];
-    updatedMetrics[index] = {
-      ...updatedMetrics[index],
-      progress: newProgress,
-    };
-    setCurrentProgressMetrics(updatedMetrics);
-  };
-
-  // Save progress updates
-  const handleSaveProgress = () => {
-    // Here you would typically send the updated progress to your API
-    console.log("Saving progress:", {
-      notes: progressNotes,
-      metrics: currentProgressMetrics,
-    });
-
-    toast.success("Treatment progress updated successfully!");
-    setIsProgressModalOpen(false);
-    setProgressNotes("");
-  };
-
-  // Reset session to start new one
   const resetSession = () => {
     setSessionCompleted(false);
     setElapsed(0);
@@ -522,10 +491,7 @@ const TherapistClientDetails: React.FC = () => {
                       </span>
                     </button>
 
-                    <button
-                      onClick={() => setIsProgressModalOpen(true)}
-                      className="w-full  bg-[#3FDCBF1A]  text-[#3FDCBF] font-semibold rounded-xl px-8 py-2.5  transition-all transform  border border-[#3FDCBF] cursor-pointer"
-                    >
+                    <button className="w-full  bg-[#3FDCBF1A]  text-[#3FDCBF] font-semibold rounded-xl px-8 py-2.5  transition-all transform  border border-[#3FDCBF] cursor-pointer">
                       <span className="flex items-center justify-center gap-2">
                         <TrendingUp className="w-5 h-5" />
                         Update Treatment Progress
@@ -547,14 +513,12 @@ const TherapistClientDetails: React.FC = () => {
         <div className="space-y-6">
           <div className="animate-in slide-in-from-bottom-3 duration-500 ease-out">
             <TreatmentProgressCard
+              treatmentProgress={treatmentProgress}
+              clientId={id}
               isThisTherapist={isThisTherapist}
-              setIsProgressModalOpen={setIsProgressModalOpen}
               aiInsight={aiInsights}
-              metrics={currentProgressMetrics}
             />
           </div>
-
-          {/* Left Column - Crisis History */}
           <CrisisHistory
             isThisTherapist={isThisTherapist}
             clientId={id}
@@ -572,94 +536,6 @@ const TherapistClientDetails: React.FC = () => {
           />
         </div>
       </div>
-
-      {/* Progress Update Modal */}
-      {/* <ProgressModal
-        isOpen={isProgressModalOpen}
-        onClose={isProgressModalOpen}
-      /> */}
-      {isProgressModalOpen && (
-        <div className="fixed inset-0 bg-black/10 flex  items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-2xl shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between p-6 -b border-gray-200">
-              <h3 className="text-lg font-bold text-gray-900">
-                Update Treatment Progress
-              </h3>
-              <button
-                onClick={() => setIsProgressModalOpen(false)}
-                className="text-gray-400 hover:text-gray-600 transition-colors"
-              >
-                <X size={24} />
-              </button>
-            </div>
-
-            <div className="p-6 space-y-6">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Progress Notes
-                </label>
-                <textarea
-                  value={progressNotes}
-                  onChange={(e) => setProgressNotes(e.target.value)}
-                  className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none"
-                  rows={4}
-                  placeholder="Enter progress notes, observations, or treatment updates..."
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-4">
-                  Progress Metrics
-                </label>
-                <div className="space-y-4">
-                  {currentProgressMetrics.map((metric, idx) => (
-                    <div key={idx} className="space-y-2">
-                      <div className="flex justify-between items-center">
-                        <span className="text-sm text-gray-600">
-                          {metric.label}
-                        </span>
-                        <span className="text-sm font-medium text-blue-600">
-                          {metric.progress}%
-                        </span>
-                      </div>
-                      <input
-                        type="range"
-                        min="0"
-                        max="100"
-                        value={metric.progress}
-                        onChange={(e) =>
-                          handleProgressUpdate(idx, parseInt(e.target.value))
-                        }
-                        className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
-                      />
-                      <div className="flex justify-between text-xs text-gray-500">
-                        <span>0%</span>
-                        <span>50%</span>
-                        <span>100%</span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            <div className="flex gap-3 p-6 border-t border-gray-200">
-              <button
-                onClick={() => setIsProgressModalOpen(false)}
-                className="flex-1 px-4 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleSaveProgress}
-                className="flex-1 px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
-              >
-                Save Progress
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

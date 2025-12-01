@@ -1,48 +1,37 @@
 import React from "react";
 import { TrendingUp } from "lucide-react";
-
-interface ProgressMetric {
-  label: string;
-  progress: number;
-}
-
+import { TreatmentProgressModal } from "@/modals/ProgressDataModal";
 interface TreatmentProgressCardProps {
   aiInsight: string | null;
-  metrics: ProgressMetric[];
   isThisTherapist: boolean;
-  setIsProgressModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  clientId: string | undefined;
+  treatmentProgress: any;
 }
 
 const TreatmentProgressCard: React.FC<TreatmentProgressCardProps> = ({
   aiInsight,
-  metrics,
-  setIsProgressModalOpen,
   isThisTherapist,
+  clientId,
+  treatmentProgress,
 }) => {
+  console.log(treatmentProgress);
   return (
     <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center gap-2">
-          <TrendingUp className="text-teal-600" size={20} />
-          <h2 className="text-lg font-bold text-gray-900">
-            Treatment Progress
-          </h2>
+        <div className="flex gap-1.5">
+          <div className="flex items-center gap-2">
+            <TrendingUp className="text-teal-600" size={20} />
+            <h2 className="text-lg font-bold text-gray-900">
+              Treatment Progress
+            </h2>
+          </div>
+          <span className="px-3 py-1 bg-teal-50 text-teal-700 text-xs font-semibold rounded-lg">
+            AI-Generated Insights
+          </span>
         </div>
-        <span className="px-3 py-1 bg-teal-50 text-teal-700 text-xs font-semibold rounded-lg">
-          AI-Generated Insights
-        </span>
-        {isThisTherapist && (
-          <button
-            onClick={() => setIsProgressModalOpen(true)}
-            className="  bg-[#3FDCBF1A]  text-[#3FDCBF] font-semibold rounded-xl px-8 py-2.5  transition-all transform  border border-[#3FDCBF] cursor-pointer"
-          >
-            <span className="flex items-center justify-center gap-2">
-              <TrendingUp className="w-5 h-5" />
-              Update Progress
-            </span>
-          </button>
-        )}
+
+        {isThisTherapist && <TreatmentProgressModal clientId={clientId} />}
       </div>
 
       {/* AI Insights */}
@@ -57,7 +46,7 @@ const TreatmentProgressCard: React.FC<TreatmentProgressCardProps> = ({
       </div>
 
       {/* Progress Metrics */}
-      <div className="space-y-4">
+      {/* <div className="space-y-4">
         {metrics.map((metric, idx) => (
           <div key={idx}>
             <div className="flex justify-between items-center mb-2">
@@ -75,6 +64,31 @@ const TreatmentProgressCard: React.FC<TreatmentProgressCardProps> = ({
                 style={{ width: `${metric.progress}%` }}
               />
             </div>
+          </div>
+        ))}
+      </div> */}
+      <div>
+        {treatmentProgress.map((item: any) => (
+          <div key={item.id}>
+            {item?.goals?.map((goal: any) => (
+              <div key={goal.id} className="mt-4 mb-6">
+                <div className="flex justify-between items-center mb-2">
+                  <span className="text-sm font-medium text-gray-700">
+                    {goal.goalName}
+                  </span>
+                  <span className="text-sm font-bold text-teal-600">
+                    {goal.score}
+                  </span>
+                </div>
+
+                <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
+                  <div
+                    className="h-full bg-gradient-to-r from-teal-500 to-teal-400 rounded-full transition-all duration-500"
+                    style={{ width: `${goal.score * 10}%` }}
+                  />
+                </div>
+              </div>
+            ))}
           </div>
         ))}
       </div>

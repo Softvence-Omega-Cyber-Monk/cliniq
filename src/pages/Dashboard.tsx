@@ -8,7 +8,7 @@ const Dashboard: React.FC = () => {
     <div className="flex-1 p-4 md:p-8 bg-gray-100 min-h-[calc(100vh-80px)]">
       {/* 1. Summary Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        {summaryCardsData.map((card, index) => (
+        {summaryCardsData.map((card: any, index: string | number) => (
           <SummaryCard key={index} data={card} />
         ))}
       </div>

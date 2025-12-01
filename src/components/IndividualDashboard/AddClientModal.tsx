@@ -45,6 +45,7 @@ const AddClientModal = ({ onClose }: AddClientModalProps) => {
     useAddClinicClientMutation();
   const isLoading =
     userType === "THERAPIST" ? isLoadingTherapist : isLoadingClinic;
+  console.log(isLoading);
   const {
     register,
     handleSubmit,

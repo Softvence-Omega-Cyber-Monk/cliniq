@@ -35,7 +35,7 @@ const baseQuery = fetchBaseQuery({
     }
     return headers;
   },
-}); 
+});
 const baseQueryWithReauth: BaseQueryFn<
   string | FetchArgs,
   unknown,
@@ -73,7 +73,7 @@ const baseApi = createApi({
   reducerPath: "baseApi",
   baseQuery: baseQueryWithReauth,
   endpoints: () => ({}),
-  tagTypes: ["APPOINTMENT", "ClINIC","CLIENT", "RESOURCE", "SUBSCRIPTION_PLAN", "THERAPIST", "CLINIC", "SUPPORT_TICKET", "SUPPORT_MESSAGE", "ClINICClIENT", "SUBSCRIPTION", "PAYMENT", "PAYMENT_METHOD","SETTINGS" ],
+  tagTypes: ["APPOINTMENT", "ClINIC", "CLIENT", "RESOURCE", "SUBSCRIPTION_PLAN", "THERAPIST", "SUPPORT_TICKET", "SUPPORT_MESSAGE", "ClINICClIENT", "SUBSCRIPTION", "PAYMENT", "PAYMENT_METHOD", "SETTINGS"],
 });
 
 export default baseApi;

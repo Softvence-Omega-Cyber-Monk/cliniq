@@ -38,7 +38,7 @@ const IndividualTherapistDashboard: React.FC<
   const { data: alerts, isLoading: loadingAlerts } = useGetCrisisAlertsQuery({
     limit: 5,
   });
-  const { data: stats, isLoading: loadingStats } = useGetDashboardStatsQuery({
+  const { data: stats } = useGetDashboardStatsQuery({
     dateRange: "last_30_days",
     startDate: "",
     endDate: "",

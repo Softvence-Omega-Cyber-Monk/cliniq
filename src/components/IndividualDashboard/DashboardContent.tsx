@@ -6,10 +6,8 @@ import RecentSessions from "./RecentSessions";
 // import SystemAlerts from "./SystemAlerts";
 import type { StatCardType } from "../../types/dashboard";
 import {
-  StatUserIcon,
   StatCalendarIcon,
   // StatAlertIcon,
-  StatCheckIcon,
   StatAlertIcon,
 } from "../icons";
 import { FaPlus } from "react-icons/fa";
