@@ -62,6 +62,10 @@ export const StatusBadge: React.FC<{ status: Status }> = ({ status }) => {
   const colorClasses =
     status === "active"
       ? "bg-[#3FDCBF] text-white"
+      : status === "inactive"
+      ? "bg-[#A7A9AC] text-white"
+      : status === "completed"
+      ? "bg-[#6FD195] text-white"
       : "bg-gray-200 text-gray-600";
 
   return <span className={`${baseClasses} ${colorClasses}`}>{status}</span>;

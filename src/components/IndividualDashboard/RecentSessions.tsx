@@ -5,7 +5,7 @@ import { useAppSelector } from "@/hooks/useRedux";
 
 const RecentSessions: React.FC = () => {
   const userType = useAppSelector((state) => state.auth.userType);
-  console.log(userType)
+  console.log(userType);
   const {
     data: sessions = [],
     isLoading,
@@ -47,7 +47,7 @@ const RecentSessions: React.FC = () => {
         <ul>
           {sessions.map((session: RecentSessionType) => (
             <li
-              key={session.id}
+              key={session.therapistId}
               className="flex items-center py-3 border-b border-gray-100 "
             >
               {/* Avatar or First Letter */}

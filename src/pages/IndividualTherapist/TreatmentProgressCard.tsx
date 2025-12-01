@@ -9,6 +9,7 @@ interface ProgressMetric {
 interface TreatmentProgressCardProps {
   aiInsight: string | null;
   metrics: ProgressMetric[];
+  isThisTherapist: boolean;
   setIsProgressModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
@@ -16,6 +17,7 @@ const TreatmentProgressCard: React.FC<TreatmentProgressCardProps> = ({
   aiInsight,
   metrics,
   setIsProgressModalOpen,
+  isThisTherapist,
 }) => {
   return (
     <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
@@ -30,15 +32,17 @@ const TreatmentProgressCard: React.FC<TreatmentProgressCardProps> = ({
         <span className="px-3 py-1 bg-teal-50 text-teal-700 text-xs font-semibold rounded-lg">
           AI-Generated Insights
         </span>
-        <button
-          onClick={() => setIsProgressModalOpen(true)}
-          className="  bg-[#3FDCBF1A]  text-[#3FDCBF] font-semibold rounded-xl px-8 py-2.5  transition-all transform  border border-[#3FDCBF] cursor-pointer"
-        >
-          <span className="flex items-center justify-center gap-2">
-            <TrendingUp className="w-5 h-5" />
-            Update Progress
-          </span>
-        </button>
+        {isThisTherapist && (
+          <button
+            onClick={() => setIsProgressModalOpen(true)}
+            className="  bg-[#3FDCBF1A]  text-[#3FDCBF] font-semibold rounded-xl px-8 py-2.5  transition-all transform  border border-[#3FDCBF] cursor-pointer"
+          >
+            <span className="flex items-center justify-center gap-2">
+              <TrendingUp className="w-5 h-5" />
+              Update Progress
+            </span>
+          </button>
+        )}
       </div>
 
       {/* AI Insights */}

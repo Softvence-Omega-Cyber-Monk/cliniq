@@ -68,7 +68,7 @@ const DashboardView: React.FC<DashboardViewProps> = ({
       : clinicAppointments.error;
 
   const totalPages = appointments?.meta?.totalPages || 1;
-
+  console.log(appointments);
   return (
     <div className="min-h-screen p-4 sm:p-8">
       {/* Header */}
@@ -81,7 +81,7 @@ const DashboardView: React.FC<DashboardViewProps> = ({
         </div>
         <button
           onClick={onOpenModal}
-          className="flex items-center px-6 py-3 font-semibold rounded-full bg-[#3FDCBF] text-white hover:bg-mint-600 transition-colors shadow-lg shadow-mint-500/30"
+          className="flex items-center px-6 py-2.5 font-medium rounded-xl bg-[#3FDCBF] text-white hover:bg-mint-600 transition-colors  shadow-mint-500/30"
         >
           <Plus size={20} className="mr-2" /> Create New Appointment
         </button>
@@ -91,7 +91,7 @@ const DashboardView: React.FC<DashboardViewProps> = ({
       <div className="flex flex-wrap gap-4 mb-10">
         <StatCard
           title="Total Appointments"
-          value={stats.totalAppointments}
+          value={appointments.meta?.total || 0}
           delta={stats.totalAppointmentsDelta}
         />
         <StatCard

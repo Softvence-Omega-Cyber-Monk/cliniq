@@ -1,11 +1,16 @@
-import React, { useState, useEffect, useRef } from "react";
-import { Client, Status } from "./types";
+import React, { useState, useEffect } from "react";
+import { Status } from "./types";
 import ClientListItem from "./ClientListItem";
 import ClientListItemSkeleton from "../Skeleton/ClientListItemSkeleton";
-import { SearchIcon, ChevronLeft, ChevronRight } from "lucide-react";
+import {
+  SearchIcon,
+  ChevronLeft,
+  ChevronRight,
+  AlertCircle,
+  Plus,
+} from "lucide-react";
 import { useAppSelector } from "@/hooks/useRedux";
 import { useUserId } from "@/hooks/useUserId";
-import { toast } from "sonner";
 import { useGetAllClientQuery } from "@/store/api/ClientsApi";
 interface Client {
   id: string;
@@ -19,7 +24,6 @@ interface Client {
 import { skipToken } from "@reduxjs/toolkit/query/react";
 import { useGetAllClinicClientsQuery } from "@/store/api/ClinicClientsApi";
 import AddClientModal from "../IndividualDashboard/AddClientModal";
-import AddNewClient from "./AddNewClient";
 
 const ClientListDashboard: React.FC = () => {
   const userType = useAppSelector((state) => state.auth.userType);
@@ -28,9 +32,7 @@ const ClientListDashboard: React.FC = () => {
   const [filter, setFilter] = useState<Status | "all">("all");
   const [page, setPage] = useState(1);
   const limit = 10;
-
   const [showAddNewClientModal, setShowAddNewClientModal] = useState(false);
-  const [showSecondModal, setShowSecondModal] = useState(false);
 
   const therapistQuery = useGetAllClientQuery(
     userType === "THERAPIST" || userType === "INDIVIDUAL_THERAPIST"
@@ -60,28 +62,61 @@ const ClientListDashboard: React.FC = () => {
     userType === "THERAPIST" || userType === "INDIVIDUAL_THERAPIST"
       ? therapistQuery.data
       : clinicQuery.data;
-  
-  console.log(data);
+
   const clients = data?.data || [];
   const meta = data?.meta;
-  
-  const isFetching =
-    userType === "THERAPIST" || userType === "INDIVIDUAL_THERAPIST"
-      ? therapistQuery.isFetching
-      : clinicQuery.isFetching;
   const isLoading =
     userType === "THERAPIST" || userType === "INDIVIDUAL_THERAPIST"
       ? therapistQuery.isLoading
       : clinicQuery.isLoading;
+
+  // Error handling
   const error =
     userType === "THERAPIST" || userType === "INDIVIDUAL_THERAPIST"
       ? therapistQuery.error
       : clinicQuery.error;
 
-  // Reset page on search/filter change
+  // Get error message from error object
+  const getErrorMessage = () => {
+    if (!error) return "";
+
+    // Handle different error formats
+    if (typeof error === "string") {
+      return error;
+    }
+
+    if (error && typeof error === "object") {
+      // RTK Query error format
+      if ("data" in error && error.data && typeof error.data === "object") {
+        return (
+          (error.data as any)?.message ||
+          "An error occurred while fetching clients"
+        );
+      }
+
+      // Standard error object
+      if ("message" in error) {
+        return (error as any).message;
+      }
+    }
+
+    return "An unexpected error occurred while loading clients";
+  };
+
+  const errorMessage = getErrorMessage();
+
   useEffect(() => {
     setPage(1);
   }, [searchTerm, filter]);
+
+  // Retry handler
+  const handleRetry = () => {
+    if (userType === "THERAPIST" || userType === "INDIVIDUAL_THERAPIST") {
+      therapistQuery.refetch();
+    } else if (userType === "CLINIC") {
+      clinicQuery.refetch();
+    }
+  };
 
   // Pagination handlers
   const handleNextPage = () => {
@@ -103,7 +138,7 @@ const ClientListDashboard: React.FC = () => {
   // Generate page numbers for pagination
   const getPageNumbers = () => {
     if (!meta) return [];
-    
+
     const totalPages = meta.totalPages;
     const currentPage = page;
     const delta = 2; // Number of pages to show on each side of current page
@@ -119,7 +154,7 @@ const ClientListDashboard: React.FC = () => {
     }
 
     if (currentPage - delta > 2) {
-      rangeWithDots.push(1, '...');
+      rangeWithDots.push(1, "...");
     } else {
       rangeWithDots.push(1);
     }
@@ -127,7 +162,7 @@ const ClientListDashboard: React.FC = () => {
     rangeWithDots.push(...range);
 
     if (currentPage + delta < totalPages - 1) {
-      rangeWithDots.push('...', totalPages);
+      rangeWithDots.push("...", totalPages);
     } else if (totalPages > 1) {
       rangeWithDots.push(totalPages);
     }
@@ -145,35 +180,33 @@ const ClientListDashboard: React.FC = () => {
             Manage your client list and sessions
           </p>
         </div>
-        {userType === "CLINIC" ? (
-          <button
-            className="mt-4 md:mt-0 px-5 py-2.5 bg-[#3FDCBF] text-white font-semibold rounded-lg hover:bg-[#46ddc1] transition shadow-md flex items-center space-x-2 cursor-pointer"
-            onClick={() => setShowAddNewClientModal(true)}
-          >
-            <svg
-              className="w-5 h-5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-              />
-            </svg>
-            <span>Add New Client</span>
-          </button>
-        ) : userType === "THERAPIST" || userType === "INDIVIDUAL_THERAPIST" ? (
-          <button
-            onClick={() => setShowSecondModal(true)}
-            className="mt-4 md:mt-0 px-5 py-2.5 bg-[#3FDCBF] text-white font-semibold rounded-lg hover:bg-[#46ddc1] transition shadow-md flex items-center space-x-2 cursor-pointer"
-          >
-            Add New Client
-          </button>
-        ) : null}
+        <button
+          className="mt-4 md:mt-0 px-5 py-2.5 bg-[#3FDCBF] text-white font-semibold rounded-lg hover:bg-[#46ddc1] transition  flex items-center space-x-2 cursor-pointer"
+          onClick={() => setShowAddNewClientModal(true)}
+        >
+          <Plus />
+          <span>Add New Client</span>
+        </button>
       </header>
+
+      {/* Error Message */}
+      {error && (
+        <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+          <div className="flex items-start">
+            <AlertCircle className="w-5 h-5 text-red-500 mr-2 flex-shrink-0 mt-0.5" />
+            <div className="flex-1">
+              <p className="text-red-700 font-medium">Failed to load clients</p>
+              <p className="text-red-600 text-sm mt-1">{errorMessage}</p>
+              <button
+                onClick={handleRetry}
+                className="mt-3 px-4 py-2 bg-red-100 text-red-700 font-medium rounded-lg hover:bg-red-200 transition-colors text-sm"
+              >
+                Try Again
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Search and Filter */}
       <div className="flex flex-col sm:flex-row justify-between items-center py-4 px-3 rounded-[12px] bg-white space-y-4 sm:space-y-0 sm:space-x-4 mb-6">
@@ -207,97 +240,127 @@ const ClientListDashboard: React.FC = () => {
         </div>
       </div>
 
-      {/* Client list with pagination */}
-      <div className="space-y-4 overflow-y-auto mb-6">
-        {/* Loading Skeletons */}
-        {isLoading &&
-          Array.from({ length: 8 }).map((_, index) => (
+      {/* Loading Skeletons */}
+      {isLoading && !error && (
+        <div className="space-y-4 overflow-y-auto mb-6">
+          {Array.from({ length: 8 }).map((_, index) => (
             <ClientListItemSkeleton key={index} />
           ))}
-
-        {/* Empty State */}
-        {!isLoading && clients.length === 0 && (
-          <div className="text-center p-10 bg-white rounded-xl shadow-lg text-gray-500">
-            No clients found matching your criteria.
-          </div>
-        )}
-
-        {/* Client List */}
-        {!isLoading &&
-          clients.length > 0 &&
-          clients.map((client: Client) => (
-            <ClientListItem
-              key={client.id}
-              client={client}
-              onClick={() => {}}
-              userType={userType}
-            />
-          ))}
-      </div>
-
-      {/* Pagination Controls */}
-      {meta && meta.totalPages > 1 && (
-        <div className="flex flex-col sm:flex-row items-center justify-between space-y-4 sm:space-y-0 bg-white p-4 rounded-lg shadow-sm">
-          {/* Page Info */}
-          <div className="text-sm text-gray-600">
-            Showing {(page - 1) * limit + 1} to {Math.min(page * limit, meta.total)} of {meta.total} clients
-          </div>
-
-          {/* Pagination Buttons */}
-          <div className="flex items-center space-x-2">
-            {/* Previous Button */}
-            <button
-              onClick={handlePrevPage}
-              disabled={page === 1}
-              className={`p-2 rounded-lg border ${
-                page === 1
-                  ? "text-gray-400 cursor-not-allowed"
-                  : "text-gray-600 hover:bg-gray-100 cursor-pointer"
-              }`}
-            >
-              <ChevronLeft size={16} />
-            </button>
-
-            {/* Page Numbers */}
-            {getPageNumbers().map((pageNumber, index) => (
-              <button
-                key={index}
-                onClick={() => typeof pageNumber === 'number' ? handlePageClick(pageNumber) : null}
-                className={`min-w-[40px] h-10 flex items-center justify-center rounded-lg border text-sm font-medium ${
-                  pageNumber === page
-                    ? "bg-[#298CDF] text-white border-[#298CDF]"
-                    : pageNumber === '...'
-                    ? "text-gray-500 cursor-default"
-                    : "text-gray-600 border-gray-300 hover:bg-gray-100 cursor-pointer"
-                }`}
-                disabled={pageNumber === '...'}
-              >
-                {pageNumber}
-              </button>
-            ))}
-
-            {/* Next Button */}
-            <button
-              onClick={handleNextPage}
-              disabled={page === meta.totalPages}
-              className={`p-2 rounded-lg border ${
-                page === meta.totalPages
-                  ? "text-gray-400 cursor-not-allowed"
-                  : "text-gray-600 hover:bg-gray-100 cursor-pointer"
-              }`}
-            >
-              <ChevronRight size={16} />
-            </button>
-          </div>
         </div>
+      )}
+
+      {/* Error State - Show only if not loading */}
+      {!isLoading && error && (
+        <div className="flex flex-col items-center justify-center p-10 bg-white rounded-xl shadow-lg text-center mb-6">
+          <AlertCircle className="w-16 h-16 text-red-400 mb-4" />
+          <h3 className="text-xl font-semibold text-gray-800 mb-2">
+            Unable to Load Clients
+          </h3>
+          <p className="text-gray-600 mb-6 max-w-md">
+            We encountered an error while trying to load your clients. Please
+            try again.
+          </p>
+          <button
+            onClick={handleRetry}
+            className="px-6 py-3 bg-[#3FDCBF] text-white font-semibold rounded-lg hover:bg-[#46ddc1] transition shadow-md"
+          >
+            Retry Loading Clients
+          </button>
+        </div>
+      )}
+
+      {/* Client list with pagination - Show only if not loading and no error */}
+      {!isLoading && !error && (
+        <>
+          <div className="space-y-4 overflow-y-auto mb-6">
+            {/* Empty State */}
+            {clients.length === 0 && (
+              <div className="text-center p-10 bg-white rounded-xl shadow-lg text-gray-500">
+                {searchTerm || filter !== "all"
+                  ? "No clients found matching your criteria."
+                  : "You don't have any clients yet. Add your first client to get started."}
+              </div>
+            )}
+
+            {/* Client List */}
+            {clients.length > 0 &&
+              clients.map((client: Client) => (
+                <ClientListItem
+                  key={client.id}
+                  client={client}
+                  onClick={() => {}}
+                  userType={userType}
+                />
+              ))}
+          </div>
+
+          {/* Pagination Controls */}
+          {meta && meta.totalPages > 1 && (
+            <div className="flex flex-col sm:flex-row items-center justify-between space-y-4 sm:space-y-0 bg-white p-4 rounded-lg shadow-sm">
+              {/* Page Info */}
+              <div className="text-sm text-gray-600">
+                Showing {(page - 1) * limit + 1} to{" "}
+                {Math.min(page * limit, meta.total)} of {meta.total} clients
+              </div>
+
+              {/* Pagination Buttons */}
+              <div className="flex items-center space-x-2">
+                {/* Previous Button */}
+                <button
+                  onClick={handlePrevPage}
+                  disabled={page === 1}
+                  className={`p-2 rounded-lg border ${
+                    page === 1
+                      ? "text-gray-400 cursor-not-allowed"
+                      : "text-gray-600 hover:bg-gray-100 cursor-pointer"
+                  }`}
+                >
+                  <ChevronLeft size={16} />
+                </button>
+
+                {/* Page Numbers */}
+                {getPageNumbers().map((pageNumber, index) => (
+                  <button
+                    key={index}
+                    onClick={() =>
+                      typeof pageNumber === "number"
+                        ? handlePageClick(pageNumber)
+                        : null
+                    }
+                    className={`min-w-[40px] h-10 flex items-center justify-center rounded-lg border text-sm font-medium ${
+                      pageNumber === page
+                        ? "bg-[#298CDF] text-white border-[#298CDF]"
+                        : pageNumber === "..."
+                        ? "text-gray-500 cursor-default"
+                        : "text-gray-600 border-gray-300 hover:bg-gray-100 cursor-pointer"
+                    }`}
+                    disabled={pageNumber === "..."}
+                  >
+                    {pageNumber}
+                  </button>
+                ))}
+
+                {/* Next Button */}
+                <button
+                  onClick={handleNextPage}
+                  disabled={page === meta.totalPages}
+                  className={`p-2 rounded-lg border ${
+                    page === meta.totalPages
+                      ? "text-gray-400 cursor-not-allowed"
+                      : "text-gray-600 hover:bg-gray-100 cursor-pointer"
+                  }`}
+                >
+                  <ChevronRight size={16} />
+                </button>
+              </div>
+            </div>
+          )}
+        </>
       )}
 
       {/* Add New Client Modal */}
       {showAddNewClientModal && (
         <AddClientModal onClose={() => setShowAddNewClientModal(false)} />
-      )}
-      {showSecondModal && (
-        <AddNewClient onClose={() => setShowSecondModal(false)} />
       )}
     </div>
   );

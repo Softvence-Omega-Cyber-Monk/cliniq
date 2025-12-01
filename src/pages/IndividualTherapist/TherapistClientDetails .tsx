@@ -29,6 +29,7 @@ import SessionHistory from "./SessionHistory";
 import TreatmentProgressCard from "./TreatmentProgressCard";
 import { Select } from "@radix-ui/react-select";
 import TherapistSelector from "./TherapistSeletor";
+import { StatusBadge } from "@/components/ClientManagement/utilityComponents";
 
 // Format seconds to HH:MM:SS
 const formatTime = (totalSeconds: number) => {
@@ -48,7 +49,6 @@ const TherapistClientDetails: React.FC = () => {
   const [addClinicClientSessionHistory] =
     useAddClinicClientSessionHistoryMutation();
   const [addedSessionbytherapist] = useAddSessionHistoryMutation();
-  console.log(userId);
 
   const therapistQuery = useGetClientByIdQuery(
     userType === "THERAPIST" || userType === "INDIVIDUAL_THERAPIST"
@@ -71,7 +71,7 @@ const TherapistClientDetails: React.FC = () => {
     userType === "THERAPIST" || userType === "INDIVIDUAL_THERAPIST"
       ? therapistQuery.data
       : clinicQuery.data;
-  console.log(client?.sessionHistory);
+  console.log("Client:", client);
   const isLoading =
     userType === "THERAPIST" || userType === "INDIVIDUAL_THERAPIST"
       ? therapistQuery.isLoading
@@ -84,7 +84,12 @@ const TherapistClientDetails: React.FC = () => {
   //   userType === "THERAPIST" || userType === "INDIVIDUAL_THERAPIST"
   //     ? therapistQuery.refetch
   //     : clinicQuery.refetch;
-  console.log(client?.therapistId, userId);
+  console.log(client);
+  const therapistId =
+    userType === "THERAPIST" || userType === "INDIVIDUAL_THERAPIST"
+      ? client?.therapist?.id
+      : client?.clinicId;
+  console.log(therapistId);
   const [isRecording, setIsRecording] = useState(false);
   const [elapsed, setElapsed] = useState(0);
   const [, setAudioURL] = useState<string | null>(null);
@@ -270,7 +275,7 @@ const TherapistClientDetails: React.FC = () => {
     setIsAnalyzing(false);
   };
 
-  // const handleGoBack = () => navigate(-1);
+  const handleGoBack = () => navigate(-1);
 
   if (isLoading) {
     return (
@@ -304,11 +309,23 @@ const TherapistClientDetails: React.FC = () => {
       </div>
     );
   }
-
+  const isThisTherapist = therapistId === userId;
   return (
     <div className="min-h-screen">
       <div className="px-6 py-8">
         {/* Client Header Card */}
+        <div>
+          {/* Back Button */}
+          <button
+            onClick={handleGoBack}
+            className="text-[#A7A9AC] cursor-pointer mb-5"
+          >
+            Client /{" "}
+            <span className="text-website-primary-color  capitalize">
+              {client.name}
+            </span>
+          </button>
+        </div>
         <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8 mb-6">
           <div className="flex flex-col  lg:flex-row justify-between gap-8">
             {/* Client Info */}
@@ -321,11 +338,11 @@ const TherapistClientDetails: React.FC = () => {
 
               <div className="flex-1">
                 <div className="flex items-center gap-3 mb-3">
-                  <h1 className="text-2xl font-bold text-gray-900">
+                  <h1 className="text-2xl font-bold text-gray-900 capitalize">
                     {client.name}
                   </h1>
-                  <span className="px-3 py-1 bg-[#3FDCBF] text-white text-sm font-medium rounded-[6px]">
-                    {client.status}
+                  <span>
+                    <StatusBadge status={client.status} />
                   </span>
                 </div>
 
@@ -358,7 +375,7 @@ const TherapistClientDetails: React.FC = () => {
               </div>
             </div>
 
-            {client?.therapistId === userId ? (
+            {isThisTherapist ? (
               <div className="flex flex-col items-center justify-center gap-4 lg:min-w-[280px]">
                 <div
                   className={`w-full rounded-xl p-6 text-center transition-all ${
@@ -530,6 +547,7 @@ const TherapistClientDetails: React.FC = () => {
         <div className="space-y-6">
           <div className="animate-in slide-in-from-bottom-3 duration-500 ease-out">
             <TreatmentProgressCard
+              isThisTherapist={isThisTherapist}
               setIsProgressModalOpen={setIsProgressModalOpen}
               aiInsight={aiInsights}
               metrics={currentProgressMetrics}
@@ -538,11 +556,13 @@ const TherapistClientDetails: React.FC = () => {
 
           {/* Left Column - Crisis History */}
           <CrisisHistory
+            isThisTherapist={isThisTherapist}
             clientId={id}
             therapistId={userId}
             crisisHistory={client?.crisisHistories}
           />
           <SessionHistory
+            isThisTherapist={isThisTherapist}
             clientId={id}
             therapistId={userId}
             userType={userType}

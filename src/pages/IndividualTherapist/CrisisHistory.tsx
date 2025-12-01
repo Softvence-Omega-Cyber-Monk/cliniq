@@ -13,11 +13,13 @@ interface CrisisHistoryProps {
   crisisHistory?: Crisis[];
   clientId: string | undefined;
   therapistId: string | undefined;
+  isThisTherapist?: boolean;
 }
 const CrisisHistory: React.FC<CrisisHistoryProps> = ({
   crisisHistory: initialCrisisHistory,
   clientId,
   therapistId,
+  isThisTherapist,
 }) => {
   const [crisisHistory, setCrisisHistory] = useState(
     initialCrisisHistory || []
@@ -32,22 +34,24 @@ const CrisisHistory: React.FC<CrisisHistoryProps> = ({
   };
 
   return (
-    <div className=" rounded-2xl   ">
+    <div className=" rounded-2xl bg-[#FAFAF7] p-6  ">
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-2">
           <AlertTriangle className="text-orange-500" size={20} />
           <h2 className="text-lg font-bold text-[#32363F]">Crisis History</h2>
         </div>
-        <button
-          onClick={() => setIsModalOpen(true)}
-          className="bg-teal-500 hover:bg-teal-600 text-white px-4 py-2 rounded-lg text-sm flex items-center gap-2"
-        >
-          <Plus size={16} />
-          Add Crisis
-        </button>
+        {isThisTherapist && (
+          <button
+            onClick={() => setIsModalOpen(true)}
+            className="bg-teal-500 hover:bg-teal-600 text-white px-4 py-2 rounded-lg text-sm flex items-center gap-2"
+          >
+            <Plus size={16} />
+            Add Crisis
+          </button>
+        )}
       </div>
 
-      <div className="space-y-4 mx-4">
+      <div className="space-y-4">
         {crisisHistory.length === 0 && (
           <p className="text-gray-500 text-sm">No crisis events recorded.</p>
         )}

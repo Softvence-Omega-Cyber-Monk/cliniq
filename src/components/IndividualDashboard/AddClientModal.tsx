@@ -5,9 +5,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { X } from "lucide-react";
 import { toast } from "sonner";
-import { useCreateNewClientMutation } from "@/store/api/ClientsApi";
-import { useGetTherapistByClinicQuery } from "@/store/api/UsersApi";
 import { useUserId } from "@/hooks/useUserId";
+import { useAddClinicClientMutation } from "@/store/api/ClinicClientsApi";
+import { useCreateNewClientMutation } from "@/store/api/ClientsApi";
 import { useAppSelector } from "@/hooks/useRedux";
 
 // Validation
@@ -16,7 +16,9 @@ const clientSchema = z.object({
   email: z.string().email("Invalid email address"),
   phone: z.string().min(1, "Phone number is required"),
   condition: z.string().min(1, "Diagnosis details is required"),
-  healthIssues: z.array(z.string()).min(1, "At least one health issue is required"),
+  healthIssues: z
+    .array(z.string())
+    .min(1, "At least one health issue is required"),
   treatmentGoals: z.string().min(1, "Treatment goals are required"),
   status: z.enum(["active", "inactive", "completed"]),
 });
@@ -30,14 +32,19 @@ interface AddClientModalProps {
 const AddClientModal = ({ onClose }: AddClientModalProps) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [healthIssueInput, setHealthIssueInput] = useState("");
-  const [healthIssues, setHealthIssues] = useState<string[]>(["Depression", "Anxiety", "Insomnia"]);
-  const [selectedTherapist, setSelectedTherapist] = useState<string | null>(null);
+  const [healthIssues, setHealthIssues] = useState<string[]>([
+    "Depression",
+    "Anxiety",
+    "Insomnia",
+  ]);
   const userId = useUserId();
-  const [createNewClient] = useCreateNewClientMutation();
-  const { data: therapist } = useGetTherapistByClinicQuery(userId);
-const userType = useAppSelector((state) => state.auth.userType);
-console.log(userType)
-
+  const userType = useAppSelector((state) => state.auth.userType);
+  const [createTherapistClient, { isLoading: isLoadingTherapist }] =
+    useCreateNewClientMutation();
+  const [createClinicClient, { isLoading: isLoadingClinic }] =
+    useAddClinicClientMutation();
+  const isLoading =
+    userType === "THERAPIST" ? isLoadingTherapist : isLoadingClinic;
   const {
     register,
     handleSubmit,
@@ -61,36 +68,40 @@ console.log(userType)
   }, [healthIssues, setValue]);
 
   const handleAddHealthIssue = () => {
-    if (healthIssueInput.trim() && !healthIssues.includes(healthIssueInput.trim())) {
+    if (
+      healthIssueInput.trim() &&
+      !healthIssues.includes(healthIssueInput.trim())
+    ) {
       setHealthIssues([...healthIssues, healthIssueInput.trim()]);
       setHealthIssueInput("");
     } else if (healthIssues.includes(healthIssueInput.trim())) {
       toast.error("This behavioral health concern is already added");
     }
   };
-
   const handleRemoveHealthIssue = (issueToRemove: string) => {
     setHealthIssues(healthIssues.filter((issue) => issue !== issueToRemove));
   };
 
   const onSubmitForm = async (data: ClientFormData) => {
-    if (!selectedTherapist) {
-      toast.error("Please select a therapist");
-      return;
-    }
-
     setIsSubmitting(true);
     const toastId = toast.loading("Adding client...");
     const payload = {
       ...data,
-      clinicId:userId
-    }
+    };
+
     try {
-      const res = await createNewClient({
-        therapistId: selectedTherapist,
-        credentials: payload,
-      }).unwrap();
-      console.log(res)
+      if (userType === "THERAPIST" || userType === "INDIVIDUAL_THERAPIST") {
+        await createTherapistClient({
+          therapistId: userId!,
+          credentials: payload,
+        }).unwrap();
+      } else if (userType === "CLINIC") {
+        console.log(payload);
+        await createClinicClient({
+          clinicId: userId!,
+          newClient: payload,
+        }).unwrap();
+      }
       toast.success("Client added successfully!", { id: toastId });
       onClose();
     } catch {
@@ -101,9 +112,9 @@ console.log(userType)
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+    <div className="fixed inset-0 bg-black/10 flex items-center justify-center p-4 z-50 backdrop-blur-sm">
       <div
-        className="bg-white rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+        className="bg-[#EBF4F2] rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"
         role="dialog"
         aria-modal="true"
         aria-labelledby="modal-title"
@@ -111,12 +122,15 @@ console.log(userType)
       >
         <div className="p-6">
           <div className="flex justify-between items-center mb-6">
-            <h3 id="modal-title" className="text-xl font-bold text-primary-text">
+            <h3
+              id="modal-title"
+              className="text-xl font-semibold text-[#32363F]"
+            >
               Add New Client
             </h3>
             <button
               onClick={onClose}
-              className="text-secondary-text hover:text-primary-text"
+              className="text-secondary-text hover:text-primary-text text-[#3FDCBF] border-[#3FDCBF66] border bg-white rounded-full p-2 hover:bg-[#3FDCBF1A] transition"
               aria-label="Close modal"
             >
               <X size={20} />
@@ -124,30 +138,11 @@ console.log(userType)
           </div>
 
           <form onSubmit={handleSubmit(onSubmitForm)}>
-
-            {/* NEW — Therapist Dropdown */}
-            <div className="bg-gray rounded-xl p-2">
-              <h4 className="text-lg font-bold text-primary-text mb-4">Assign Therapist</h4>
-
-              <label className="block text-sm mb-2">Select Therapist</label>
-              <select
-                className="w-full p-2 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-1 focus:ring-primary-blue"
-                value={selectedTherapist || ""}
-                onChange={(e) => setSelectedTherapist(e.target.value)}
-              >
-                <option value="">Select therapist</option>
-
-                {therapist?.data?.map((t: any) => (
-                  <option key={t.id} value={t.id}>
-                    {t.fullName}
-                  </option>
-                ))}
-              </select>
-            </div>
-
             {/* Personal Information */}
             <div className="bg-gray rounded-xl p-2">
-              <h4 className="text-lg font-bold text-primary-text mb-4">Personal Information</h4>
+              <h4 className="text-lg font-medium text-[#32363F] mb-4">
+                Personal Information
+              </h4>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
@@ -160,7 +155,11 @@ console.log(userType)
                     } rounded-lg bg-white`}
                     placeholder="John Doe"
                   />
-                  {errors.name && <p className="text-xs text-red-500">{errors.name.message}</p>}
+                  {errors.name && (
+                    <p className="text-xs text-red-500">
+                      {errors.name.message}
+                    </p>
+                  )}
                 </div>
 
                 <div>
@@ -173,7 +172,11 @@ console.log(userType)
                     } rounded-lg bg-white`}
                     placeholder="john.doe@example.com"
                   />
-                  {errors.email && <p className="text-xs text-red-500">{errors.email.message}</p>}
+                  {errors.email && (
+                    <p className="text-xs text-red-500">
+                      {errors.email.message}
+                    </p>
+                  )}
                 </div>
 
                 <div>
@@ -186,19 +189,27 @@ console.log(userType)
                     } rounded-lg bg-white`}
                     placeholder="+1234567890"
                   />
-                  {errors.phone && <p className="text-xs text-red-500">{errors.phone.message}</p>}
+                  {errors.phone && (
+                    <p className="text-xs text-red-500">
+                      {errors.phone.message}
+                    </p>
+                  )}
                 </div>
               </div>
             </div>
 
             {/* Medical Information */}
             <div className="bg-gray rounded-xl p-2">
-              <h4 className="text-lg font-bold text-primary-text mb-4">Medical Information</h4>
+              <h4 className="text-lg font-medium text-[#32363F] mb-4">
+                Medical Information
+              </h4>
 
               {/* Condition + Status */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm mb-2">Primary Diagnosis Details</label>
+                  <label className="block text-sm mb-2">
+                    Primary Diagnosis Details
+                  </label>
                   <select
                     {...register("condition")}
                     className={`w-full p-2 border ${
@@ -230,7 +241,9 @@ console.log(userType)
 
               {/* Health Issues */}
               <div className="mt-4">
-                <label className="block text-sm mb-2">Behavioral Health Issues</label>
+                <label className="block text-sm mb-2">
+                  Behavioral Health Issues
+                </label>
                 <div className="flex gap-2 mb-2">
                   <input
                     type="text"
@@ -242,7 +255,7 @@ console.log(userType)
                   <button
                     type="button"
                     onClick={handleAddHealthIssue}
-                    className="px-4 py-2 bg-[#3FDCBF] text-white rounded-lg cursor-pointer"
+                    className="px-4 py-1 bg-[#3FDCBF] text-white rounded-lg cursor-pointer"
                   >
                     Add
                   </button>
@@ -286,7 +299,7 @@ console.log(userType)
               <button
                 type="button"
                 onClick={onClose}
-                className="px-4 py-2 border border-gray-300 text-gray-700 cursor-pointer rounded-lg text-sm"
+                className="px-4 py-2 flex-1 border border-gray-300 text-gray-700 cursor-pointer rounded-lg text-sm"
                 disabled={isSubmitting}
               >
                 Cancel
@@ -294,13 +307,12 @@ console.log(userType)
 
               <button
                 type="submit"
-                className="px-4 py-2 bg-black text-white rounded-lg text-sm cursor-pointer"
+                className="px-4 py-2 flex-1 bg-[#3FDCBF] text-white rounded-lg text-sm cursor-pointer"
                 disabled={isSubmitting}
               >
                 {isSubmitting ? "Adding Client..." : "Add Client"}
               </button>
             </div>
-
           </form>
         </div>
       </div>

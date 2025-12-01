@@ -31,6 +31,7 @@ export interface RecentSessionType {
   description: string;
   patientId: string;
   therapistName: string;
+  therapistId: string;
 }
 export interface RecentSessionType2 {
 

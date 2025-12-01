@@ -1,4 +1,4 @@
-export type Status = 'active' | 'inactive';
+export type Status = any;
 export type Severity = 'high' | 'medium' | 'low';
 
 export interface CrisisEvent {

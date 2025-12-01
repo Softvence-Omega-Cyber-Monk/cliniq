@@ -25,6 +25,7 @@ interface SessionHistoryProps {
     | "CLINIC"
     | null
     | undefined;
+  isThisTherapist?: boolean;
 }
 
 const SessionHistory: React.FC<SessionHistoryProps> = ({
@@ -34,6 +35,7 @@ const SessionHistory: React.FC<SessionHistoryProps> = ({
   clientId,
   therapistId,
   userType,
+  isThisTherapist,
 }) => {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
   const [sessions, setSessions] = useState<Session[]>(sessionHistory);
@@ -87,9 +89,11 @@ const SessionHistory: React.FC<SessionHistoryProps> = ({
         <span className="text-sm text-gray-500">
           {sessions.length} sessions
         </span>
-        <div className="mt-4">
-          <SessionHistoryModal onSubmit={handleAddSession} />
-        </div>
+        {isThisTherapist && (
+          <div className="mt-4">
+            <SessionHistoryModal onSubmit={handleAddSession} />
+          </div>
+        )}
       </div>
 
       <div className="space-y-3">
