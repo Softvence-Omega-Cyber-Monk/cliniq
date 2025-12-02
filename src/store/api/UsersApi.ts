@@ -6,8 +6,16 @@ const usersApi = baseApi.injectEndpoints({
             query: () => '/users/clinics',
         }),
         getTherapistByClinic: builder.query({
-            query: (id) => `/users/clinics/${id}/therapists`,
+            query: ({ id, page = 1, limit = 10, search = "" }) => {
+                const params = new URLSearchParams();
+                params.append("page", page.toString());
+                params.append("limit", limit.toString());
+                if (search) params.append("search", search);
+
+                return `/users/clinics/${id}/therapists?${params.toString()}`;
+            },
         }),
+
         getClinicById: builder.query({
             query: (id) => `/users/clinics/${id}`,
         }),
@@ -69,10 +77,10 @@ const usersApi = baseApi.injectEndpoints({
             }),
         }),
         removeTherapistFromSubscription: builder.mutation({
-            query: ( id ) => ({
+            query: (id) => ({
                 url: `/users/therapists/${id}/subscription`,
                 method: "DELETE",
-               
+
             }),
         }),
         getTherapistById: builder.query({
@@ -81,9 +89,9 @@ const usersApi = baseApi.injectEndpoints({
     }),
 })
 
-export const { useGetAllClinicsQuery, useGetTherapistByClinicQuery, useGetAllTherapistQuery, useGetClinicByIdQuery, 
-    useUpdateClinicProfileMutation, useDeleteClinicMutation, useUpdateClinicNotificationMutation, useAssignSubscriptionToClinicMutation, 
+export const { useGetAllClinicsQuery, useGetTherapistByClinicQuery, useGetAllTherapistQuery, useGetClinicByIdQuery,
+    useUpdateClinicProfileMutation, useDeleteClinicMutation, useUpdateClinicNotificationMutation, useAssignSubscriptionToClinicMutation,
     useRemoveSubscriptionFromClinicMutation, useUpdateTherapistProfileMutation, useDeleteTherapistMutation, useAssignSubscriptionToTherapistMutation,
     useRemoveTherapistFromSubscriptionMutation, useGetTherapistByIdQuery
- } = usersApi
+} = usersApi
 export default usersApi

@@ -21,10 +21,10 @@ const RoleCard: React.FC<{
   return (
     <div
       onClick={onSelect}
-      className={`cursor-pointer p-6 rounded-xl border-2 transition-all duration-200 ${
+      className={`cursor-pointer p-6 rounded-xl border transition-all duration-200 ${
         isSelected
-          ? "border-[#3FDCBF1A] bg-[#3FDCBF1A] shadow-md"
-          : "border-gray-200 bg-white hover:border-[#3FDCBF1A] hover:bg-[#3FDCBF1A]"
+          ? "border-[#3FDCBF] bg-[#3FDCBF1A] "
+          : "border-[#ECEFDE] bg-[#F3F3EC] hover:border-[#3FDCBF] hover:bg-[#3FDCBF1A]"
       }`}
     >
       <div className="flex items-start  space-x-4">
@@ -35,7 +35,7 @@ const RoleCard: React.FC<{
               : "bg-gray-100 text-gray-500"
           }`}
         >
-          <img src={icon} alt="" />
+          <img src={icon} alt="therapist icon" />
         </div>
         <div>
           <h3 className="font-bold text-gray-800">{title}</h3>
@@ -54,12 +54,12 @@ const RoleSelection: React.FC<RoleSelectionProps> = ({
 }) => {
   return (
     <div className="flex flex-col h-full">
-      <div className="text-right mt-5 mr-[80px]">
-        <p className="text-gray-600">
+      <div className="text-right mt-5 text-lg mr-[80px]">
+        <p className="text-[#7E8086]">
           Already have an account?{" "}
           <button
             onClick={onSwitchToLogin}
-            className="font-bold text-clinic-accent hover:underline text-[#3FDCBF]"
+            className="  hover:underline text-[#3FDCBF]"
           >
             Sign In
           </button>

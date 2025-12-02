@@ -266,7 +266,7 @@ const RoleSelector: React.FC<{
         type="button"
         onClick={() => !disabled && setIsOpen(!isOpen)}
         disabled={disabled}
-        className="w-full flex items-center justify-between text-left px-4 py-3 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-clinic-primary focus:border-transparent transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        className="w-full flex items-center justify-between text-left px-4 py-3 text-sm font-medium text-[#1A1A1A] bg-[#3FDCBF1A] border border-[#3FDCBF] rounded-lg hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-[#3FDCBF] focus:border-transparent transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         aria-haspopup="listbox"
         aria-expanded={isOpen}
       >
@@ -466,12 +466,12 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
             disabled={isLoading}
           />
         </div>
-        <p className="text-sm">
+        <p className="text-lg text-[#7E8086]">
           Already have an account?{" "}
           <button
             type="button"
             onClick={onSwitchToLogin}
-            className="font-bold text-clinic-accent hover:underline focus:outline-none focus:ring-2 focus:ring-clinic-accent focus:ring-offset-2 rounded text-[#3FDCBF]"
+            className=" hover:underline focus:outline-none focus:ring-2 focus:ring-clinic-accent focus:ring-offset-2 rounded text-[#3FDCBF]"
             disabled={isLoading}
           >
             Sign In

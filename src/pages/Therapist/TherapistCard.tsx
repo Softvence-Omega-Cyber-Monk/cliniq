@@ -4,13 +4,16 @@ import { Therapist } from "./TherapistType";
 
 interface TherapistCardProps {
   therapist: Therapist;
-setSelectedTherapist : Dispatch<SetStateAction<string | null>>
+  setSelectedTherapist: Dispatch<SetStateAction<string | null>>;
 }
 
-const TherapistCard: React.FC<TherapistCardProps> = ({ therapist, setSelectedTherapist }) => {
+const TherapistCard: React.FC<TherapistCardProps> = ({
+  therapist,
+  setSelectedTherapist,
+}) => {
   const userId = useUserId();
   return (
-    <div className="bg-white p-5 rounded-xl shadow-md border border-gray-100 flex flex-col transition-shadow hover:shadow-lg">
+    <div className="bg-white p-5 rounded-xl shadow-[0px 4px 33.099998474121094px 0px rgba(0, 0, 0, 0.04)] border border-gray-100 flex flex-col transition-shadow hover:shadow">
       {/* Name and Specialty */}
       <div className="flex items-center space-x-3 mb-4">
         <div
@@ -54,7 +57,7 @@ const TherapistCard: React.FC<TherapistCardProps> = ({ therapist, setSelectedThe
       {/* View Details Button */}
       <button
         onClick={() => setSelectedTherapist(therapist.id)}
-        className="w-full py-2 bg-teal-500 text-white font-semibold rounded-lg hover:bg-teal-600 transition duration-150 shadow-md hover:shadow-lg cursor-pointer"
+        className="w-full py-2 bg-teal-500 text-white font-semibold rounded-lg hover:bg-teal-600 transition duration-150  hover:shadow cursor-pointer"
       >
         View Details
       </button>

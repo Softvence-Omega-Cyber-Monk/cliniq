@@ -31,3 +31,11 @@ export interface PlanCardProps {
   buttonText: string;
   buttonColor: string;
 }
+export interface Session {
+  notes: string;
+  duration: number; // in minutes
+  createdAt: string; // ISO date string
+  sessionId: string;
+  sessionDate: string; // ISO date string
+  sessionType: string;
+}

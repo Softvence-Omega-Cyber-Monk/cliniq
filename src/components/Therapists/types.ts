@@ -1,4 +1,4 @@
-export type Status = 'active' | 'inactive';
+export type Status = 'active' | 'inactive' | "completed";
 
 export interface Therapist {
   id: string;
@@ -15,12 +15,13 @@ export interface Therapist {
 }
 
 export interface Patient {
+  patient: Patient;
   id: string;
   therapistId: string;
   name: string;
   sessionCount: number;
   treatmentProgress: number;
-  status: Status;
+  status?: Status;
   email: string;
   healthIssue: string;
   age: number;
@@ -28,6 +29,7 @@ export interface Patient {
     name: string;
     phone: string;
   };
+
   overallProgress: number;
   treatmentGoals: TreatmentGoal[];
   sessionHistory: Session[];

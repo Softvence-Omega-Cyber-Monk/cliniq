@@ -72,7 +72,7 @@ const RoleSelector: React.FC<{
         type="button"
         onClick={() => !disabled && setIsOpen(!isOpen)}
         disabled={disabled}
-        className="w-full flex items-center justify-between text-left px-4 py-3 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-clinic-primary focus:border-transparent transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        className="w-full flex items-center justify-between text-left px-4 py-3 text-sm font-medium text-gray-700 bg-[#3FDCBF1A] border border-[#3FDCBF] rounded-[20px] hover:border-[#02d1ab] focus:outline-none focus:ring-2 focus:ring-[#3FDCBF] focus:border-transparent transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         aria-haspopup="listbox"
         aria-expanded={isOpen}
       >
@@ -83,7 +83,7 @@ const RoleSelector: React.FC<{
           {roleData[selectedRole as keyof typeof roleData]?.label}
         </span>
         <ChevronDownIcon
-          className={`w-5 h-5 ml-2 text-gray-400 transform transition-transform ${
+          className={`w-5 h-5 ml-2 text-website-primary-color transform transition-transform ${
             isOpen ? "rotate-180" : ""
           }`}
         />
@@ -176,7 +176,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSwitchToSignUp }) => {
   return (
     <div className="flex flex-col h-full min-h-[500px]">
       <div className="flex justify-between items-center mb-8 mt-4 mx-2">
-        <div className="w-auto">
+        <div className="w-auto space-x-1.5">
           <RoleSelector
             selectedRole={currentRole}
             onRoleChange={(role) =>
@@ -195,12 +195,12 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSwitchToSignUp }) => {
           )}
         </div>
 
-        <p className="text-sm">
+        <p className="text-lg text-[#7E8086]">
           Don't have an account?{" "}
           <button
             type="button"
             onClick={onSwitchToSignUp}
-            className="font-bold text-clinic-accent hover:underline"
+            className=" hover:underline cursor-pointer text-website-primary-color"
             disabled={isLoading}
           >
             Register
@@ -211,7 +211,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSwitchToSignUp }) => {
       <div className="flex flex-col justify-center mx-4">
         <form
           onSubmit={handleSubmit(onSubmit)}
-          className="space-y-6 mt-[150px] md:w-2/4 mx-auto"
+          className="space-y-6 mt-[150px] md:w-3/4 mx-auto"
         >
           <div>
             <label className="text-sm font-bold text-gray-700 block mb-2">
@@ -221,7 +221,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSwitchToSignUp }) => {
               {...register("email")}
               type="email"
               placeholder="Enter your email"
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg"
+              className="w-full px-4 py-3 border bg-white border-gray-300 rounded-xl"
               disabled={isLoading}
             />
             {errors.email && (
@@ -239,7 +239,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSwitchToSignUp }) => {
               {...register("password")}
               type="password"
               placeholder="Enter your password"
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg"
+              className="w-full px-4 py-3 bg-[#FFFFFF] border border-gray-300 rounded-xl"
               disabled={isLoading}
             />
             {errors.password && (
@@ -252,7 +252,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSwitchToSignUp }) => {
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full bg-[#298CDF] text-white font-bold py-3 px-4 rounded-lg"
+            className="w-full bg-[#298CDF] text-white font-bold py-3 px-4 rounded-lg cursor-pointer"
           >
             {isLoading ? "Log In..." : "Log In"}
           </button>

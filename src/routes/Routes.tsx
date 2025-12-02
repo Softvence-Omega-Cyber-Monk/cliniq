@@ -37,6 +37,9 @@ import ReportsAnalytics from "@/components/Admin/ReportAnalytics";
 import Settings from "@/components/Admin/Settings";
 import TherapistClientDetails from "@/pages/IndividualTherapist/TherapistClientDetails ";
 import TherapistLayout from "@/Layout/TherapistLayout";
+import TherapistDetailsLayout from "@/pages/Admin/TherapistDetailsLayout";
+import ClinicTherapistDetails from "@/pages/Therapist/ClinicTherapistDetails";
+import PatientDetails from "@/pages/Admin/PatientDetails";
 
 const routes = createBrowserRouter([
   {
@@ -135,7 +138,24 @@ const routes = createBrowserRouter([
         element: <IndividualLayout />,
         children: [
           { index: true, element: <DashboardContent /> },
-          { path: "therapists", element: <Therapists /> },
+          {
+            path: "therapists",
+
+            children: [
+              {
+                index: true,
+                element: <Therapists />,
+              },
+              {
+                path: ":therapistId",
+                element: <TherapistDetailsLayout />,
+                children: [
+                  { index: true, element: <ClinicTherapistDetails /> },
+                  { path: "patients/:patientId", element: <PatientDetails /> },
+                ],
+              },
+            ],
+          },
           { path: "sessions", element: <Sessions /> },
           { path: "clients", element: <Clients /> },
           {
