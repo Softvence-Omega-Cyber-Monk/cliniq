@@ -1,10 +1,11 @@
 import { useUserId } from "@/hooks/useUserId";
 import { useGetTherapistByClinicQuery } from "@/store/api/UsersApi";
-import { ChevronDown, Search } from "lucide-react";
+import { ChevronDown, Plus, Search } from "lucide-react";
 import { useState } from "react";
 import { Therapist } from "./TherapistType";
 import TherapistCardSkeleton from "@/components/Skeleton/TherapistCardSkeleton";
 import { Link } from "react-router-dom";
+import EditPersonalInfo from "@/components/IndividualDashboard/EditPersonalInfo";
 
 export default function Therapists() {
   const userId = useUserId();
@@ -12,24 +13,39 @@ export default function Therapists() {
   const [filterStatus, setFilterStatus] = useState<
     "All" | "Active" | "Inactive"
   >("All");
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const { data: therapistData, isLoading } = useGetTherapistByClinicQuery({
     id: userId,
     search: searchTerm,
     status: filterStatus,
   });
+  const handleCloseModal = () => setIsModalOpen(false);
+  const openAddModal = () => {
+    setIsModalOpen(true);
+  };
   return (
     <div className="min-h-[calc(100vh-105px)] bg-[#f3f3ec] p-4 sm:p-8 ">
-      <div>
+      <div className="flex justify-between">
         {" "}
-        <h1 className="text-3xl font-semibold text-[#32363F] tracking-tight">
-          THERAPISTS{" "}
-        </h1>{" "}
-        <p className="text-gray-500 text-sm mt-1">
-          Manage therapists in your practice.{" "}
-        </p>{" "}
+        <div>
+          <h1 className="text-3xl font-semibold text-[#32363F] tracking-tight">
+            THERAPISTS{" "}
+          </h1>{" "}
+          <p className="text-gray-500 text-sm mt-1">
+            Manage therapists in your practice.{" "}
+          </p>{" "}
+        </div>
+        <button
+          onClick={openAddModal}
+          className="cursor-pointer h-fit flex items-center bg-gray-800 text-white px-4 py-2 rounded-lg text-sm font-medium shadow-lg hover:bg-gray-700 transition"
+        >
+          <Plus size={16} className="mr-2" />
+          Add New Therapist
+        </button>
       </div>
-      <div className="flex flex-col lg:flex-row gap-4 mb-8 items-stretch">
+
+      <div className="flex flex-col lg:flex-row gap-4 mb-8 items-stretch mt-6">
         <div className="relative flex-grow lg:w-1/3">
           <Search
             size={20}
@@ -134,6 +150,7 @@ export default function Therapists() {
           ))}
         </div>
       )}
+      <EditPersonalInfo isOpen={isModalOpen} onClose={handleCloseModal} />
     </div>
   );
 }

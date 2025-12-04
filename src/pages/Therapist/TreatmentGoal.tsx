@@ -11,7 +11,7 @@ export const TreatmentGoal: React.FC<GoalProps> = ({ title, progress }) => (
     </div>
     <div className="relative h-2 rounded-full bg-gray-200">
       <div
-        className="absolute h-2 rounded-full bg-teal-500 transition-all duration-500"
+        className="absolute h-2 rounded-full bg-[#298CDF] transition-all duration-500"
         style={{ width: `${progress}%` }}
       ></div>
     </div>

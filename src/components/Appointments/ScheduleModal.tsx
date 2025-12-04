@@ -40,7 +40,7 @@ const ScheduleModal: React.FC<ScheduleModalProps> = ({ onClose }) => {
   const [createAppointment, { isLoading: isCreating }] =
     useCreateAppointmentMutation();
   const { data: therapistsData } = useGetTherapistByClinicQuery(
-    userType === "CLINIC" ? userId! : skipToken
+    userId ? { id: userId, search: "", status: "" } : skipToken
   );
   const therapistQuery = useGetAllClientQuery(
     userType === "THERAPIST" || userType === "INDIVIDUAL_THERAPIST"

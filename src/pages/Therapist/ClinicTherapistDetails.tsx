@@ -23,16 +23,10 @@ export default function ClinicTherapistDetails() {
   const { therapistId } = useParams();
   const { data: therapistData, isLoading } =
     useGetTherapistByIdQuery(therapistId);
-  const {
-    data: overviewData,
-    refetch: refetchOverview,
-    isLoading: isLoadingOverview,
-  } = useGetTherapistOverviewQuery(therapistId);
-  const {
-    data: clientData,
-    refetch: refetchClients,
-    isLoading: isLoadingClients,
-  } = useGetTherapistClientTableQuery(therapistId);
+  const { data: overviewData, isLoading: isLoadingOverview } =
+    useGetTherapistOverviewQuery(therapistId);
+  const { data: clientData, isLoading: isLoadingClients } =
+    useGetTherapistClientTableQuery(therapistId);
 
   if (isLoading || isLoadingOverview || isLoadingClients) {
     return <ClinicTherapistDetailsSkeleton />;
@@ -70,11 +64,11 @@ export default function ClinicTherapistDetails() {
                 <p className="">Specialty</p>
               </div> */}
             </div>
-            <div className="flex gap-2 text-black">
-              <button className="bg-brand-gray-800  font-semibold py-2 px-4 rounded-lg hover:bg-brand-gray-600 transition-colors">
+            <div className="flex gap-2 text-white text-sm ">
+              <button className="bg-[#32363F] cursor-pointer  font-medium py-2  px-4 rounded-lg  hover:bg-brand-gray-600 transition-colors">
                 Suspend
               </button>
-              <button className="bg-brand-red font-semibold py-2 px-4 rounded-lg hover:bg-red-600 transition-colors">
+              <button className="bg-[#D45B53] font-semibold py-2 px-4 rounded-lg hover:bg-red-600 cursor-pointer transition-colors">
                 Delete
               </button>
             </div>
@@ -152,7 +146,7 @@ export default function ClinicTherapistDetails() {
 
         <div className="bg-white rounded-xl  overflow-x-auto p-2">
           <table className="w-full text-left">
-            <thead className=" bg-[#FAFAF7] rounded-[8px]">
+            <thead className="bg-[#FAFAF7] rounded-[10px]">
               <tr>
                 <th className="p-4 text-[#666666] font-normal">Patient Name</th>
                 <th className="p-4 text-[#666666] font-normal">
@@ -162,13 +156,24 @@ export default function ClinicTherapistDetails() {
                   Treatment Progress
                 </th>
                 <th className="p-4 text-[#666666] font-normal">Status</th>
-                <th className="p-4 text-[#666666] font-normal ">Action</th>
+                <th className="p-4 text-[#666666] font-normal">Action</th>
               </tr>
             </thead>
             <tbody>
-              {clientData?.data.map((patient: any) => (
-                <DetailPatientRow key={patient.id} patient={patient} />
-              ))}
+              {clientData?.data && clientData.data.length > 0 ? (
+                clientData.data.map((patient: any) => (
+                  <DetailPatientRow key={patient.id} patient={patient} />
+                ))
+              ) : (
+                <tr>
+                  <td
+                    colSpan={5}
+                    className="text-center text-gray-500 py-6 italic"
+                  >
+                    No patients available.
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>

@@ -1,5 +1,7 @@
 import { Calendar, Eye, FileText } from "lucide-react";
 import { format } from "date-fns";
+import { useState } from "react";
+import SessionNoteModal from "@/modals/SessionNoteModal";
 
 interface SessionHistoryProps {
   key: string;
@@ -14,6 +16,12 @@ export const SessionHistoryCard: React.FC<SessionHistoryProps> = ({
   notes,
   duration,
 }) => {
+  const [open, setOpen] = useState(false);
+  const sampleSession = {
+    date,
+    duration,
+    fullNote: notes,
+  };
   return (
     <div className="bg-white p-4 rounded-xl  border border-[#EBEBEC] flex flex-col hover:shadow-md transition">
       <div className="flex justify-between items-start space-x-4 mb-3">
@@ -28,7 +36,9 @@ export const SessionHistoryCard: React.FC<SessionHistoryProps> = ({
             </div>
 
             <div className="flex text-[#7E8086] gap-2">
-              <FileText size={20} />
+              <div>
+                <FileText className="size-5" size={20} />
+              </div>
               <p className="text-sm text-[#7E8086]  line-clamp-1  mt-1">
                 {notes}
               </p>
@@ -40,10 +50,18 @@ export const SessionHistoryCard: React.FC<SessionHistoryProps> = ({
         </span>
       </div>
 
-      <button className="w-full cursor-pointer py-2 mt-2 text-sm font-medium text-[#3FDCBF] bg-[#3FDCBF1A] hover:bg-teal-100 rounded-lg transition duration-200 flex items-center justify-center space-x-2 border border-teal-200 hover:border-teal-300 ">
+      <button
+        onClick={() => setOpen(true)}
+        className="w-full cursor-pointer py-2 mt-2 text-sm font-medium text-[#3FDCBF] bg-[#3FDCBF1A] hover:bg-teal-100 rounded-lg transition duration-200 flex items-center justify-center space-x-2 border border-teal-200 hover:border-teal-300 "
+      >
         <Eye size={16} />
         <span>View Session Note</span>
       </button>
+      <SessionNoteModal
+        isOpen={open}
+        onClose={() => setOpen(false)}
+        session={sampleSession}
+      />
     </div>
   );
 };

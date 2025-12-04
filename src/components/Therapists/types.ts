@@ -48,3 +48,7 @@ export interface Session {
   summary: string;
   notes: string;
 }
+export interface Goal {
+  score: number;
+  goalName: string;
+}

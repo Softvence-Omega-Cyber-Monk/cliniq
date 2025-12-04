@@ -39,7 +39,7 @@ import TherapistClientDetails from "@/pages/IndividualTherapist/TherapistClientD
 import TherapistLayout from "@/Layout/TherapistLayout";
 import TherapistDetailsLayout from "@/pages/Admin/TherapistDetailsLayout";
 import ClinicTherapistDetails from "@/pages/Therapist/ClinicTherapistDetails";
-import PatientDetails from "@/pages/Admin/PatientDetails";
+import PatientDetails from "@/pages/Therapist/PatientDetails";
 
 const routes = createBrowserRouter([
   {

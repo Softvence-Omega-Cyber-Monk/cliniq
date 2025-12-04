@@ -28,6 +28,7 @@ import SessionHistory from "./SessionHistory";
 import TreatmentProgressCard from "./TreatmentProgressCard";
 import TherapistSelector from "./TherapistSeletor";
 import { StatusBadge } from "@/components/ClientManagement/utilityComponents";
+import TherapistClientDetailsSkeleton from "@/components/Skeleton/TherapistClientDetailsSkeleton";
 
 // Format seconds to HH:MM:SS
 const formatTime = (totalSeconds: number) => {
@@ -247,14 +248,7 @@ const TherapistClientDetails: React.FC = () => {
   const handleGoBack = () => navigate(-1);
 
   if (isLoading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex justify-center items-center">
-        <div className="text-center">
-          <div className="w-16 h-16 border-4 border-teal-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-600 font-medium">Loading client...</p>
-        </div>
-      </div>
-    );
+    return <TherapistClientDetailsSkeleton />;
   }
 
   if (error || !client) {

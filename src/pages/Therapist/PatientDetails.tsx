@@ -8,12 +8,13 @@ import {
   Phone,
   User,
 } from "lucide-react";
-import { useParams } from "react-router-dom";
-import { DetailItem } from "../Therapist/DetailItem";
-import { TreatmentGoal } from "../Therapist/TreatmentGoal";
-import { SessionHistoryCard } from "../Therapist/SessionHistoryCard";
+import { Link, useParams } from "react-router-dom";
+import { DetailItem } from "./DetailItem";
+import { TreatmentGoal } from "./TreatmentGoal";
+import { SessionHistoryCard } from "./SessionHistoryCard";
 import { Session } from "@/components/Settings/types";
 import PatientDetailsSkeleton from "@/components/Skeleton/PatientDetailsSkeleton";
+import { Goal } from "@/components/Therapists";
 
 export default function PatientDetails() {
   const clinicId = useUserId();
@@ -32,14 +33,20 @@ export default function PatientDetails() {
   } else if (error instanceof Error) {
     return <div>Error: {error.message}</div>;
   }
+  const goals = patientData?.treatmentProgress?.entries?.[0]?.goals || [];
+  console.log(goals);
 
   return (
     <div className="space-y-4">
       <div className="flex items-center space-x-2 text-sm text-gray-500 mb-6">
-        <button className=" flex items-center space-x-1 font-medium">
-          <span>Therapist</span>
+        <button className=" flex items-center space-x-1 ">
+          <Link to={"/private-practice-admin/therapists"}>Therapist</Link>
           <span>/</span>
-          <span>{patientData?.therapist?.fullName}</span>
+          <Link
+            to={`/private-practice-admin/therapists/${patientData?.therapist?.id}`}
+          >
+            {patientData?.therapist?.fullName}
+          </Link>
           <span>/</span>
           <span className="text-website-primary-color">
             {patientData?.name}
@@ -111,26 +118,43 @@ export default function PatientDetails() {
           Treatment Goals
         </h3>
         <div className="space-y-5">
-          <TreatmentGoal title="Reduce anxiety symptoms by 50%" progress={65} />
-          <TreatmentGoal title="Improve sleep quality" progress={40} />
-          <TreatmentGoal title="Develop coping strategies" progress={80} />
+          {goals && goals.length > 0 ? (
+            goals.map((goal: Goal, index: number) => (
+              <TreatmentGoal
+                key={index}
+                title={goal.goalName}
+                progress={goal.score * 10}
+              />
+            ))
+          ) : (
+            <p className="text-gray-500 italic text-center">
+              No goals available.
+            </p>
+          )}
         </div>
       </div>
       {/* Session History */}
-      <div className="bg-white p-6 rounded-xl ">
+      <div className="bg-white p-6 rounded-xl">
         <h3 className="text-xl font-medium text-[#32363F] mb-5">
           Session History
         </h3>
         <div className="space-y-4">
-          {patientData?.sessionHistory.map((session: Session) => (
-            <SessionHistoryCard
-              key={session.sessionId}
-              date={session.sessionDate}
-              duration={session.duration}
-              type={session.sessionType}
-              notes={session.notes}
-            />
-          ))}
+          {patientData?.sessionHistory &&
+          patientData.sessionHistory.length > 0 ? (
+            patientData.sessionHistory.map((session: Session) => (
+              <SessionHistoryCard
+                key={session.sessionId}
+                date={session.sessionDate}
+                duration={session.duration}
+                type={session.sessionType}
+                notes={session.notes}
+              />
+            ))
+          ) : (
+            <p className="text-gray-500 italic text-center">
+              No session history available.
+            </p>
+          )}
         </div>
       </div>
     </div>
