@@ -70,7 +70,7 @@ const TherapistClientDetails: React.FC = () => {
     userType === "THERAPIST" || userType === "INDIVIDUAL_THERAPIST"
       ? therapistQuery.data
       : clinicQuery.data;
-
+  console.log("client :", client);
   const isLoading =
     userType === "THERAPIST" || userType === "INDIVIDUAL_THERAPIST"
       ? therapistQuery.isLoading
@@ -89,7 +89,6 @@ const TherapistClientDetails: React.FC = () => {
       ? client?.therapist?.id
       : client?.clinicId;
   const treatmentProgress = client?.treatmentProgress?.entries || [];
-  console.log("Client:", treatmentProgress);
   const [isRecording, setIsRecording] = useState(false);
   const [elapsed, setElapsed] = useState(0);
   const [, setAudioURL] = useState<string | null>(null);
@@ -497,7 +496,10 @@ const TherapistClientDetails: React.FC = () => {
             ) : (
               <div className="flex  flex-col gap-2 ">
                 <span className="text-[#7E8086]">Assigned Doctor</span>
-                <TherapistSelector />
+                <TherapistSelector
+                  assignedTherapistId={client?.therapist?.id}
+                  clientId={client?.id}
+                />
               </div>
             )}
           </div>

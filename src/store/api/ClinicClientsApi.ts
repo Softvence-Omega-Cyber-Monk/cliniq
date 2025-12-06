@@ -73,6 +73,17 @@ const clientsApi = baseApi.injectEndpoints({
             }),
             invalidatesTags: ["ClINICClIENT"],
         }),
+        assignTherapistToClient: builder.mutation({
+            query: ({ clinicId, clientId, therapistId }) => ({
+                url: `/clinics/${clinicId}/clients/${clientId}/assign-therapist`,
+                method: "PUT",
+                body: { therapistId },
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            }),
+        }),
+
     }),
 });
 
@@ -83,6 +94,7 @@ export const {
     useAddClinicClientCrisisHistoryMutation,
     useAddClinicClientSessionHistoryMutation,
     useAddClinicClientTreatmentProgressMutation,
+    useAssignTherapistToClientMutation
 } = clientsApi;
 
 export default clientsApi;
