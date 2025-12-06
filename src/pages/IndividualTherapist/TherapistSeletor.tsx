@@ -1,9 +1,8 @@
 import { useUserId } from "@/hooks/useUserId";
 import { useGetTherapistByClinicQuery } from "@/store/api/UsersApi";
-
 export default function TherapistSelector() {
-  const userId = useUserId();
-  const { data: therapists, isLoading } = useGetTherapistByClinicQuery(userId);
+  const id = useUserId();
+  const { data: therapists, isLoading } = useGetTherapistByClinicQuery({ id });
   console.log(therapists);
 
   return (

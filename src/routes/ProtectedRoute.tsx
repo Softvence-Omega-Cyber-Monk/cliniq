@@ -10,8 +10,6 @@ const ProtectedRoute = ({ allowedRoles }: ProtectedRouteProps) => {
   const accessToken = useAppSelector((state) => state.auth.accessToken);
   const refreshToken = useAppSelector((state) => state.auth.refreshToken);
 
-  console.log("ProtectedRoute:", { userType, allowedRoles });
-
   // Check if user is authenticated
   if (!userType || (!accessToken && !refreshToken)) {
     return <Navigate to="/login" replace />;
