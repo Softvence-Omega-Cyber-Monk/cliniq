@@ -69,14 +69,15 @@ const RoleSelection: React.FC<RoleSelectionProps> = ({
         <div className="max-w-[600px] mr-auto w-full">
           <h2 className="text-3xl font-bold text-gray-800">JOIN US!</h2>
           <p className="text-gray-500 mt-2">
-            Lorem ipsum dolor sit amet consectetur. Aliquet ac arcu nullam nunc
-            aliquet.
+            CliniQ helps therapists manage clients easily, schedule sessions
+            faster, and provide better care. Join our growing community of
+            mental health professionals.
           </p>
           <div className="space-y-4 mt-8">
             <RoleCard
               role={Role.INDIVIDUAL}
               title="INDIVIDUAL"
-              description="Lorem ipsum dolor sit amet consectetur. Aliquet ac arcu nullam nunc aliquet."
+              description="Perfect for independent therapists who want to organize their practice and save time."
               icon={drIcon}
               isSelected={selectedRole === Role.INDIVIDUAL}
               onSelect={() => onRoleChange(Role.INDIVIDUAL)}
@@ -84,7 +85,7 @@ const RoleSelection: React.FC<RoleSelectionProps> = ({
             <RoleCard
               role={Role.PRIVATE_PRACTICE}
               title="PRIVATE PRACTICE"
-              description="Lorem ipsum dolor sit amet consectetur. Aliquet ac arcu nullam nunc aliquet."
+              description="Tools to help you manage clients, schedule sessions, and grow your practice with ease."
               icon={drsIcon}
               isSelected={selectedRole === Role.PRIVATE_PRACTICE}
               onSelect={() => onRoleChange(Role.PRIVATE_PRACTICE)}
@@ -93,19 +94,7 @@ const RoleSelection: React.FC<RoleSelectionProps> = ({
           <div className="mt-8">
             <button
               onClick={() => onContinue(selectedRole)}
-              className="
-                                  w-[200px]
-                                     flex items-center justify-center 
-                                      h-[60px] 
-                                 px-10 py-2 
-                                     bg-[#298CDF] 
-                                 text-white font-bold 
-                                        rounded-[20px] 
-                                      gap-2
-                                  hover:bg-opacity-90 
-                                                  transition-colors 
-                                       focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#298CDF]
-                                          "
+              className="w-[200px] flex items-center justify-center h-[60px] px-10 py-2 bg-[#298CDF]  text-white font-bold rounded-[20px] gap-2 hover:bg-opacity-90 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#298CDF]"
             >
               Continue
             </button>
