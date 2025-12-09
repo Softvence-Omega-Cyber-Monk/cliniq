@@ -29,7 +29,7 @@ const SessionNoteModal: React.FC<SessionNoteModalProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="min-w-[840px] max-h-[90vh] p-0 overflow-hidden bg-[#FAFAF7] border-none flex flex-col gap-0">
+      <DialogContent className="max-w-[840px] max-h-[90vh] p-0 overflow-hidden bg-[#FAFAF7] border-none flex flex-col gap-0">
         {/* HEADER */}
         <DialogHeader className="p-6 ">
           <div className="flex justify-between items-center">

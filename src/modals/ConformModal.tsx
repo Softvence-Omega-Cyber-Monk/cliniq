@@ -6,19 +6,12 @@ import {
   DialogFooter,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import {
-  AlertTriangle,
-  Trash2,
-  Ban,
-  Archive,
-  Power,
-  AlertCircle,
-} from "lucide-react";
 
 interface Props {
   children?: React.ReactNode;
-  onConfirm: () => void;
+  onConfirm?: () => void;
   triggerText?: string;
+  triggerBtnStyle?: string;
   confirmText?: string;
   cancelText?: string;
   variant?: "outline" | "destructive" | "default" | "secondary" | "warning";
@@ -29,6 +22,7 @@ interface Props {
 export function ConfirmationModal({
   children,
   onConfirm,
+  triggerBtnStyle = "bg-[#D45B53]",
   triggerText = "Confirm",
   confirmText = "Confirm",
   cancelText = "Cancel",
@@ -37,7 +31,9 @@ export function ConfirmationModal({
   disabled = false,
 }: Props) {
   const handleConfirm = () => {
-    onConfirm();
+    if (onConfirm) {
+      onConfirm();
+    }
   };
 
   // Determine button variant based on action type
@@ -48,7 +44,7 @@ export function ConfirmationModal({
     <Dialog>
       <DialogTrigger asChild>
         <Button
-          className="bg-[#d45b53] cursor-pointer"
+          className={`${triggerBtnStyle} cursor-pointer`}
           size="default"
           disabled={disabled}
         >
@@ -60,7 +56,7 @@ export function ConfirmationModal({
 
         <DialogFooter className="sm:justify-end space-x-2 mt-6">
           <DialogClose asChild>
-            <Button type="button" variant="outline">
+            <Button className="cursor-pointer" type="button" variant="outline">
               {cancelText}
             </Button>
           </DialogClose>

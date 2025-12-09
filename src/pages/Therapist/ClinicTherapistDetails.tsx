@@ -2,6 +2,8 @@ import { InfoCard } from "@/common/InfoCard";
 import {
   useGetTherapistClientTableQuery,
   useGetTherapistOverviewQuery,
+  useGetTherapistProfileQuery,
+  useUpdateTherapistAccountStatusMutation,
 } from "@/store/api/TherapistApi";
 import {
   useDeleteTherapistMutation,
@@ -28,20 +30,45 @@ export default function ClinicTherapistDetails() {
   const navigate = useNavigate();
   const { therapistId } = useParams();
   const { data: therapistData, isLoading } =
-    useGetTherapistByIdQuery(therapistId);
+    useGetTherapistProfileQuery(therapistId);
   const { data: overviewData, isLoading: isLoadingOverview } =
     useGetTherapistOverviewQuery(therapistId);
   const { data: clientData, isLoading: isLoadingClients } =
     useGetTherapistClientTableQuery(therapistId);
   const [deleteTherapist, { isLoading: isDeleting }] =
     useDeleteTherapistMutation();
+  // status update
+  const [handelUserStatusUpdate, { isLoading: isLoadingStatusUpdate }] =
+    useUpdateTherapistAccountStatusMutation();
+  // therapist update
+  const handleStatusUpdate = async (status: string) => {
+    try {
+      await handelUserStatusUpdate({
+        id: therapistId,
+        data: {
+          status: status,
+        },
+      });
+
+      toast.success("Therapist status updated successfully!");
+    } catch (error) {
+      console.log(error);
+      toast.error("Failed to update therapist status.");
+    }
+  };
+  // therapist  delete
   const handleDelete = async () => {
     try {
-      const res = await deleteTherapist(therapistId);
+      const res = await deleteTherapist(therapistId).unwrap();
       console.log(res);
-      toast.success("Therapist deleted successfully!");
+      toast.success(res?.message || "Therapist deleted successfully!");
       navigate("/private-practice-admin/therapists");
-    } catch (error) {}
+    } catch (error: any) {
+      const message =
+        error?.data?.message || error?.message || "Something went wrong.";
+      console.log(error);
+      toast.error(message);
+    }
   };
   if (isLoading || isLoadingOverview || isLoadingClients) {
     return <ClinicTherapistDetailsSkeleton />;
@@ -80,9 +107,15 @@ export default function ClinicTherapistDetails() {
               </div> */}
             </div>
             <div className="flex gap-2 text-white text-sm ">
-              <button className="bg-[#32363F] cursor-pointer  font-medium py-2  px-4 rounded-lg  hover:bg-brand-gray-600 transition-colors">
-                Suspend
-              </button>
+              <ConfirmationModal
+                onConfirm={() => handleStatusUpdate("suspended")}
+                triggerBtnStyle="bg-[#32363f]"
+                disabled={isLoadingStatusUpdate}
+                triggerText="Suspend"
+              >
+                Are you sure you want to suspend this therapist? <br /> This
+                action cannot be undone.
+              </ConfirmationModal>
 
               <ConfirmationModal
                 disabled={isDeleting}
