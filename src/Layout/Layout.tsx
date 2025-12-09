@@ -2,6 +2,7 @@ import { Outlet } from "react-router-dom";
 import Sidebar from "./Sidebar";
 import Navbar from "./Navbar";
 import { useState, useCallback } from "react";
+import { ScrollToTop } from "@/common/ScrollToTop";
 
 const Layout: React.FC = () => {
   const mainContentOffset = "md:ml-64";
@@ -35,6 +36,7 @@ const Layout: React.FC = () => {
         <Navbar toggleSidebar={toggleSidebar} />
 
         <main className="flex-1  ">
+          <ScrollToTop />
           <Outlet />
         </main>
       </div>

@@ -36,7 +36,7 @@ const AppointmentCard: React.FC<AppointmentCardProps> = ({ appointment }) => {
     );
   const userType = useAppSelector((state) => state.auth.userType);
   const userId = useUserId();
-  console.log(therapist.id, userId);
+  // console.log(therapist.id, userId);
   return (
     <div className="bg-[#FAFAF7] p-5 rounded-xl  border border-gray-100 flex flex-col justify-between transition-all duration-300 hover:shadow-xl hover:border-mint-200">
       <div>

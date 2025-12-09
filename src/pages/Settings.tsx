@@ -10,7 +10,7 @@ const Settings: React.FC = () => {
     <div className="min-h-screen bg-gray-50 ">
       <header className="py-8 px-6 bg-white shadow-sm border-b border-gray-100">
         <div className="max-w-7xl mx-auto">
-          <h1 className="text-2xl font-extrabold text-gray-800">SETTINGS</h1>
+          <h1 className="text-3xl font-semibold text-gray-800">SETTINGS</h1>
           <p className="text-sm text-gray-500">
             Manage your account and preferences.
           </p>

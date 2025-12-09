@@ -147,7 +147,7 @@ const ScheduleModal: React.FC<ScheduleModalProps> = ({ onClose }) => {
           </h2>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 transition"
+            className="text-gray-400 hover:text-gray-600 transition cursor-pointer"
           >
             <X size={24} />
           </button>
@@ -297,13 +297,13 @@ const ScheduleModal: React.FC<ScheduleModalProps> = ({ onClose }) => {
             <button
               type="button"
               onClick={onClose}
-              className="px-6 py-2 font-medium rounded-[12px] flex-1 border border-gray-950 text-gray-900 hover:bg-gray-50 transition-colors"
+              className="px-6 py-2 font-medium rounded-[12px] flex-1 border border-gray-950 text-gray-900 hover:bg-gray-50 transition-colors cursor-pointer"
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="px-6 py-3 font-medium  rounded-[12px] flex-1 bg-mint-500 text-white bg-[#3FDCBF] transition-colors "
+              className="px-6 py-3 font-medium  rounded-[12px] flex-1 bg-mint-500 text-white bg-[#3FDCBF] transition-colors  cursor-pointer"
             >
               {isCreating ? "Scheduling..." : "Schedule Appointment"}
             </button>

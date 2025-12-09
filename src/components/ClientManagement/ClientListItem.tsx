@@ -39,7 +39,7 @@ const ClientListItem: React.FC<{
     }
     return `/private-practice-admin/clients/${client.id}`;
   };
-  console.log(client);
+  // console.log(client);
   const userId = useUserId();
   function formatDate(dateString: string) {
     const date = new Date(dateString);

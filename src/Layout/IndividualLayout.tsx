@@ -12,20 +12,15 @@ import {
   Calendar,
   LogOut,
   BookOpen,
+  User,
 } from "lucide-react";
 import { useGetProfileQuery, useLogoutMutation } from "@/store/api/AuthApi";
 import { toast } from "sonner";
 import { useAppDispatch } from "@/hooks/useRedux";
 import { logOut } from "@/store/Slices/AuthSlice/authSlice";
+import { ScrollToTop } from "@/common/ScrollToTop";
+import EditPersonalInfoModal from "@/modals/EditPersonalInfoModal";
 
-interface NavItem {
-  id: number;
-  label: string;
-  icon: React.ElementType;
-  href: string;
-}
-
-// ... your navItems array here
 interface NavItem {
   id: number;
   label: string;
@@ -124,9 +119,11 @@ const Navbar: React.FC<NavbarProps> = ({ toggleSidebar }) => {
   const avatarUrl = "https://placehold.co/40x40/fbcfe8/be185d?text=Dr";
   const { data } = useGetProfileQuery({});
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const [logout] = useLogoutMutation();
   const dispatch = useAppDispatch();
+
   const handleLogout = async () => {
     console.log("Logging out...");
 
@@ -136,7 +133,11 @@ const Navbar: React.FC<NavbarProps> = ({ toggleSidebar }) => {
     } catch {
       toast.error("Failed to logout. Please try again.");
     }
-    // Implement your logout logic here
+    setDropdownOpen(false);
+  };
+
+  const handleEditProfile = () => {
+    setShowEditModal(true);
     setDropdownOpen(false);
   };
 
@@ -188,7 +189,7 @@ const Navbar: React.FC<NavbarProps> = ({ toggleSidebar }) => {
           <div className="relative" ref={dropdownRef}>
             <button
               onClick={() => setDropdownOpen(!dropdownOpen)}
-              className="relative w-10 h-10 rounded-full overflow-hidden border-2 border-pink-400"
+              className="relative w-10 h-10 rounded-full overflow-hidden border-2 border-pink-400 cursor-pointer"
             >
               <img
                 src={avatarUrl}
@@ -198,16 +199,21 @@ const Navbar: React.FC<NavbarProps> = ({ toggleSidebar }) => {
             </button>
 
             {dropdownOpen && (
-              <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-xl shadow-lg py-2 z-50">
-                <div className="px-4 py-2 border-b border-gray-100">
-                  <p className="text-sm font-medium text-gray-900">
+              <div className="absolute right-0 mt-2 w-56 bg-white border border-gray-200 rounded-xl shadow-lg py-2 z-50">
+                <div className="px-4 py-3 border-b border-gray-100">
+                  {/* <p className="text-sm font-medium text-gray-900 truncate">
                     {data?.user?.fullName}
-                  </p>
-                  <p className="text-xs text-gray-500">{data?.user?.role}</p>
+                  </p> */}
+                  <button
+                    onClick={handleEditProfile}
+                    className=" flex gap-2 w-full cursor-pointer"
+                  >
+                    <User size={18} /> Profile
+                  </button>
                 </div>
                 <button
                   onClick={handleLogout}
-                  className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center space-x-2"
+                  className="w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-gray-100 flex items-center space-x-2 transition-colors"
                 >
                   <LogOut className="w-4 h-4" />
                   <span>Logout</span>
@@ -217,11 +223,14 @@ const Navbar: React.FC<NavbarProps> = ({ toggleSidebar }) => {
           </div>
         </div>
       </div>
+      <EditPersonalInfoModal
+        isOpen={showEditModal}
+        onClose={() => setShowEditModal(false)}
+      />
     </header>
   );
 };
 
-// Layout component stays the same
 const IndividualLayout = () => {
   const [isOpen, setIsOpen] = useState(false);
   const toggleSidebar = () => setIsOpen(!isOpen);
@@ -256,6 +265,7 @@ const IndividualLayout = () => {
       <div className="flex flex-col flex-1 bg-[#f3f3ec] md:ml-64">
         <Navbar toggleSidebar={toggleSidebar} />
         <main className="flex-1">
+          <ScrollToTop />
           <Outlet />
         </main>
       </div>

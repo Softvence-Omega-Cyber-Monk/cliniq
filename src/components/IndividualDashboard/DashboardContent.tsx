@@ -82,7 +82,7 @@ const DashboardContent: React.FC = () => {
 
   return (
     <div className="p-4 sm:p-6 lg:p-8 flex-1">
-      <div className="pl-289">
+      <div className="flex justify-end">
         <div className="flex gap-[12px]">
           <button
             onClick={handleOpenModal}

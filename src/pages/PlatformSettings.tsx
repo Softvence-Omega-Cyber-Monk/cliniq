@@ -337,7 +337,7 @@ const App: React.FC = () => {
       <div className="">
         <header className="flex justify-between items-center mb-8 pt-4">
           <div>
-            <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight">
+            <h1 className="text-3xl font-semibold text-gray-900 tracking-tight">
               SETTINGS
             </h1>
             <p className="text-sm text-gray-500 mt-1">

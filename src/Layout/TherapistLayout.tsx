@@ -2,6 +2,7 @@ import { Outlet } from "react-router-dom";
 import { useState, useCallback } from "react";
 import Navbar from "./Navbar"; // Your top navbar component
 import TherapistSideBar from "./TherapistSideBar";
+import { ScrollToTop } from "@/common/ScrollToTop";
 
 const TherapistLayout: React.FC = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -45,6 +46,7 @@ const TherapistLayout: React.FC = () => {
         {/* Page content */}
         <main className="flex-1 p-6 md:p-8 overflow-auto">
           <Outlet />
+          <ScrollToTop />
         </main>
       </div>
     </div>

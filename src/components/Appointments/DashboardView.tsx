@@ -23,7 +23,7 @@ const DashboardView: React.FC<DashboardViewProps> = ({
 }) => {
   const userType = useAppSelector((state) => state.auth.userType);
   const userId = useUserId();
-  console.log(userId);
+  // console.log(userId);
   const [page, setPage] = useState(1);
 
   // Clinic Query
@@ -56,7 +56,7 @@ const DashboardView: React.FC<DashboardViewProps> = ({
     userType === "THERAPIST" || userType === "INDIVIDUAL_THERAPIST"
       ? therapistClients.data
       : clinicAppointments.data;
-  console.log("app", appointments);
+  // console.log("app", appointments);
   const isLoading =
     userType === "THERAPIST" || userType === "INDIVIDUAL_THERAPIST"
       ? therapistClients.isLoading
@@ -68,7 +68,7 @@ const DashboardView: React.FC<DashboardViewProps> = ({
       : clinicAppointments.error;
 
   const totalPages = appointments?.meta?.totalPages || 1;
-  console.log(appointments);
+  // console.log(appointments);
   return (
     <div className="min-h-screen p-4 sm:p-8">
       {/* Header */}
@@ -81,7 +81,7 @@ const DashboardView: React.FC<DashboardViewProps> = ({
         </div>
         <button
           onClick={onOpenModal}
-          className="flex items-center px-6 py-2.5 font-medium rounded-xl bg-[#3FDCBF] text-white hover:bg-mint-600 transition-colors  shadow-mint-500/30"
+          className="flex items-center px-6 py-2.5 font-medium rounded-xl bg-[#3FDCBF] text-white hover:bg-mint-600 transition-colors  shadow-mint-500/30 cursor-pointer"
         >
           <Plus size={20} className="mr-2" /> Create New Appointment
         </button>

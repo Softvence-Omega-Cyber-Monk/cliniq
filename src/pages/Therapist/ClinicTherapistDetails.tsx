@@ -3,7 +3,10 @@ import {
   useGetTherapistClientTableQuery,
   useGetTherapistOverviewQuery,
 } from "@/store/api/TherapistApi";
-import { useGetTherapistByIdQuery } from "@/store/api/UsersApi";
+import {
+  useDeleteTherapistMutation,
+  useGetTherapistByIdQuery,
+} from "@/store/api/UsersApi";
 import PatientIcon from "@/assets/Icons/Patients.svg";
 import {
   Award,
@@ -14,12 +17,15 @@ import {
   PhoneIcon,
   UserIcon,
 } from "lucide-react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import Toggle from "@/common/Toggle";
 import { DetailPatientRow } from "@/common/ClientRow";
 import ClinicTherapistDetailsSkeleton from "@/components/Skeleton/ClinicTherapistDetailsSkeleton";
+import { toast } from "sonner";
+import { ConfirmationModal } from "@/modals/ConformModal";
 
 export default function ClinicTherapistDetails() {
+  const navigate = useNavigate();
   const { therapistId } = useParams();
   const { data: therapistData, isLoading } =
     useGetTherapistByIdQuery(therapistId);
@@ -27,7 +33,16 @@ export default function ClinicTherapistDetails() {
     useGetTherapistOverviewQuery(therapistId);
   const { data: clientData, isLoading: isLoadingClients } =
     useGetTherapistClientTableQuery(therapistId);
-
+  const [deleteTherapist, { isLoading: isDeleting }] =
+    useDeleteTherapistMutation();
+  const handleDelete = async () => {
+    try {
+      const res = await deleteTherapist(therapistId);
+      console.log(res);
+      toast.success("Therapist deleted successfully!");
+      navigate("/private-practice-admin/therapists");
+    } catch (error) {}
+  };
   if (isLoading || isLoadingOverview || isLoadingClients) {
     return <ClinicTherapistDetailsSkeleton />;
   }
@@ -68,9 +83,16 @@ export default function ClinicTherapistDetails() {
               <button className="bg-[#32363F] cursor-pointer  font-medium py-2  px-4 rounded-lg  hover:bg-brand-gray-600 transition-colors">
                 Suspend
               </button>
-              <button className="bg-[#D45B53] font-semibold py-2 px-4 rounded-lg hover:bg-red-600 cursor-pointer transition-colors">
-                Delete
-              </button>
+
+              <ConfirmationModal
+                disabled={isDeleting}
+                variant="warning"
+                triggerText="Delete"
+                onConfirm={handleDelete}
+              >
+                Are you sure you want to delete this therapist? <br /> This
+                action cannot be undone.
+              </ConfirmationModal>
             </div>
           </div>
 

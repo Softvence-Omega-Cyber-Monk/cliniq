@@ -15,7 +15,7 @@ const AuthLayout: React.FC<AuthLayoutProps> = ({ children, role }) => {
   return (
     <div className="flex flex-col md:flex-row bg-white min-h-screen">
       {/* LEFT SIDE */}
-      <div className="w-full md:w-6/12 bg-[#0B0D3D] text-white  flex flex-col relative justify-between overflow-hidden">
+      <div className="w-full sticky top-0 h-screen md:w-6/12 bg-[#0B0D3D] text-white  flex flex-col  justify-between overflow-hidden">
         {/* TEXT (above image) */}
 
         <div className="relative z-10 text-center mt-[50px]">
@@ -36,7 +36,7 @@ const AuthLayout: React.FC<AuthLayoutProps> = ({ children, role }) => {
       </div>
 
       {/* RIGHT SIDE */}
-      <div className="w-full md:w-7/12 px-10 bg-[#ECEFDE]">{children}</div>
+      <div className="w-full pb-6 md:w-7/12 px-10 bg-[#ECEFDE]">{children}</div>
     </div>
   );
 };

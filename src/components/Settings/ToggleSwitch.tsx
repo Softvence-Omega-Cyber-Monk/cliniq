@@ -1,7 +1,13 @@
-import React from 'react';
-import { ToggleSwitchProps } from './types';
+import React from "react";
+import { ToggleSwitchProps } from "./types";
 
-const ToggleSwitch: React.FC<ToggleSwitchProps> = ({ label, subText, id, checked, onChange }) => (
+const ToggleSwitch: React.FC<ToggleSwitchProps> = ({
+  label,
+  subText,
+  id,
+  checked,
+  onChange,
+}) => (
   <div className="flex items-center justify-between py-3 border-b border-gray-100 last:border-b-0">
     <div className="flex flex-col">
       <label htmlFor={id} className="text-base font-medium text-gray-700">
@@ -18,14 +24,15 @@ const ToggleSwitch: React.FC<ToggleSwitchProps> = ({ label, subText, id, checked
         onChange={(e) => onChange(e.target.checked)}
         className="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer"
         style={{
-          boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)',
+          boxShadow:
+            "0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)",
         }}
       />
       <label
         htmlFor={id}
         className={`
           toggle-label block overflow-hidden h-6 rounded-full cursor-pointer 
-          ${checked ? 'bg-emerald-500' : 'bg-gray-300'}
+          ${checked ? "bg-emerald-500" : "bg-gray-300"}
         `}
       ></label>
     </div>

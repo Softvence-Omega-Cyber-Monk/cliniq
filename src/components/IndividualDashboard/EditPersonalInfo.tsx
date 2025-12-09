@@ -1,11 +1,16 @@
 import { useUserId } from "@/hooks/useUserId";
-import {
-  useRegisterTherapistMutation,
-} from "@/store/api/AuthApi";
+import { useRegisterTherapistMutation } from "@/store/api/AuthApi";
 import React, { useState, useCallback, useMemo } from "react";
 import { toast } from "sonner";
 
-type Day = "SATURDAY" | "SUNDAY" | "MONDAY" | "TUESDAY" | "WEDNESDAY" | "THURSDAY" | "FRIDAY";
+type Day =
+  | "SATURDAY"
+  | "SUNDAY"
+  | "MONDAY"
+  | "TUESDAY"
+  | "WEDNESDAY"
+  | "THURSDAY"
+  | "FRIDAY";
 
 interface UserProfile {
   name: string;
@@ -99,10 +104,7 @@ const FormInput: React.FC<FormInputProps> = ({
 interface EditPersonalInfoProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave?: (
-    profile: UserProfile,
-    daysAvailable: Day[]
-  ) => void;
+  onSave?: (profile: UserProfile, daysAvailable: Day[]) => void;
 }
 
 const EditPersonalInfo: React.FC<EditPersonalInfoProps> = ({
@@ -118,7 +120,7 @@ const EditPersonalInfo: React.FC<EditPersonalInfoProps> = ({
     message: string;
   } | null>(null);
   const [registerTherapist] = useRegisterTherapistMutation();
-  
+
   // General handler for all text/input changes
   const handleChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -138,7 +140,9 @@ const EditPersonalInfo: React.FC<EditPersonalInfoProps> = ({
         return prev.filter((d) => d !== day);
       } else {
         return [...prev, day].sort(
-          (a, b) => ALL_DAYS.findIndex(d => d.value === a) - ALL_DAYS.findIndex(d => d.value === b)
+          (a, b) =>
+            ALL_DAYS.findIndex((d) => d.value === a) -
+            ALL_DAYS.findIndex((d) => d.value === b)
         );
       }
     });
@@ -182,16 +186,18 @@ const EditPersonalInfo: React.FC<EditPersonalInfoProps> = ({
         password: profile.password,
         clinicId: userId,
         ...(profile.speciality && { speciality: profile.speciality }),
-        ...(profile.qualifications && { qualification: profile.qualifications }),
+        ...(profile.qualifications && {
+          qualification: profile.qualifications,
+        }),
         ...(profile.licenseNumber && { licenseNumber: profile.licenseNumber }),
         ...(daysAvailable.length > 0 && { availableDays: daysAvailable }),
       };
 
       const res = await registerTherapist(payload).unwrap();
-      
+
       console.log(res);
       toast.success("Therapist added successfully!");
-      
+
       setSaveMessage({
         type: "success",
         message: "Therapist added successfully!",
@@ -206,7 +212,8 @@ const EditPersonalInfo: React.FC<EditPersonalInfoProps> = ({
       }, 1500);
     } catch (error: any) {
       console.error(error);
-      const errorMessage = error?.data?.message || "Failed to add therapist. Please try again.";
+      const errorMessage =
+        error?.data?.message || "Failed to add therapist. Please try again.";
       toast.error(errorMessage);
       setSaveMessage({
         type: "error",

@@ -3,7 +3,7 @@ import ClientManagementDashboard from "@/components/ClientManagement/ClientManag
 
 const Clients: React.FC = () => {
   return (
-    <div className=" bg-[#f3f3ec] min-h-screen">
+    <div className=" bg-[#f3f3ec] min-h-[calc(100vh-105px)]">
       <ClientManagementDashboard />
     </div>
   );

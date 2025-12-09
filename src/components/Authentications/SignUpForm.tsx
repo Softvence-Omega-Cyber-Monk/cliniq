@@ -406,7 +406,7 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
     setShowConfirmPassword(!showConfirmPassword);
 
   const password = watch("password");
-  const acceptPolicy = watch("acceptPolicy");
+  // const acceptPolicy = watch("acceptPolicy");
   const countryCode = watch("countryCode");
 
   const onSubmit: SubmitHandler<FormData> = async (data) => {
@@ -766,8 +766,8 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
             <div className="flex justify-center">
               <button
                 type="submit"
-                disabled={isLoading || !acceptPolicy}
-                className="w-full flex items-center justify-center h-[60px] px-10 py-2 bg-[#298CDF] text-white font-bold rounded-[20px] gap-2 hover:bg-opacity-90 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#298CDF] disabled:opacity-50 disabled:cursor-not-allowed mt-4"
+                disabled={isLoading}
+                className="w-full flex items-center justify-center h-[60px] px-10 py-2 bg-[#298CDF] text-white font-bold rounded-[20px] gap-2 hover:bg-opacity-90 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 cursor-pointer focus:ring-[#298CDF] disabled:opacity-50 disabled:cursor-not-allowed mt-4"
               >
                 {isLoading ? (
                   <span className="flex items-center justify-center">

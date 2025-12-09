@@ -68,7 +68,7 @@ export default function App() {
           MATERIALS
         </h1>
         <p className="mt-2 text-gray-600">
-          Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet.
+          Helpful resources to assist therapists in their daily work.
         </p>
       </header>
 

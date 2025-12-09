@@ -94,7 +94,10 @@ export default function Therapists() {
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {therapistData.data.map((therapist: Therapist) => (
-            <div className="bg-white p-5 rounded-xl shadow-[0px 4px 33.099998474121094px 0px rgba(0, 0, 0, 0.04)] border border-gray-100 flex flex-col transition-shadow hover:shadow">
+            <div
+              key={therapist.id}
+              className="bg-white p-5 rounded-xl shadow-[0px 4px 33.099998474121094px 0px rgba(0, 0, 0, 0.04)] border border-gray-100 flex flex-col transition-shadow hover:shadow"
+            >
               {/* Name and Specialty */}
               <div className="flex items-center space-x-3 mb-4">
                 <div
