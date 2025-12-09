@@ -29,6 +29,7 @@ interface Therapist {
   email: string;
   speciality?: string;
 }
+
 const ScheduleModal: React.FC<ScheduleModalProps> = ({ onClose }) => {
   const userType = useAppSelector((state) => state.auth.userType);
   const userId = useUserId();
@@ -68,7 +69,6 @@ const ScheduleModal: React.FC<ScheduleModalProps> = ({ onClose }) => {
       : clinicQuery.data;
 
   const [selectedClientId, setSelectedClientId] = useState("");
-
   const [scheduledDate, setScheduledDate] = useState("");
   const [scheduledTime, setScheduledTime] = useState("");
   const [duration, setDuration] = useState(60);
@@ -134,67 +134,70 @@ const ScheduleModal: React.FC<ScheduleModalProps> = ({ onClose }) => {
 
   return (
     <div
-      className="fixed inset-0 bg-[#FAFAF7]/50 flex items-center justify-center backdrop-blur-[1px] z-50 p-4"
+      className="fixed inset-0 bg-[#FAFAF7]/50 flex items-center justify-center backdrop-blur-[1px] z-50 p-2 sm:p-4 overflow-y-auto"
       onClick={onClose}
     >
       <div
-        className="bg-[#ebf4f2] p-10 rounded-2xl  w-full max-w-[695px] overflow-hidden"
+        className="bg-[#ebf4f2] p-4  md:p-5 lg:p-8 rounded-xl md:rounded-2xl w-full max-w-[95%] sm:max-w-[90%] md:max-w-[850px] my-4 max-h-[90vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className=" border-b border-gray-100 flex justify-between items-center mb-5">
-          <h2 className="text-xl font-medium text-gray-800">
+        <div className="border-b border-gray-100 flex justify-between items-center mb-1.5  ">
+          <h2 className="text-lg sm:text-xl font-medium text-gray-800">
             Schedule New Appointment
           </h2>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 transition cursor-pointer"
+            className="text-gray-400 hover:text-gray-600 transition cursor-pointer p-1"
           >
-            <X size={24} />
+            <X size={20} className="sm:w-6 sm:h-6" />
           </button>
         </div>
 
-        <form className=" space-y-4" onSubmit={handleSubmit}>
+        <form className="space-y-1 " onSubmit={handleSubmit}>
           {/* Therapist Select - Only show for CLINIC users */}
-          {userType === "CLINIC" && (
-            <div className="mb-4">
+          <div className="flex gap-1.5">
+            {userType === "CLINIC" && (
+              <div className="mb-3 sm:mb-4 flex-1">
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Therapist
+                </label>
+                <select
+                  value={selectedTherapistId}
+                  onChange={(e) => setSelectedTherapistId(e.target.value)}
+                  className="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base border border-gray-300 rounded-lg sm:rounded-xl focus:ring-mint-500 focus:border-mint-500 transition duration-150 text-gray-800 bg-white shadow-inner"
+                >
+                  <option value="">Select Therapist</option>
+                  {therapistsData?.data?.map((t: Therapist) => (
+                    <option key={t.id} value={t.id}>
+                      {t.fullName} ({t.email})
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
+
+            {/* Client Select */}
+            <div className="mb-3 sm:mb-4 flex-1">
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Therapist
+                Client
               </label>
               <select
-                value={selectedTherapistId}
-                onChange={(e) => setSelectedTherapistId(e.target.value)}
-                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-mint-500 focus:border-mint-500 transition duration-150 text-gray-800 bg-white shadow-inner"
+                value={selectedClientId}
+                onChange={(e) => setSelectedClientId(e.target.value)}
+                className="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base border rounded-lg sm:rounded-xl focus:ring-mint-500 focus:border-mint-500 transition duration-150 text-gray-800 border-[#EAE9DD] bg-[#FAFAF7]"
               >
-                <option value="">Select Therapist</option>
-                {therapistsData?.data?.map((t: Therapist) => (
-                  <option key={t.id} value={t.id}>
-                    {t.fullName} ({t.email})
+                <option value="">Select Client</option>
+                {clientsData?.data?.map((c: Client) => (
+                  <option key={c.id} value={c.id}>
+                    {c.name}
                   </option>
                 ))}
               </select>
             </div>
-          )}
-          {/* Client Select */}
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Client
-            </label>
-            <select
-              value={selectedClientId}
-              onChange={(e) => setSelectedClientId(e.target.value)}
-              className="w-full px-4 py-3 border  rounded-xl focus:ring-mint-500 focus:border-mint-500 transition duration-150 text-gray-800 border-[#EAE9DD] bg-[#FAFAF7]"
-            >
-              <option value="">Select Client</option>
-              {clientsData?.data?.map((c: Client) => (
-                <option key={c.id} value={c.id}>
-                  {c.name}
-                </option>
-              ))}
-            </select>
           </div>
 
           {/* Date & Time */}
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-4 gap-1">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Date
@@ -203,7 +206,7 @@ const ScheduleModal: React.FC<ScheduleModalProps> = ({ onClose }) => {
                 type="date"
                 value={scheduledDate}
                 onChange={(e) => setScheduledDate(e.target.value)}
-                className="w-full px-4 py-3 border  rounded-xl focus:ring-mint-500 focus:border-mint-500 transition duration-150 text-gray-800 border-[#EAE9DD] bg-[#FAFAF7]"
+                className="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base border rounded-lg sm:rounded-xl focus:ring-mint-500 focus:border-mint-500 transition duration-150 text-gray-800 border-[#EAE9DD] bg-[#FAFAF7]"
               />
             </div>
             <div>
@@ -214,14 +217,23 @@ const ScheduleModal: React.FC<ScheduleModalProps> = ({ onClose }) => {
                 type="time"
                 value={scheduledTime}
                 onChange={(e) => setScheduledTime(e.target.value)}
-                className="w-full px-4 py-3 border  rounded-xl focus:ring-mint-500 focus:border-mint-500 transition duration-150 text-gray-800 bg-[#FAFAF7] border-[#EAE9DD]"
+                className="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base border rounded-lg sm:rounded-xl focus:ring-mint-500 focus:border-mint-500 transition duration-150 text-gray-800 bg-[#FAFAF7] border-[#EAE9DD]"
               />
             </div>
-          </div>
-
-          <div className="flex justify-between gap-4">
-            {/* Duration */}
-            <div className="mb-4 flex-1">
+            <div className="mb-3 sm:mb-4 flex-1">
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Session Type
+              </label>
+              <select
+                value={sessionType}
+                onChange={(e) => setSessionType(e.target.value)}
+                className="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base border rounded-lg sm:rounded-xl focus:ring-mint-500 focus:border-mint-500 transition duration-150 text-gray-800 bg-[#FAFAF7] border-[#EAE9DD]"
+              >
+                <option value="virtual">Virtual</option>
+                <option value="onsite">Onsite</option>
+              </select>
+            </div>
+            <div className="mb-3 sm:mb-4 flex-1">
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Duration (minutes)
               </label>
@@ -230,29 +242,13 @@ const ScheduleModal: React.FC<ScheduleModalProps> = ({ onClose }) => {
                 min={15}
                 value={duration}
                 onChange={(e) => setDuration(Number(e.target.value))}
-                className="w-full px-4 py-3 border  rounded-xl focus:ring-mint-500 focus:border-mint-500 transition duration-150 text-gray-800 bg-[#FAFAF7]  border-[#EAE9DD]"
+                className="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base border rounded-lg sm:rounded-xl focus:ring-mint-500 focus:border-mint-500 transition duration-150 text-gray-800 bg-[#FAFAF7] border-[#EAE9DD]"
               />
             </div>
-
-            {/* Session Type */}
-            <div className="mb-4 flex-1">
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Session Type
-              </label>
-              <select
-                value={sessionType}
-                onChange={(e) => setSessionType(e.target.value)}
-                className="w-full px-4 py-3.5 border  rounded-xl focus:ring-mint-500 focus:border-mint-500 transition duration-150 text-gray-800 bg-[#FAFAF7] border-[#EAE9DD]"
-              >
-                <option value="virtual">Virtual</option>
-                <option value="onsite">Onsite</option>
-              </select>
-            </div>
           </div>
-
-          <div className="flex gap-4">
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
             {/* Phone */}
-            <div className="mb-4 flex-1 ">
+            <div className="mb-3 sm:mb-4 flex-1">
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Phone
               </label>
@@ -261,12 +257,12 @@ const ScheduleModal: React.FC<ScheduleModalProps> = ({ onClose }) => {
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
                 placeholder="+1234567890"
-                className="w-full px-4 py-3 border  rounded-xl focus:ring-mint-500 focus:border-mint-500 transition duration-150 text-gray-800 border-[#EAE9DD]  bg-[#FAFAF7]"
+                className="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base border rounded-lg sm:rounded-xl focus:ring-mint-500 focus:border-mint-500 transition duration-150 text-gray-800 border-[#EAE9DD] bg-[#FAFAF7]"
               />
             </div>
 
             {/* Email */}
-            <div className="mb-4 flex-1">
+            <div className="mb-3 sm:mb-4 flex-1">
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Email
               </label>
@@ -275,13 +271,13 @@ const ScheduleModal: React.FC<ScheduleModalProps> = ({ onClose }) => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="client@example.com"
-                className="w-full px-4 py-3 border  rounded-xl focus:ring-mint-500 focus:border-mint-500 transition duration-150 text-gray-800 border-[#EAE9DD] bg-[#FAFAF7]"
+                className="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base border rounded-lg sm:rounded-xl focus:ring-mint-500 focus:border-mint-500 transition duration-150 text-gray-800 border-[#EAE9DD] bg-[#FAFAF7]"
               />
             </div>
           </div>
 
           {/* Notes */}
-          <div className="mb-4">
+          <div className="mb-3 sm:mb-4">
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Notes
             </label>
@@ -289,21 +285,23 @@ const ScheduleModal: React.FC<ScheduleModalProps> = ({ onClose }) => {
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               placeholder="Client requested early morning session"
-              className="w-full px-4 py-3 border  rounded-xl focus:ring-mint-500 focus:border-mint-500 transition duration-150 text-gray-800 border-[#EAE9DD] bg-[#FAFAF7]"
+              rows={3}
+              className="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base border rounded-lg sm:rounded-xl focus:ring-mint-500 focus:border-mint-500 transition duration-150 text-gray-800 border-[#EAE9DD] bg-[#FAFAF7]"
             />
           </div>
 
-          <div className="pt-6 flex justify-end space-x-3">
+          <div className=" flex flex-col justify-end sm:flex-row gap-2 sm:gap-3">
             <button
               type="button"
               onClick={onClose}
-              className="px-6 py-2 font-medium rounded-[12px] flex-1 border border-gray-950 text-gray-900 hover:bg-gray-50 transition-colors cursor-pointer"
+              className="px-4 sm:px-6 py-2.5 sm:py-3 text-sm sm:text-base font-medium rounded-lg sm:rounded-[12px] border border-gray-950 text-gray-900 hover:bg-gray-50 transition-colors cursor-pointer order-2 sm:order-1"
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="px-6 py-3 font-medium  rounded-[12px] flex-1 bg-mint-500 text-white bg-[#3FDCBF] transition-colors  cursor-pointer"
+              disabled={isCreating}
+              className="px-4  text-sm sm:text-base font-medium rounded-lg sm:rounded-[12px] bg-[#3FDCBF] text-white hover:bg-[#36c8ae] transition-colors cursor-pointer disabled:opacity-70 disabled:cursor-not-allowed order-1 sm:order-2"
             >
               {isCreating ? "Scheduling..." : "Schedule Appointment"}
             </button>
