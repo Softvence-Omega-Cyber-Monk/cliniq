@@ -1,5 +1,5 @@
 import React from "react";
-import logincover from "@/assets/doctor.png";
+import logincover from "@/assets/photo_2025-12-09_08-34-05v5.png";
 import { Role } from "./types";
 
 interface AuthLayoutProps {

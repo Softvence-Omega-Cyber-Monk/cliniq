@@ -21,7 +21,13 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Loader2, CreditCard, AlertCircle, CheckCircle2, Plus } from "lucide-react";
+import {
+  Loader2,
+  CreditCard,
+  AlertCircle,
+  CheckCircle2,
+  Plus,
+} from "lucide-react";
 import AddPaymentMethodDialog from "@/components/Admin/Billing/AddPaymentMethodDialog";
 import UpgradePlanDialog from "@/components/Admin/Billing/UpgradePlanDialog";
 import CancelSubscriptionDialog from "@/components/Admin/Billing/CancelSubscriptionDialog";
@@ -44,8 +50,10 @@ const BillingComponent = () => {
     error: statusError,
   } = useGetSubscriptionStatusQuery();
 
-  const { data: plans = [], isLoading: plansLoading } = useGetSubscriptionPlansQuery();
-  const { data: paymentMethods = [], isLoading: pmLoading } = useGetPaymentMethodsQuery();
+  const { data: plans = [], isLoading: plansLoading } =
+    useGetSubscriptionPlansQuery();
+  const { data: paymentMethods = [], isLoading: pmLoading } =
+    useGetPaymentMethodsQuery();
 
   const [cancelSubscription] = useCancelSubscriptionMutation();
   const [reactivateSubscription, { isLoading: reactivating }] =
@@ -168,7 +176,9 @@ const BillingComponent = () => {
       <div className="space-y-8">
         {/* Section Header */}
         <div>
-          <h2 className="text-xl font-bold text-gray-800">Billing & Subscription</h2>
+          <h2 className="text-xl font-bold text-gray-800">
+            Billing & Subscription
+          </h2>
         </div>
 
         {/* Notification */}
@@ -282,7 +292,7 @@ const BillingComponent = () => {
                 </p>
                 <Button
                   onClick={() => setIsPurchaseOpen(true)}
-                  className="bg-teal-600"
+                  className="bg-website-primary-color cursor-pointer hover:bg-teal-400 text-white"
                 >
                   View Plans
                 </Button>
@@ -321,15 +331,19 @@ const BillingComponent = () => {
                   >
                     {plan.isPopular && (
                       <div className="absolute -top-4 left-1/2 -translate-x-1/2">
-                        <Badge className="bg-teal-600 text-white">
+                        <Badge className="bg-website-primary-color text-white">
                           Most Popular
                         </Badge>
                       </div>
                     )}
                     <CardHeader>
-                      <CardTitle className="text-base">{plan.planName}</CardTitle>
+                      <CardTitle className="text-base">
+                        {plan.planName}
+                      </CardTitle>
                       {plan.tagline && (
-                        <CardDescription className="text-sm">{plan.tagline}</CardDescription>
+                        <CardDescription className="text-sm">
+                          {plan.tagline}
+                        </CardDescription>
                       )}
                       <div className="mt-4">
                         <span className="text-3xl font-bold">
@@ -367,7 +381,7 @@ const BillingComponent = () => {
                         </Button>
                       ) : (
                         <Button
-                          className="w-full bg-teal-600 hover:bg-teal-700"
+                          className="w-full bg-website-primary-color text-white hover:bg-teal-500 cursor-pointer"
                           onClick={() => setIsPurchaseOpen(true)}
                           size="sm"
                         >
@@ -459,9 +473,7 @@ const BillingComponent = () => {
             Our support team is here to help you with any subscription or
             payment questions.
           </p>
-          <Button
-            className="bg-teal-600 hover:bg-teal-700 text-white cursor-pointer"
-          >
+          <Button className="bg-teal-400 hover:bg-teal-500 text-white cursor-pointer">
             Contact Support
           </Button>
         </div>
