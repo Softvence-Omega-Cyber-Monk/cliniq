@@ -6,7 +6,6 @@ import {
   BarChart,
   Settings,
   HelpCircle,
-  Zap,
   // Bell,
   Menu,
   Calendar,
@@ -245,8 +244,8 @@ const IndividualLayout = () => {
   return (
     <div className="flex">
       <aside className={sidebarClasses}>
-        <div className="flex items-center px-2 py-4 mb-8">
-          <Zap className="h-6 w-6 text-sky-500 mr-2" />
+        <div className="flex items-center px-2 py-4 mb-8 gap-2">
+          <img src="cliniq.png" alt="" className="w-10 h-10 rounded-full " />
           <span className="text-xl font-bold text-gray-800">
             Private Practice Admin
           </span>
