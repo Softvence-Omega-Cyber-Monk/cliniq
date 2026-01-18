@@ -142,10 +142,10 @@ export default function ReportsAnalytics() {
         {/* Top Therapists Bar Chart */}
         <div className="rounded-lg bg-card p-6 bg-white border border-gray-200">
           <h2 className="text-lg font-semibold text-foreground mb-4">Top Therapists</h2>
-          <ResponsiveContainer width="100%" height={250}>
+          <ResponsiveContainer width="100%" height={350}>
             <BarChart data={topTherapistsData}>
               <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
-              <XAxis dataKey="name" stroke="var(--muted-foreground)" angle={-45} textAnchor="end" height={80} />
+              <XAxis dataKey="name" stroke="var(--muted-foreground)" angle={-35} textAnchor="end" height={100} />
               <YAxis stroke="var(--muted-foreground)" />
               <Tooltip contentStyle={{ backgroundColor: "var(--card)", border: "1px solid var(--border)" }} />
               <Bar dataKey="sessions" fill="#3b82f6" />

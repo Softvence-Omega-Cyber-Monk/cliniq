@@ -6,7 +6,6 @@ import {
   BarChart,
   Settings,
   HelpCircle,
-  Zap,
 } from "lucide-react";
 import { NavLink } from "react-router-dom";
 import { CiMoneyBill } from "react-icons/ci";
@@ -95,9 +94,10 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, setActiveItemId }) => {
   return (
     <div className={sidebarClasses}>
       {/* Logo/Header Section */}
-      <div className="flex items-center px-2 py-4 mb-8">
-        <Zap className="h-6 w-6 text-sky-500 mr-2" />
-        <span className="text-xl font-bold text-gray-800">logoipsum</span>
+      <div className="flex items-center px-2 py-4 mb-8 gap-2">
+        {/* <Zap className="h-6 w-6 text-sky-500 mr-2" /> */}
+        <img src="cliniq.png" alt="" className="w-10 h-10 rounded-full " />
+        <span className="text-xl font-bold text-gray-800">CLINIQ</span>
       </div>
 
       {/* Navigation Links */}
