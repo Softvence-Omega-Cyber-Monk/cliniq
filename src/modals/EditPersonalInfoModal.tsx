@@ -11,7 +11,6 @@ import { X } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { useGetProfileQuery } from "@/store/api/AuthApi";
 import { useUpdateTherapistMutation } from "@/store/api/TherapistApi";
-import { id } from "date-fns/locale";
 import { useUserId } from "@/hooks/useUserId";
 import { toast } from "sonner";
 

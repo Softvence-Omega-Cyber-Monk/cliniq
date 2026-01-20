@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { InfoCard } from "@/common/InfoCard";
 import {
   useGetTherapistClientTableQuery,
@@ -7,7 +8,6 @@ import {
 } from "@/store/api/TherapistApi";
 import {
   useDeleteTherapistMutation,
-  useGetTherapistByIdQuery,
 } from "@/store/api/UsersApi";
 import PatientIcon from "@/assets/Icons/Patients.svg";
 import {

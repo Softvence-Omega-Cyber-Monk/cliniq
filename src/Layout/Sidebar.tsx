@@ -6,11 +6,9 @@ import {
   BarChart,
   Settings,
   HelpCircle,
-  // Zap,
   BookOpen,
 } from "lucide-react";
 import { NavLink } from "react-router-dom";
-import brandLogo from "@/assets/Icons/cliniq.png";
 
 interface NavItem {
   id: number;
@@ -116,12 +114,10 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, setActiveItemId }) => {
   return (
     <div className={sidebarClasses}>
       {/* Logo/Header Section */}
-      <div className="flex items-center px-2 gap-3 py-4 mb-8">
+      <div className="flex items-center px-2 py-4 mb-8 gap-2">
         {/* <Zap className="h-6 w-6 text-sky-500 mr-2" /> */}
-        <img className="size-10 rounded-full" src={brandLogo} alt="" />
-        <span className="text-xl font-bold text-gray-800">
-          Individual Therapist
-        </span>
+        <img src="cliniq.png" alt="" className="w-10 h-10 rounded-full " />
+        <span className="text-xl font-bold text-gray-800">CLINIQ</span>
       </div>
 
       {/* Navigation Links */}

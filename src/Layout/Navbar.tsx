@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { Menu, LogOut, User } from "lucide-react";
 import { useAppDispatch, useAppSelector } from "@/hooks/useRedux";
 import { logOut } from "@/store/Slices/AuthSlice/authSlice";
+import { useNavigate } from "react-router-dom";
 import EditPersonalInfoModal from "@/modals/EditPersonalInfoModal";
 
 interface NavbarProps {
@@ -36,8 +37,11 @@ const Navbar: React.FC<NavbarProps> = ({ toggleSidebar }) => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  const navigate = useNavigate();
   const handleLogout = () => {
     dispatch(logOut());
+    // Implement your logout logic here
+    navigate("/login");
   };
 
   const handleEditProfile = () => {
@@ -85,7 +89,7 @@ const Navbar: React.FC<NavbarProps> = ({ toggleSidebar }) => {
                   alt="User Avatar"
                   className="w-full h-full object-cover"
                   onError={(
-                    e: React.SyntheticEvent<HTMLImageElement, Event>
+                    e: React.SyntheticEvent<HTMLImageElement, Event>,
                   ) => {
                     const target = e.target as HTMLImageElement;
                     target.onerror = null;
